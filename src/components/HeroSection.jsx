@@ -123,9 +123,9 @@ export default function HeroSection() {
           className="logo"
           alt="PARK VIEW Logo"
           sx={{
-            width: { xs: '260px', sm: '440px', md: '500px' },
+            width: { xs: '260px', sm: '340px', md: '450px' },
             maxWidth: '90vw',
-            mb: { xs: 2.5, sm: 10 },
+            mb: { xs: 2.5, sm: 0 },
             filter: 'drop-shadow(0 4px 18px rgba(0, 0, 0, 0.5))',
           }}
         />
@@ -154,6 +154,8 @@ export default function HeroSection() {
           className="countdown circled large"
           sx={{
             display: 'flex',
+            flexDirection: 'row',
+            direction: 'ltr',
             alignItems: 'center',
             justifyContent: 'center',
             margin: { xs: '20px auto', sm: '40px auto' },
