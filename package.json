@@ -1,0 +1,38 @@
+{
+  "name": "park-view-yaafour",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.0",
+    "@mui/icons-material": "^6.4.2",
+    "@mui/material": "^6.4.2",
+    "@sanity/image-url": "^2.1.1",
+    "@sanity/vision": "^3.58.0",
+    "gsap": "^3.12.7",
+    "lenis": "^1.1.18",
+    "lucide-react": "^0.474.0",
+    "mui-tel-input": "^11.0.0",
+    "next": "^15.1.6",
+    "next-sanity": "^9.8.3",
+    "pdfjs-dist": "^3.11.174",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "sanity": "^3.58.0",
+    "styled-components": "^6.4.4"
+  },
+  "devDependencies": {
+    "@types/node": "^26.1.2",
+    "@types/react": "^19.2.18",
+    "@types/react-dom": "^19.2.4",
+    "eslint": "^9.19.0",
+    "eslint-config-next": "^15.1.6",
+    "typescript": "^5.9.3"
+  }
+}

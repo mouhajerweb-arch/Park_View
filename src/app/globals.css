@@ -1,0 +1,148 @@
+@font-face {
+  font-family: 'CS Brandis';
+  src: url('/cs-brandis-demo/CSBrandis-Regular_demo.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Guise';
+  src: url('/terminal-guise/hanken-design-co-terminal-guise-regular.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Silka';
+  src: url('/silka-font-demo/Silka-Regular-&-Italic/Silka_Regular &_Italic_Webfont/Silka-Regular-&-Italic-Webfont/silka-regular-webfont.woff2') format('woff2'),
+       url('/silka-font-demo/Silka-Regular-&-Italic/Silka_Regular &_Italic_Webfont/Silka-Regular-&-Italic-Webfont/silka-regular-webfont.woff') format('woff'),
+       url('/silka-font-demo/Silka-Regular-&-Italic/Silka_Regular &_Italic_Webfont/Silka-Regular-&-Italic-Webfont/silka-regular-webfont.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-family: 'Guise', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background-color: #F6F2EC;
+  color: #2B2825;
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  overflow-x: hidden;
+  background-color: #F6F2EC;
+}
+
+/* Lenis smooth scrolling rules */
+html.lenis, html.lenis body {
+  height: auto;
+}
+
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+.lenis.lenis-scrolling iframe {
+  pointer-events: none;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #F6F2EC;
+}
+::-webkit-scrollbar-thumb {
+  background: #C4BBB0;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #9E9488;
+}
+
+/* Vertical Side Tab Component matching Brochure PDF pages 02 & 03 */
+.side-tab-bar {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 48px;
+  height: 100%;
+  background: #D9D2C9;
+  border-top-left-radius: 24px;
+  border-bottom-left-radius: 24px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  padding: 40px 0 24px 0;
+  z-index: 10;
+  box-shadow: -2px 0 10px rgba(0, 0, 0, 0.03);
+}
+
+html[dir="rtl"] .side-tab-bar {
+  right: auto;
+  left: 0;
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+  border-top-right-radius: 24px;
+  border-bottom-right-radius: 24px;
+}
+
+.side-tab-title {
+  writing-mode: vertical-rl;
+  text-transform: uppercase;
+  letter-spacing: 0.35em;
+  font-size: 0.85rem;
+  font-weight: 600;
+  font-family: "Guise", sans-serif;
+  color: #7A7268;
+  transform: rotate(180deg);
+}
+
+.side-tab-number {
+  font-size: 0.85rem;
+  font-weight: 600;
+  font-family: "Guise", sans-serif;
+  color: #7A7268;
+}
+
+/* Section Container */
+.brochure-section {
+  position: relative;
+  width: 100%;
+  min-height: 100vh;
+  background-color: #F6F2EC;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  overflow: hidden;
+  padding: 80px 70px 60px 80px;
+}
+
+@media (max-width: 960px) {
+  .brochure-section {
+    padding: 60px 24px 40px 24px;
+  }
+  .side-tab-bar {
+    display: none;
+  }
+}
