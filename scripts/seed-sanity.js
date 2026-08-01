@@ -1,4 +1,24 @@
+const fs = require('fs');
+const path = require('path');
 const { createClient } = require('@sanity/client');
+
+// Manually load env variables from .env file
+try {
+  const envPath = path.resolve(__dirname, '../.env');
+  if (fs.existsSync(envPath)) {
+    const envConfig = fs.readFileSync(envPath, 'utf8');
+    envConfig.split(/\r?\n/).forEach((line) => {
+      const parts = line.split('=');
+      if (parts.length >= 2) {
+        const key = parts[0].trim();
+        const value = parts.slice(1).join('=').trim();
+        process.env[key] = value;
+      }
+    });
+  }
+} catch (e) {
+  console.warn('Failed to parse .env file:', e);
+}
 
 // Initialize client with Write privileges
 const client = createClient({
