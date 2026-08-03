@@ -149,7 +149,7 @@ async function seed() {
     const siteDoc = {
       _type: 'siteSettings',
       _id: 'siteSettings',
-      contactPhone: '+963 11 9900',
+      contactPhone: '+963 11 4068',
       whatsappNumber: '963997711226',
     };
     await client.createOrReplace(siteDoc);

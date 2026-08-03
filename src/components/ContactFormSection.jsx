@@ -155,7 +155,7 @@ export default function ContactFormSection() {
                       dir: 'ltr',
                     }}
                   >
-                    +963 997 711 226
+                    +963 11 4068
                   </Typography>
                 </Box>
 
@@ -182,7 +182,7 @@ export default function ContactFormSection() {
                       fontWeight: 400,
                     }}
                   >
-                    sales@parkviewyaafour.com
+                    info@parkview.community
                   </Typography>
                 </Box>
 
