@@ -10,6 +10,17 @@ export default defineType({
     defineField({ name: 'eyebrow', title: 'Eyebrow Text', type: 'localizedString' }),
     defineField({ name: 'title', title: 'Section Title', type: 'localizedString' }),
     defineField({ name: 'description', title: 'Description Text', type: 'localizedText' }),
-    defineField({ name: 'mapImage', title: 'Map Image', type: 'image', options: { hotspot: true } }),
+    defineField({
+      name: 'mapImageEn',
+      title: 'Map Image (English)',
+      type: 'image',
+      options: { hotspot: true },
+    }),
+    defineField({
+      name: 'mapImageAr',
+      title: 'Map Image (Arabic)',
+      type: 'image',
+      options: { hotspot: true },
+    }),
   ],
 });
