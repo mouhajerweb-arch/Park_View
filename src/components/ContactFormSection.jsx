@@ -526,6 +526,7 @@ export default function ContactFormSection() {
 
                 {/* Telephone Country Code Input Selector */}
                 <MuiTelInput
+                  defaultCountry="SY"
                   value={phone}
                   onChange={handlePhoneChange}
                   required
@@ -534,6 +535,18 @@ export default function ContactFormSection() {
                   lang={lang}
                   dir="ltr"
                   placeholder={labelPhone}
+                  MenuProps={{
+                    disableScrollLock: true,
+                    PaperProps: {
+                      'data-lenis-prevent': 'true',
+                      onWheel: (e) => {
+                        e.stopPropagation();
+                      },
+                      style: {
+                        maxHeight: 280,
+                      }
+                    }
+                  }}
                   sx={{
                     '& .MuiOutlinedInput-root': {
                       borderRadius: '50px',
