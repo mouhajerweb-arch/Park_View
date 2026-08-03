@@ -80,6 +80,7 @@ export default function GallerySection() {
             subtitleAr: item.subtitle?.ar || '',
           }))
         );
+      }
     }).catch((err) => console.warn('Gallery items fetch failed:', err));
 
     // Fetch section descriptors
