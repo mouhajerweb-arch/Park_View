@@ -249,7 +249,7 @@ export default function ConnectivitySection() {
           /> */}
 
           {/* Desktop Overlay Text Labels (only active on sm+ screens ≥ 600px) */}
-          <Typography
+          {/* <Typography
             sx={{
               position: 'absolute',
               top: '18.8%',
@@ -265,7 +265,7 @@ export default function ConnectivitySection() {
             }}
           >
             {labels.yaafour}
-          </Typography>
+          </Typography> */}
 
           {/* PARK VIEW Callout Badge Box (Kept commented out per user directive) */}
           {/* <Box
@@ -312,7 +312,7 @@ export default function ConnectivitySection() {
             </Typography>
           </Box> */}
 
-          <Typography
+          {/* <Typography
             sx={{
               position: 'absolute',
               top: '34.5%',
@@ -493,8 +493,8 @@ export default function ConnectivitySection() {
             >
               {labels.damascusAirport}
             </Typography>
-          </Box>
-        </Box>
+          </Box>*/}
+        </Box> 
 
         {/* Bottom Section: Title & Responsive Destinations List */}
         <Box 

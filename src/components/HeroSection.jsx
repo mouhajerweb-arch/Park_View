@@ -114,8 +114,8 @@ export default function HeroSection() {
       sx={{
         position: "relative",
         width: "100%",
-        height: "100vh",
-        minHeight: "700px",
+        height: { xs: "75vh", sm: "85vh", md: "100vh" },
+        minHeight: { xs: "500px", sm: "600px", md: "700px" },
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
@@ -133,7 +133,7 @@ export default function HeroSection() {
           left: 0,
           right: 0,
           bottom: 0,
-          backgroundColor: "rgba(0, 0, 0, 0.23)",
+          backgroundColor: "rgba(0, 0, 0, 0.4)",
           zIndex: 1,
         },
       }}

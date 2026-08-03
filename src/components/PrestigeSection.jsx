@@ -142,7 +142,8 @@ export default function PrestigeSection() {
         ref={imageRef}
         sx={{ 
           width: { xs: '100%', md: '50%' },
-          minHeight: { xs: '450px', md: '100vh' },
+          height: { xs: '320px', sm: '420px', md: 'auto' },
+          minHeight: { xs: 'auto', md: '100vh' },
           alignSelf: 'stretch', // Spans full height of the flex row container
           overflow: 'hidden',
           position: 'relative',
@@ -157,6 +158,9 @@ export default function PrestigeSection() {
             height: '100%',
             objectFit: 'cover',
             display: 'block',
+            position: 'absolute',
+            top: 0,
+            left: 0,
           }}
         />
       </Box>
