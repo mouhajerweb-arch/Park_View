@@ -174,7 +174,7 @@ export default function GallerySection() {
       if (!isDragging.current) {
         handleNext();
       }
-    }, 1500);
+    }, 2500);
 
     return () => clearInterval(interval);
   }, [zoomedImage, activeDot, slideWidth, wrapperWidth, N]);
@@ -231,8 +231,8 @@ export default function GallerySection() {
 
     gsap.to(trackRef.current, {
       x: nextOffset,
-      duration: 0.35,
-      ease: 'power3.out',
+      duration: 0.7,
+      ease: 'power2.inOut',
       onComplete: () => {
         currentIndexRef.current = nextIndex;
         if (currentIndexRef.current >= 2 * N) {
@@ -258,8 +258,8 @@ export default function GallerySection() {
 
     gsap.to(trackRef.current, {
       x: prevOffset,
-      duration: 0.35,
-      ease: 'power3.out',
+      duration: 0.7,
+      ease: 'power2.inOut',
       onComplete: () => {
         currentIndexRef.current = prevIndex;
         if (currentIndexRef.current <= 0) {

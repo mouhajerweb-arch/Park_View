@@ -158,7 +158,7 @@ export default function ConnectivitySection() {
       sx={{
         position: 'relative',
         width: '100%',
-        minHeight: '100vh',
+        minHeight: { xs: '78vh', sm:'85vh', md: '100vh' },
         backgroundColor: '#F6F2EC', // Luxury brochure beige stone
         py: { xs: 5, sm: 6, md: 8 },
         px: { xs: 2, sm: 4, md: 8, lg: 10 },

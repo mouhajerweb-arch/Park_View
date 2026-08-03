@@ -1,14 +1,12 @@
 'use client';
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Box, Container, Grid2 as Grid, Typography } from '@mui/material';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useLanguage } from '../context/LanguageContext';
+import { client, urlFor } from '../sanity/client';
 
 gsap.registerPlugin(ScrollTrigger);
-
-// Palette definitions matching our theme
-const primaryColor = '#2B2825'; // Bold theme charcoal slate
 
 const amenitiesList = [
   { nameEn: 'Swimming Pool', nameAr: 'مسبح خارجي', iconSrc: '/icons/swimming.png' },
@@ -34,6 +32,29 @@ export default function AmenitiesSection() {
   const sectionRef = useRef(null);
   const headerRef = useRef(null);
   const gridRef = useRef(null);
+
+  const [amenitiesData, setAmenitiesData] = useState(null);
+
+  useEffect(() => {
+    let active = true;
+    client
+      .fetch(`*[_type == "page" && _id == "home"][0].sections[_type == "amenitiesSection"][0] {
+        ...,
+        "resolvedAmenities": amenities[] {
+          ...,
+          "iconUrl": icon.asset->url
+        }
+      }`)
+      .then((data) => {
+        if (active && data) {
+          setAmenitiesData(data);
+        }
+      })
+      .catch((err) => console.warn('Error fetching amenities data from Sanity:', err));
+    return () => {
+      active = false;
+    };
+  }, []);
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -74,7 +95,22 @@ export default function AmenitiesSection() {
     }, sectionRef);
 
     return () => ctx.revert();
-  }, [lang]);
+  }, [lang, amenitiesData]);
+
+  const dynamicAmenities = amenitiesData?.resolvedAmenities || [];
+  const displayTitle = amenitiesData?.title?.[lang] || amenitiesData?.title?.en || (lang === 'ar' ? 'الموقع المثالي للعيش العصري الراقي' : 'The Location for Refined Living');
+  const displaySubtitle = amenitiesData?.eyebrow?.[lang] || amenitiesData?.eyebrow?.en || (lang === 'ar' ? 'المرافق ونمط الحياة' : 'Lifestyle & Amenities');
+  const displayDescription = amenitiesData?.description?.[lang] || amenitiesData?.description?.en || (lang === 'ar' ? 'يقدم بارك فيو مجموعة متكاملة من المرافق ووسائل الراحة التي تلبي تطلعات العائلات الباحثة عن الرفاهية والهدوء والأمان.' : 'Park View Yaafour provides an address set apart, fully integrated with premium health, social, and residential security facilities for a lifetime of ease.');
+
+  const listToRender = dynamicAmenities.length > 0 
+    ? dynamicAmenities.map(item => ({
+        name: item.name?.[lang] || item.name?.en || '',
+        iconSrc: item.iconUrl || '/icons/default.png'
+      }))
+    : amenitiesList.map(item => ({
+        name: lang === 'ar' ? item.nameAr : item.nameEn,
+        iconSrc: item.iconSrc
+      }));
 
   return (
     <Box
@@ -116,7 +152,7 @@ export default function AmenitiesSection() {
               width: '100%',
             }}
           >
-            {lang === 'ar' ? 'المرافق ونمط الحياة' : 'Lifestyle & Amenities'}
+            {displaySubtitle}
           </Typography>
           <Typography
             variant="h2"
@@ -132,7 +168,7 @@ export default function AmenitiesSection() {
               letterSpacing: '-0.01em',
             }}
           >
-            {lang === 'ar' ? 'الموقع المثالي للعيش العصري الراقي' : 'The Location for Refined Living'}
+            {displayTitle}
           </Typography>
           <Typography
             variant="body1"
@@ -145,9 +181,7 @@ export default function AmenitiesSection() {
               maxWidth: '650px'
             }}
           >
-            {lang === 'ar'
-              ? 'يقدم بارك فيو مجموعة متكاملة من المرافق ووسائل الراحة التي تلبي تطلعات العائلات الباحثة عن الرفاهية والهدوء والأمان.'
-              : 'Park View Yaafour provides an address set apart, fully integrated with premium health, social, and residential security facilities for a lifetime of ease.'}
+            {displayDescription}
           </Typography>
         </Box>
 
@@ -163,7 +197,7 @@ export default function AmenitiesSection() {
             px: { xs: 1, md: 2 }
           }}
         >
-          {amenitiesList.map((item, idx) => {
+          {listToRender.map((item, idx) => {
             return (
               <Grid
                 key={idx}
@@ -199,7 +233,7 @@ export default function AmenitiesSection() {
                   <Box
                     component="img"
                     src={item.iconSrc}
-                    alt={lang === 'ar' ? item.nameAr : item.nameEn}
+                    alt={item.name}
                     sx={{
                       width: { xs: '38px', md: '45px' },
                       height: { xs: '38px', md: '45px' },
@@ -221,7 +255,7 @@ export default function AmenitiesSection() {
                     maxWidth: '160px'
                   }}
                 >
-                  {lang === 'ar' ? item.nameAr : item.nameEn}
+                  {item.name}
                 </Typography>
               </Grid>
             );

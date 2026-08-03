@@ -11,18 +11,25 @@ export default defineType({
     defineField({ name: 'title', title: 'Section Title', type: 'localizedString' }),
     defineField({ name: 'description', title: 'Description Text', type: 'localizedText' }),
     defineField({
-      name: 'bullets',
-      title: 'Amenities Bullet List',
+      name: 'amenities',
+      title: 'Amenities List',
+      description: 'Add amenity items with icon images and bilingual names.',
       type: 'array',
       of: [
         {
           type: 'object',
+          name: 'amenityItem',
+          title: 'Amenity',
           fields: [
-            defineField({ name: 'label', title: 'Amenity Label', type: 'localizedString' }),
-            defineField({ name: 'icon', title: 'Icon Identifier Name', type: 'string' }),
-          ]
+            defineField({ name: 'name', title: 'Amenity Name', type: 'localizedString', validation: (Rule) => Rule.required() }),
+            defineField({ name: 'icon', title: 'Icon Image (PNG)', type: 'image', description: 'Upload amenity icon (PNG with transparent background recommended).' }),
+          ],
+          preview: {
+            select: { title: 'name.en', media: 'icon' },
+          }
         }
-      ]
-    })
+      ],
+      validation: (Rule) => Rule.max(20),
+    }),
   ],
 });
