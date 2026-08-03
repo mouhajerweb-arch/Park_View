@@ -114,7 +114,7 @@ export default function HeroSection() {
       sx={{
         position: "relative",
         width: "100%",
-        height: { xs: "75vh", sm: "85vh", md: "100vh" },
+        height: { xs: "50vh", sm: "85vh", md: "100vh" },
         minHeight: { xs: "500px", sm: "600px", md: "700px" },
         display: "flex",
         alignItems: "center",
@@ -133,7 +133,7 @@ export default function HeroSection() {
           left: 0,
           right: 0,
           bottom: 0,
-          backgroundColor: "rgba(0, 0, 0, 0.4)",
+          backgroundColor: "rgba(0, 0, 0, 0.2)",
           zIndex: 1,
         },
       }}
@@ -171,6 +171,7 @@ export default function HeroSection() {
           alignItems: "center",
           justifyContent: "center",
           py: { xs: 4, sm: 6 },
+          mt:{xs:7.3, sm:0}
         }}
       >
         {/* Brand Logo */}
@@ -181,7 +182,7 @@ export default function HeroSection() {
           className="logo"
           alt="PARK VIEW Logo"
           sx={{
-            width: { xs: "260px", sm: "340px", md: "450px" },
+            width: { xs: "190px", sm: "300px", md: "450px" },
             maxWidth: "90vw",
             mb: { xs: 2.5, sm: 0 },
             filter: "drop-shadow(0 4px 18px rgba(0, 0, 0, 0.5))",

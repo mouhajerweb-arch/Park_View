@@ -144,6 +144,7 @@ export default function PrestigeSection() {
           width: { xs: '100%', md: '50%' },
           height: { xs: '320px', sm: '420px', md: 'auto' },
           minHeight: { xs: 'auto', md: '100vh' },
+          flexGrow: { xs: 1, md: 0 },
           alignSelf: 'stretch', // Spans full height of the flex row container
           overflow: 'hidden',
           position: 'relative',
