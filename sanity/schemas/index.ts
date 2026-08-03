@@ -25,6 +25,7 @@ import faq from './faq';
 import galleryItem from './galleryItem';
 import siteSettings from './siteSettings';
 import footerSettings from './footerSettings';
+import headerSettings from './headerSettings';
 
 export const schemaTypes = [
   // Objects
@@ -54,4 +55,5 @@ export const schemaTypes = [
   galleryItem,
   siteSettings,
   footerSettings,
+  headerSettings,
 ];

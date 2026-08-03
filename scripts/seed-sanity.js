@@ -40,7 +40,7 @@ const faqsData = [
     qEn: 'What is Park View?',
     qAr: 'ما هو مشروع بارك فيو؟',
     aEn: 'Park View is a master planned residential community developed by Unlimited Real Estate & Investment. It spans 50,000 sqm, with 30,000 sqm set aside for landscaped gardens and open green space, forming a gated community built around nature, privacy, and modern family life.',
-    aAr: 'بارك فيو هو مجمع سكني متكامل ومخطط تم تطويره بواسطة شركة ليميتد العقارية للاستثمار. يمتد على مساحة 50,000 متر مربع، مع تخصيص 30,000 متر مربع للحدائق والمساحات الخضراء المفتوحة، مما يشكل مجتمعاً مغلقاً مبنياً حول الطبيعة والخصوصية وحياة الأسرة الحديثة.'
+    aAr: 'بارك فيو هو مجمع سكني متكامل ومخطط تم تطويره بواسطة شركة انليميتد العقارية للاستثمار. يمتد على مساحة 50,000 متر مربع، مع تخصيص 30,000 متر مربع للحدائق والمساحات الخضراء المفتوحة، مما يشكل مجتمعاً مغلقاً مبنياً حول الطبيعة والخصوصية وحياة الأسرة الحديثة.'
   },
   {
     qEn: 'Why choose Park View?',
@@ -64,7 +64,7 @@ const faqsData = [
     qEn: 'Who is developing Park View?',
     qAr: 'من هو مطور مشروع بارك فيو؟',
     aEn: 'Park View is developed by Unlimited Real Estate & Investment. The company brings more than 25 years of experience across construction, luxury interiors, hospitality, and real estate development.',
-    aAr: 'يتم تطوير بارك فيو من قِبل شركة ليميتد العقارية للاستثمار. وتتمتع بخبرة تزيد عن 25 عاماً في مجالات الإنشاءات والتصاميم الداخلية الفاخرة والضيافة والتطوير العقاري.'
+    aAr: 'يتم تطوير بارك فيو من قِبل شركة انليميتد العقارية للاستثمار. وتتمتع بخبرة تزيد عن 25 عاماً في مجالات الإنشاءات والتصاميم الداخلية الفاخرة والضيافة والتطوير العقاري.'
   },
   {
     qEn: 'What property types are available?',
@@ -144,6 +144,57 @@ async function seed() {
     };
     await client.createOrReplace(footerDoc);
 
+    // 2.5 Seed Header Settings
+    console.log('Seeding Header Settings...');
+    const headerDoc = {
+      _type: 'headerSettings',
+      _id: 'headerSettings',
+      brandName: {
+        en: 'PARK VIEW',
+        ar: 'بارك فيو',
+      },
+      navItems: [
+        {
+          _key: 'nav_home',
+          label: { en: 'Home', ar: 'الرئيسية' },
+          path: '#hero',
+        },
+        {
+          _key: 'nav_about',
+          label: { en: 'About', ar: 'عن بارك فيو' },
+          path: '#about',
+        },
+        {
+          _key: 'nav_location',
+          label: { en: 'Location', ar: 'الموقع' },
+          path: '#location',
+        },
+        {
+          _key: 'nav_residences',
+          label: { en: 'Residences', ar: 'الوحدات السكنية' },
+          path: '#residences',
+        },
+        {
+          _key: 'nav_gallery',
+          label: { en: 'Gallery', ar: 'المعرض' },
+          path: '#gallery',
+        },
+        {
+          _key: 'nav_contact',
+          label: { en: 'Contact', ar: 'تواصل معنا' },
+          path: '#contact',
+        },
+      ],
+      registerButton: {
+        label: { en: 'Register Interest', ar: 'سجّل اهتمامك' },
+        styleOption: 'outlined',
+      },
+      languageSwitch: {
+        showFlag: true,
+      },
+    };
+    await client.createOrReplace(headerDoc);
+
     // 3. Seed Site Settings
     console.log('Seeding Site Settings...');
     const siteDoc = {
@@ -194,15 +245,15 @@ async function seed() {
           _type: 'developerProfileSection',
           enabled: true,
           anchor: 'developer',
-          title: { en: 'Developed by Unlimited Real Estate & Investment', ar: 'تطوير شركة ليميتد العقارية للاستثمار' },
-          subtitle: { en: 'UNLIMITED REAL ESTATE & INVESTMENT', ar: 'ليميتد العقارية للاستثمار' },
+          title: { en: 'Developed by Unlimited Real Estate & Investment', ar: 'تطوير شركة انليميتد العقارية للاستثمار' },
+          subtitle: { en: 'UNLIMITED REAL ESTATE & INVESTMENT', ar: 'انليميتد العقارية للاستثمار' },
           quote: {
             en: '"We do not just construct buildings; we curate bespoke living environments where architectural luxury and natural harmony meet."',
             ar: '"نحن لا نقوم فقط بتشييد المباني؛ بل نصمم بيئات معيشية خاصة تجمع بين الفخامة المعمارية والوئام الطبيعي."'
           },
           bio: {
             en: 'Park View is developed by Unlimited Real Estate & Investment, bringing more than 25 years of experience in construction, luxury design, hospitality, and real estate development. The company is committed to creating bespoke residential communities that combine premium comforts and natural harmony.',
-            ar: 'تم تطوير مشروع بارك فيو من قِبل شركة ليميتد العقارية للاستثمار، والتي تتمتع بخبرة تزيد عن 25 عاماً في مجالات المقاولات والتصميم والضيافة والتطوير العقاري. تلتزم الشركة بإنشاء بيئات معيشية خاصة تجمع بين الفخامة المعمارية والوئام الطبيعي.'
+            ar: 'تم تطوير مشروع بارك فيو من قِبل شركة انليميتد العقارية للاستثمار، والتي تتمتع بخبرة تزيد عن 25 عاماً في مجالات المقاولات والتصميم والضيافة والتطوير العقاري. تلتزم الشركة بإنشاء بيئات معيشية خاصة تجمع بين الفخامة المعمارية والوئام الطبيعي.'
           }
         },
         {
