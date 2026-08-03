@@ -30,6 +30,16 @@ export default function FooterSection() {
         <Grid container spacing={{ xs: 6, md: 8 }} sx={{ borderBottom: '1px solid rgba(43, 40, 37, 0.08)', pb: 6 }}>
           {/* Column 1: Heading & Description */}
           <Grid size={{ xs: 12, md: 4 }}>
+            <Box 
+              sx={{ 
+                width: 60, 
+                height: 3, 
+                backgroundColor: '#2B2825', 
+                mb: 2.5,
+                ml: lang === 'ar' ? 'auto' : 0,
+                mr: lang === 'ar' ? 0 : 'auto',
+              }} 
+            />
             <Typography
               variant="h4"
               sx={{
@@ -123,8 +133,8 @@ export default function FooterSection() {
               }}
             >
               {lang === 'ar'
-                ? `موقع متميز في يعفور خلف البيت السويسري مباشرةً\n• ١٥ دقيقة إلى وسط دمشق\n• وصول مباشر إلى طريق دمشق - بيروت`
-                : `Prime location in Yaafour directly behind the Swiss House\n• 15 minutes to central Damascus\n• Direct access to Damascus–Beirut Road`}
+                ? `وجهة سكنية بارزة في وادي يعفور. عنوان مخصص للنخبة، موقع متميز في يعفور خلف البيت السويسري مباشرة • ١٥ دقيقة إلى وسط دمشق * وصول مباشر إلى طريق دمشق - بيروت * متصل بأوتوستراد الديماس`
+                : `A landmark residential destination in Yaafour Valley. An Address Reserved for the Few Prime location in Yaafour Directly behind the Swiss House • 15 minutes to central Damascus * Direct access to Damascus–Beirut Road * Connected to Dimas Highway`}
             </Typography>
           </Grid>
 
@@ -150,7 +160,7 @@ export default function FooterSection() {
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, flexDirection: 'row' }}>
                 <PhoneIcon sx={{ fontSize: 16, color: '#7C7368' }} />
                 <Typography sx={{ fontFamily: '"Silka", sans-serif', fontSize: '0.88rem', color: '#6B6661', fontWeight: 300, dir: 'ltr' }}>
-                  +963 997 711 226
+                  +963 11 4068
                 </Typography>
               </Box>
 
@@ -158,7 +168,7 @@ export default function FooterSection() {
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, flexDirection: 'row' }}>
                 <EmailIcon sx={{ fontSize: 16, color: '#7C7368' }} />
                 <Typography sx={{ fontFamily: '"Silka", sans-serif', fontSize: '0.88rem', color: '#6B6661', fontWeight: 300 }}>
-                  sales@parkviewyaafour.com
+                  info@parkview.community
                 </Typography>
               </Box>
 
