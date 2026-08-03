@@ -224,6 +224,7 @@ async function seed() {
       },
       sections: [
         {
+          _key: 'home_hero',
           _type: 'heroSection',
           enabled: true,
           anchor: 'hero',
@@ -232,6 +233,7 @@ async function seed() {
           backgroundType: 'image',
         },
         {
+          _key: 'home_prestige',
           _type: 'prestigeSection',
           enabled: true,
           anchor: 'about',
@@ -242,6 +244,7 @@ async function seed() {
           }
         },
         {
+          _key: 'home_developer',
           _type: 'developerProfileSection',
           enabled: true,
           anchor: 'developer',
@@ -257,6 +260,7 @@ async function seed() {
           }
         },
         {
+          _key: 'home_connectivity',
           _type: 'connectivitySection',
           enabled: true,
           anchor: 'location',
@@ -268,6 +272,7 @@ async function seed() {
           }
         },
         {
+          _key: 'home_residences',
           _type: 'residencesSection',
           enabled: true,
           anchor: 'residences',
@@ -279,6 +284,7 @@ async function seed() {
           }
         },
         {
+          _key: 'home_interiors',
           _type: 'interiorsSection',
           enabled: true,
           anchor: 'interiors',
@@ -290,6 +296,7 @@ async function seed() {
           }
         },
         {
+          _key: 'home_gallery',
           _type: 'gallerySection',
           enabled: true,
           anchor: 'gallery',
@@ -301,6 +308,7 @@ async function seed() {
           }
         },
         {
+          _key: 'home_amenities',
           _type: 'amenitiesSection',
           enabled: true,
           anchor: 'amenities',
@@ -312,6 +320,7 @@ async function seed() {
           }
         },
         {
+          _key: 'home_contact',
           _type: 'contactFormSection',
           enabled: true,
           anchor: 'contact',
@@ -334,6 +343,7 @@ async function seed() {
       },
       sections: [
         {
+          _key: 'about_hero',
           _type: 'heroSection',
           enabled: true,
           title: { en: 'About Park View', ar: 'عن بارك فيو' },
