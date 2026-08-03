@@ -227,9 +227,9 @@ async function seed() {
           _type: 'heroSection',
           enabled: true,
           anchor: 'hero',
-          eyebrow: { en: 'YAAFOUR — DAMASCUS', ar: 'يعفور — دمشق' },
-          title: { en: 'PARK VIEW', ar: 'بارك فيو' },
-          subtitle: { en: 'More Space for Life', ar: 'مساحة أكبر للحياة' },
+          soonText: { en: 'SOON', ar: 'قريباً' },
+          countdownTarget: '2027-06-30T11:13:00+02:00',
+          backgroundType: 'image',
         },
         {
           _type: 'prestigeSection',

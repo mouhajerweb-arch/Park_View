@@ -7,18 +7,39 @@ export default defineType({
   fields: [
     defineField({ name: 'enabled', title: 'Enabled', type: 'boolean', initialValue: true }),
     defineField({ name: 'anchor', title: 'Anchor Link ID', type: 'string' }),
-    defineField({ name: 'eyebrow', title: 'Eyebrow Text', type: 'localizedString' }),
-    defineField({ name: 'title', title: 'Main Title', type: 'localizedString' }),
-    defineField({ name: 'subtitle', title: 'Subtitle Text', type: 'localizedString' }),
+    defineField({ name: 'logo', title: 'Hero Brand Logo', type: 'image' }),
+    defineField({ name: 'soonText', title: 'Soon / Coming Soon Text', type: 'localizedString' }),
+    defineField({
+      name: 'countdownTarget',
+      title: 'Countdown Target Date (e.g. 2027-06-30T11:13:00+02:00)',
+      type: 'string',
+      initialValue: '2027-06-30T11:13:00+02:00',
+    }),
+    defineField({
+      name: 'backgroundType',
+      title: 'Background Type',
+      type: 'string',
+      options: {
+        list: [
+          { title: 'Image', value: 'image' },
+          { title: 'Video', value: 'video' },
+        ],
+      },
+      initialValue: 'image',
+    }),
     defineField({ name: 'backgroundImage', title: 'Background Image', type: 'image', options: { hotspot: true } }),
     defineField({
-      name: 'cta',
-      title: 'Call to Action Button',
-      type: 'object',
-      fields: [
-        defineField({ name: 'label', title: 'Label', type: 'localizedString' }),
-        defineField({ name: 'link', title: 'Link (URL or anchor)', type: 'string' }),
-      ]
-    })
+      name: 'backgroundVideo',
+      title: 'Background Video File',
+      type: 'file',
+      options: {
+        accept: 'video/*',
+      },
+    }),
+    defineField({
+      name: 'backgroundVideoUrl',
+      title: 'Or External Background Video URL',
+      type: 'string',
+    }),
   ],
 });
