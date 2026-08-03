@@ -92,8 +92,8 @@ export default function PrestigeSection() {
           alignItems: 'center', 
           justifyContent: 'center',
           py: { xs: 8, md: 12 },
-          ps: { xs: 3, sm: 6, md: 10, lg: 12 },
-          pe: { xs: 3, sm: 6, md: 8, lg: 10 },
+          pl: lang === 'ar' ? { xs: 3, sm: 6, md: 8, lg: 10 } : { xs: 3, sm: 6, md: 10, lg: 12 },
+          pr: lang === 'ar' ? { xs: 3, sm: 6, md: 10, lg: 12 } : { xs: 3, sm: 6, md: 8, lg: 10 },
         }}
       >
         <Box sx={{ maxWidth: '540px', textAlign: 'start', width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
