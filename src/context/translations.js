@@ -33,8 +33,8 @@ export const translations = {
       pageNo: '02b',
       sideBrand: 'DEVELOPER',
       title: 'Developed by Unlimited Real Estate & Investment',
-      subtitle: 'A DIVISION OF MOUHAJER INTERNATIONAL GROUP',
-      description: 'Park View is developed by Unlimited Real Estate & Investment, a division of Mouhajer International Group with more than 25 years of experience in construction, design, hospitality, and real estate. The company is led by Eng. Maher Mouhajer, whose career includes turnkey construction, luxury residential developments, hospitality projects, and high end interior fit outs across Dubai and Abu Dhabi through Mouhajer International Design & Contracting (MIDC).\n\nToday, Unlimited Real Estate & Investment works across four areas:',
+      subtitle: 'UNLIMITED REAL ESTATE & INVESTMENT',
+      description: 'Park View is developed by Unlimited Real Estate & Investment, bringing more than 25 years of experience in construction, luxury design, hospitality, and real estate development. The company is committed to creating bespoke residential communities that combine premium comforts and natural harmony.\n\nToday, Unlimited Real Estate & Investment works across four areas:',
       constructionTitle: 'Construction',
       constructionDesc: 'delivering projects through in house expertise',
       realEstateTitle: 'Real Estate Development',
@@ -44,7 +44,7 @@ export const translations = {
       retailTitle: 'Retail',
       retailDesc: "through Fashion Gate Mall Syria, the country's first luxury shopping destination",
       quoteText: '"We do not just construct buildings; we curate bespoke living environments where architectural luxury and natural harmony meet."',
-      quoteAuthor: 'ENG. MAHER MOUHAJER — FOUNDER & CEO',
+      quoteAuthor: 'UNLIMITED REAL ESTATE & INVESTMENT',
       footerText: 'This gives the company oversight of every stage of a project, from planning and construction through to hospitality and destination retail, keeping standards consistent across everything it builds.\n\nPark View reflects that same experience: a residential community built on quality construction, practical design, and long term value.'
     },
     natureSerenity: {
@@ -398,7 +398,7 @@ export const translations = {
         },
         {
           q: 'Who is developing Park View?',
-          a: 'Park View is developed by Unlimited Real Estate & Investment, a division of Mouhajer International Group. Led by Eng. Maher Mouhajer, the company brings more than 25 years of experience across construction, luxury interiors, hospitality, and real estate development.'
+          a: 'Park View is developed by Unlimited Real Estate & Investment, bringing more than 25 years of experience across construction, luxury interiors, hospitality, and real estate development.'
         },
         {
           q: 'What property types are available?',
@@ -513,8 +513,8 @@ export const translations = {
       pageNo: '02b',
       sideBrand: 'المطور',
       title: 'تطوير شركة ليميتد العقارية للاستثمار',
-      subtitle: 'إحدى شركات مجموعة مهاجر الدولية',
-      description: 'تم تطوير مشروع بارك فيو من قِبل شركة ليميتد العقارية للاستثمار، وهي جزء من مجموعة مهاجر الدولية التي تتمتع بخبرة تزيد عن 25 عاماً في مجالات المقاولات والتصميم والضيافة والتطوير العقاري. يقود الشركة المهندس ماهر مهاجر، وتتضمن مسيرته المهنية مشاريع بناء متكاملة، ومجمعات سكنية فاخرة، ومشاريع ضيافة، وتجهيزات داخلية راقية في دبي وأبو ظبي من خلال شركة مهاجر الدولية للتصميم والمقاولات (MIDC).\n\nاليوم، تعمل شركة ليميتد العقارية في أربعة مجالات رئيسية:',
+      subtitle: 'ليميتد العقارية للاستثمار',
+      description: 'تم تطوير مشروع بارك فيو من قِبل شركة ليميتد العقارية للاستثمار، والتي تتمتع بخبرة تزيد عن 25 عاماً في مجالات المقاولات والتصميم والضيافة والتطوير العقاري. تلتزم الشركة بإنشاء بيئات معيشية خاصة تجمع بين الفخامة المعمارية والوئام الطبيعي.\n\nاليوم، تعمل شركة ليميتد العقارية للاستثمار في أربعة مجالات رئيسية:',
       constructionTitle: 'المقاولات والإنشاءات',
       constructionDesc: 'تنفيذ المشاريع بالاعتماد على خبراتنا الهندسية الداخلية',
       realEstateTitle: 'التطوير العقاري',
@@ -524,7 +524,7 @@ export const translations = {
       retailTitle: 'قطاع التجزئة',
       retailDesc: 'عبر فاشن جيت مول سوريا، الوجهة الأولى للتسوق الفاخر في البلاد',
       quoteText: '"نحن لا نقوم فقط بتشييد المباني؛ بل نصمم بيئات معيشية خاصة تجمع بين الفخامة المعمارية والوئام الطبيعي."',
-      quoteAuthor: 'المهندس ماهر مهاجر — المؤسس والرئيس التنفيذي',
+      quoteAuthor: 'ليميتد العقارية للاستثمار',
       footerText: 'يمنح هذا التنوع للشركة إمكانية الإشراف الكامل على جميع مراحل المشروع، بدءاً من التخطيط والبناء وصولاً إلى خدمات الضيافة والتجزئة الفاخرة، مما يضمن معايير جودة متسقة في كل ما نشيده.\n\nيعكس بارك فيو هذه الخبرة العريقة: مجتمع سكني قائم على جودة الإنشاء، والتصميم العملي، والقيمة المستدامة.'
     },
     natureSerenity: {
@@ -877,7 +877,7 @@ export const translations = {
         },
         {
           q: 'من هو المطور العقاري لمشروع بارك فيو؟',
-          a: 'تطوّر المشروع شركة "ليميتد العقارية للاستثمار"، وهي قسم من مجموعة مهاجر الدولية. تقاد الشركة من قِبل المهندس ماهر مهاجر وتتمتع بخبرة تزيد عن 25 عاماً في قطاعات البناء، الديكورات الفاخرة، الضيافة، والتطوير العقاري.'
+          a: 'تطوّر المشروع شركة "ليميتد العقارية للاستثمار"، وتتمتع بخبرة تزيد عن 25 عاماً في قطاعات البناء، التصميم الفاخر، الضيافة، والتطوير العقاري.'
         },
         {
           q: 'ما هي أنواع العقارات المتاحة في المشروع؟',
