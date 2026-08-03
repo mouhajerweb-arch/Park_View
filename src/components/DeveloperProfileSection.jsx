@@ -135,7 +135,7 @@ export default function DeveloperProfileSection() {
             width: '100%'
           }}
         >
-          {/* Left Column: Portrait of Eng. Maher Mouhajer & Biography Footer Text */}
+          {/* Left Column: Project Architecture Facade & Biography Footer Text */}
           <Box sx={{ width: { xs: '100%', md: '41.666667%' } }}>
             <Box
               ref={imageBoxRef}
@@ -146,7 +146,7 @@ export default function DeveloperProfileSection() {
                 alignItems: 'flex-start',
               }}
             >
-              {/* Premium Framed Portrait */}
+              {/* Premium Framed Architectural Rendering */}
               <Box
                 sx={{
                   position: 'relative',
@@ -172,8 +172,8 @@ export default function DeveloperProfileSection() {
               >
                 <Box
                   component="img"
-                  src="/images/maher-mouhajer.jpg"
-                  alt="Eng. Maher Mouhajer Portrait"
+                  src="/images/prestige-tranquility.jpg"
+                  alt="Park View Residential Facade"
                   sx={{
                     width: '100%',
                     height: '100%',
@@ -196,7 +196,7 @@ export default function DeveloperProfileSection() {
                     width: '100%',
                   }}
                 >
-                  {lang === 'ar' ? 'المهندس ماهر مهاجر' : 'Eng. Maher Mouhajer'}
+                  {lang === 'ar' ? 'التصميم المعماري والمساحات الخضراء' : 'Architecture & Landscaping'}
                 </Typography>
                 <Typography
                   sx={{
@@ -211,7 +211,7 @@ export default function DeveloperProfileSection() {
                     width: '100%',
                   }}
                 >
-                  {lang === 'ar' ? 'المؤسس والرئيس التنفيذي' : 'Founder & CEO'}
+                  {lang === 'ar' ? 'مجمع بارك فيو السكني' : 'Park View Yaafour'}
                 </Typography>
               </Box>
 

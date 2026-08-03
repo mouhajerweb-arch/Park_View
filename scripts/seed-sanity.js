@@ -63,8 +63,8 @@ const faqsData = [
   {
     qEn: 'Who is developing Park View?',
     qAr: 'من هو مطور مشروع بارك فيو؟',
-    aEn: 'Park View is developed by Unlimited Real Estate & Investment, a division of Mouhajer International Group. Led by Eng. Maher Mouhajer, the company brings more than 25 years of experience across construction, luxury interiors, hospitality, and real estate development.',
-    aAr: 'يتم تطوير بارك فيو من قِبل شركة ليميتد العقارية للاستثمار، وهي جزء من مجموعة مهاجر الدولية. يقود الشركة المهندس ماهر مهاجر، وتتمتع بخبرة تزيد عن 25 عاماً في مجالات الإنشاءات والتصاميم الداخلية الفاخرة والضيافة والتطوير العقاري.'
+    aEn: 'Park View is developed by Unlimited Real Estate & Investment. The company brings more than 25 years of experience across construction, luxury interiors, hospitality, and real estate development.',
+    aAr: 'يتم تطوير بارك فيو من قِبل شركة ليميتد العقارية للاستثمار. وتتمتع بخبرة تزيد عن 25 عاماً في مجالات الإنشاءات والتصاميم الداخلية الفاخرة والضيافة والتطوير العقاري.'
   },
   {
     qEn: 'What property types are available?',
@@ -195,14 +195,14 @@ async function seed() {
           enabled: true,
           anchor: 'developer',
           title: { en: 'Developed by Unlimited Real Estate & Investment', ar: 'تطوير شركة ليميتد العقارية للاستثمار' },
-          subtitle: { en: 'A DIVISION OF MOUHAJER INTERNATIONAL GROUP', ar: 'إحدى شركات مجموعة مهاجر الدولية' },
+          subtitle: { en: 'UNLIMITED REAL ESTATE & INVESTMENT', ar: 'ليميتد العقارية للاستثمار' },
           quote: {
             en: '"We do not just construct buildings; we curate bespoke living environments where architectural luxury and natural harmony meet."',
             ar: '"نحن لا نقوم فقط بتشييد المباني؛ بل نصمم بيئات معيشية خاصة تجمع بين الفخامة المعمارية والوئام الطبيعي."'
           },
           bio: {
-            en: 'Park View is developed by Unlimited Real Estate & Investment, a division of Mouhajer International Group with more than 25 years of experience in construction, design, hospitality, and real estate. The company is led by Eng. Maher Mouhajer, whose career includes turnkey construction, luxury residential developments, hospitality projects, and high end interior fit outs across Dubai and Abu Dhabi.',
-            ar: 'تم تطوير مشروع بارك فيو من قِبل شركة ليميتد العقارية للاستثمار، وهي جزء من مجموعة مهاجر الدولية التي تتمتع بخبرة تزيد عن 25 عاماً في مجالات المقاولات والتصميم والضيافة والتطوير العقاري. يقود الشركة المهندس ماهر مهاجر، وتتضمن مسيرته المهنية مشاريع بناء سكنية فاخرة وضيافة متكاملة.'
+            en: 'Park View is developed by Unlimited Real Estate & Investment, bringing more than 25 years of experience in construction, luxury design, hospitality, and real estate development. The company is committed to creating bespoke residential communities that combine premium comforts and natural harmony.',
+            ar: 'تم تطوير مشروع بارك فيو من قِبل شركة ليميتد العقارية للاستثمار، والتي تتمتع بخبرة تزيد عن 25 عاماً في مجالات المقاولات والتصميم والضيافة والتطوير العقاري. تلتزم الشركة بإنشاء بيئات معيشية خاصة تجمع بين الفخامة المعمارية والوئام الطبيعي.'
           }
         },
         {
