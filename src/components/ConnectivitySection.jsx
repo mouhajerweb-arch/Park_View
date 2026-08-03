@@ -1,10 +1,11 @@
 'use client';
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Box, Container, Grid2 as Grid, Typography } from '@mui/material';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useLanguage } from '../context/LanguageContext';
 import LearnMoreLink from './LearnMoreLink';
+import { client, urlFor } from '../sanity/client';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -64,6 +65,23 @@ export default function ConnectivitySection() {
   const textRef = useRef(null);
   const listRef = useRef(null);
 
+  const [connectivityData, setConnectivityData] = useState(null);
+
+  useEffect(() => {
+    let active = true;
+    client
+      .fetch(`*[_type == "page" && _id == "home"][0].sections[_type == "connectivitySection"][0]`)
+      .then((data) => {
+        if (active && data) {
+          setConnectivityData(data);
+        }
+      })
+      .catch((err) => console.warn('Error fetching connectivity section data:', err));
+    return () => {
+      active = false;
+    };
+  }, []);
+
   useEffect(() => {
     const ctx = gsap.context(() => {
       gsap.fromTo(
@@ -122,6 +140,16 @@ export default function ConnectivitySection() {
 
   const labels = t.connectivity.mapLabels;
 
+  const mapImage = lang === 'ar'
+    ? (connectivityData?.mapImageAr ? urlFor(connectivityData.mapImageAr).url() : null)
+    : (connectivityData?.mapImageEn ? urlFor(connectivityData.mapImageEn).url() : null);
+
+  const desktopMapSrc = mapImage || "/images/map-clean-base.png";
+  const mobileMapSrc = mapImage || "/images/map-mobile-rotated-labels.png";
+
+  const displayTitle = connectivityData?.title?.[lang] || connectivityData?.title?.en || t.connectivity.title;
+  const displaySubtitle = connectivityData?.description?.[lang] || connectivityData?.description?.en || t.connectivity.subtitle;
+
   return (
     <Box
       id="connectivity"
@@ -157,7 +185,7 @@ export default function ConnectivitySection() {
           {/* Mobile Rotated Map Image with Perfectly Aligned Vector Labels (display on xs screens < 600px) */}
           <Box
             component="img"
-            src="/images/map-mobile-rotated-labels.png"
+            src={mobileMapSrc}
             alt="Damascus Map Rotated Mobile"
             sx={{
               width: '100%',
@@ -170,7 +198,7 @@ export default function ConnectivitySection() {
           {/* Desktop Landscape Map Image (display on sm+ screens ≥ 600px) */}
           <Box
             component="img"
-            src="/images/map-clean-base.png"
+            src={desktopMapSrc}
             alt="Damascus Map Landscape Base"
             sx={{
               width: '100%',
@@ -496,7 +524,7 @@ export default function ConnectivitySection() {
                   width: '100%',
                 }}
               >
-                {t.connectivity.title}
+                {displayTitle}
               </Typography>
               <Typography
                 variant="h4"
@@ -510,7 +538,7 @@ export default function ConnectivitySection() {
                   width: '100%',
                 }}
               >
-                {t.connectivity.subtitle}
+                {displaySubtitle}
               </Typography>
             </Box>
             <LearnMoreLink path="/location" bg="#F6F2EC" />
