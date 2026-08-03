@@ -67,24 +67,11 @@ export default function GallerySection() {
   useEffect(() => {
     let active = true;
 
-    // Fetch visual assets
-    client.fetch(`*[_type == "galleryItem"] | order(order asc)`).then((data) => {
-      if (!active) return;
-      if (data && data.length > 0) {
-        setGalleryList(
-          data.map((item) => ({
-            src: item.image ? urlFor(item.image).url() : '',
-            titleEn: item.title?.en || '',
-            titleAr: item.title?.ar || '',
-            subtitleEn: item.subtitle?.en || '',
-            subtitleAr: item.subtitle?.ar || '',
-          }))
-        );
-      }
-    }).catch((err) => console.warn('Gallery items fetch failed:', err));
-
-    // Fetch section descriptors
-    client.fetch(`*[_type == "page" && _id == "home"][0].sections[_type == "gallerySection"][0]`).then((data) => {
+    // Fetch section data (including inline carousel images)
+    client.fetch(`*[_type == "page" && _id == "home"][0].sections[_type == "gallerySection"][0] {
+      ...,
+      "inlineImages": images[] { ..., "imageUrl": image.asset->url }
+    }`).then((data) => {
       if (!active) return;
       if (data) {
         setSectionMeta({
@@ -101,8 +88,38 @@ export default function GallerySection() {
             ar: data.description?.ar || ''
           }
         });
+
+        // Use inline images if available
+        if (data.inlineImages && data.inlineImages.length > 0) {
+          setGalleryList(
+            data.inlineImages.map((item) => ({
+              src: item.imageUrl || (item.image ? urlFor(item.image).url() : ''),
+              titleEn: item.title?.en || '',
+              titleAr: item.title?.ar || '',
+              subtitleEn: item.subtitle?.en || '',
+              subtitleAr: item.subtitle?.ar || '',
+            }))
+          );
+          return; // Don't fetch standalone galleryItems
+        }
       }
-    }).catch((err) => console.warn('Gallery section meta fetch failed:', err));
+
+      // Fallback: fetch standalone galleryItem documents
+      client.fetch(`*[_type == "galleryItem"] | order(order asc)`).then((items) => {
+        if (!active) return;
+        if (items && items.length > 0) {
+          setGalleryList(
+            items.map((item) => ({
+              src: item.image ? urlFor(item.image).url() : '',
+              titleEn: item.title?.en || '',
+              titleAr: item.title?.ar || '',
+              subtitleEn: item.subtitle?.en || '',
+              subtitleAr: item.subtitle?.ar || '',
+            }))
+          );
+        }
+      }).catch((err) => console.warn('Gallery items fetch failed:', err));
+    }).catch((err) => console.warn('Gallery section fetch failed:', err));
 
     return () => {
       active = false;
