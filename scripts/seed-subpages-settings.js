@@ -190,7 +190,11 @@ async function seed() {
       _type: 'siteSettings',
       _id: 'siteSettings',
       title: 'Site Settings',
-      ...(imgLogo ? { logo: imgLogo } : {}),
+      siteName: {
+        en: 'Park View Yaafour',
+        ar: 'بارك فيو يعفور'
+      },
+      ...(imgLogo ? { logo: imgLogo, favicon: imgLogo } : {}),
       contactPhone: '+963 11 4068',
       whatsappNumber: '963997711226'
     });
