@@ -13,7 +13,7 @@ export default function LearnMoreLink({ path, bg = '#FFFFFF' }) {
       sx={{ 
         width: '100%', 
         backgroundColor: bg, 
-        pb: 10,
+        // pb: 10,
         pt: 2,
         // borderBottom: '1px solid rgba(29, 29, 28, 0.04)'
       }}
