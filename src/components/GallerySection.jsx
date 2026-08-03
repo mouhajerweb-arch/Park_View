@@ -167,17 +167,23 @@ export default function GallerySection() {
   }, [N, slideWidth, step]);
 
   // Autoplay circular loop starts automatically on mount without user interaction
+  const handleNextRef = useRef(handleNext);
+  useEffect(() => {
+    handleNextRef.current = handleNext;
+  });
+
+  // Autoplay circular loop starts automatically on mount without user interaction
   useEffect(() => {
     if (zoomedImage) return;
 
     const interval = setInterval(() => {
       if (!isDragging.current) {
-        handleNext();
+        handleNextRef.current();
       }
     }, 2500);
 
     return () => clearInterval(interval);
-  }, [zoomedImage, activeDot, slideWidth, wrapperWidth, N]);
+  }, [zoomedImage]);
 
   useEffect(() => {
     const ctx = gsap.context(() => {
