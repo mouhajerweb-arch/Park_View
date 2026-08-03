@@ -21,6 +21,7 @@ import aboutPage from './aboutPage';
 import contactPage from './contactPage';
 import residencesPage from './residencesPage';
 import locationPage from './locationPage';
+import galleryPage from './galleryPage';
 import faq from './faq';
 import galleryItem from './galleryItem';
 import siteSettings from './siteSettings';
@@ -51,6 +52,7 @@ export const schemaTypes = [
   contactPage,
   residencesPage,
   locationPage,
+  galleryPage,
   faq,
   galleryItem,
   siteSettings,

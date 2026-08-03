@@ -57,6 +57,14 @@ export const structure: StructureResolver = (S) =>
                     .schemaType("locationPage")
                     .documentId("locationPage")
                     .title("Location Page")
+                ),
+              S.listItem()
+                .title("Gallery Page")
+                .child(
+                  S.document()
+                    .schemaType("galleryPage")
+                    .documentId("galleryPage")
+                    .title("Gallery Page")
                 )
             ])
         ),
@@ -106,6 +114,7 @@ export const structure: StructureResolver = (S) =>
             "contactPage",
             "residencesPage",
             "locationPage",
+            "galleryPage",
             "faq",
             "galleryItem",
             "siteSettings",
