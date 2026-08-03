@@ -74,99 +74,97 @@ export default function PrestigeSection() {
     <Box
       id="prestige-intro"
       ref={sectionRef}
-      className="brochure-section"
+      className="brochure-section-prestige"
       sx={{
         width: '100%',
         minHeight: '100vh',
         backgroundColor: '#F6F2EC', // Luxury beige matching brochure
-        py: { xs: 8, md: 12 },
-        px: { xs: 3, sm: 6, md: 10, lg: 12 },
         display: 'flex',
-        alignItems: 'center',
+        flexDirection: { xs: 'column', md: 'row' },
+        overflow: 'hidden',
       }}
     >
-      <Container maxWidth="xl" sx={{ pr: { md: 6 } }}>
-        <Box 
-          sx={{
-            display: 'flex',
-            flexDirection: { xs: 'column', md: 'row' },
-            gap: { xs: 6, md: 8, lg: 10 },
-            alignItems: 'center',
-            width: '100%'
-          }}
-        >
-          {/* Left Column: Text Content */}
-          <Box sx={{ width: { xs: '100%', md: '45%' }, display: 'flex', flexDirection: 'column' }}>
-            <Box sx={{ maxWidth: '540px', textAlign: 'start', width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
-              <Typography
-                ref={headingRef}
-                variant="h2"
-                sx={{
-                  fontFamily: '"CS Brandis", serif',
-                  fontWeight: 600,
-                  fontSize: { xs: '2rem', sm: '2.5rem', md: '2.85rem', lg: '3.25rem' },
-                  lineHeight: 1.15,
-                  color: '#2B2825',
-                  mb: { xs: 3, md: 5 },
-                  letterSpacing: '-0.02em',
-                  textAlign: 'start',
-                  width: '100%',
-                }}
-              >
-                {t.prestige.headingLine1}
-                <br />
-                {t.prestige.headingLine2}
-                <br />
-                {t.prestige.headingLine3}
-              </Typography>
+      {/* Left Column: Text Content */}
+      <Box 
+        sx={{ 
+          width: { xs: '100%', md: '50%' }, 
+          display: 'flex', 
+          alignItems: 'center', 
+          justifyContent: 'center',
+          py: { xs: 8, md: 12 },
+          pl: lang === 'ar' ? { xs: 3, sm: 6, md: 8, lg: 10 } : { xs: 3, sm: 6, md: 10, lg: 12 },
+          pr: lang === 'ar' ? { xs: 3, sm: 6, md: 10, lg: 12 } : { xs: 3, sm: 6, md: 8, lg: 10 },
+        }}
+      >
+        <Box sx={{ maxWidth: '540px', textAlign: 'start', width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
+          <Typography
+            ref={headingRef}
+            variant="h2"
+            sx={{
+              fontFamily: '"CS Brandis", serif',
+              fontWeight: 600,
+              fontSize: { xs: '2rem', sm: '2.5rem', md: '2.85rem', lg: '3.25rem' },
+              lineHeight: 1.15,
+              color: '#2B2825',
+              mb: { xs: 3, md: 5 },
+              letterSpacing: '-0.02em',
+              textAlign: 'start',
+              width: '100%',
+            }}
+          >
+            {t.prestige.headingLine1}
+            <br />
+            {t.prestige.headingLine2}
+            <br />
+            {t.prestige.headingLine3}
+          </Typography>
 
-              <Typography
-                ref={bodyRef}
-                variant="body1"
-                sx={{
-                  fontFamily: '"Silka", sans-serif',
-                  fontWeight: 300,
-                  fontSize: { xs: '0.95rem', md: '1.025rem' },
-                  lineHeight: 1.85,
-                  color: '#6B6661',
-                  textAlign: 'start',
-                  width: '100%',
-                }}
-              >
-                {t.prestige.body}
-              </Typography>
-            </Box>
-          </Box>
-
-          {/* Right Column: High-Res Render Image */}
-          <Box sx={{ width: { xs: '100%', md: '55%' } }}>
-            <Box
-              ref={imageRef}
-              sx={{
-                width: '100%',
-                maxHeight: { xs: '450px', md: '680px' },
-                height: 'auto',
-                borderRadius: '16px',
-                overflow: 'hidden',
-                boxShadow: '0 20px 40px rgba(43, 40, 37, 0.08)',
-                position: 'relative',
-              }}
-            >
-              <Box
-                component="img"
-                src="/images/prestige-tranquility.jpg"
-                alt="Park View Yaafour Garden Promenade"
-                sx={{
-                  width: '100%',
-                  height: '100%',
-                  objectFit: 'cover',
-                  display: 'block',
-                }}
-              />
-            </Box>
-          </Box>
+          <Typography
+            ref={bodyRef}
+            variant="body1"
+            sx={{
+              fontFamily: '"Silka", sans-serif',
+              fontWeight: 300,
+              fontSize: { xs: '0.95rem', md: '1.025rem' },
+              lineHeight: 1.85,
+              color: '#6B6661',
+              textAlign: 'start',
+              width: '100%',
+            }}
+          >
+            {t.prestige.body}
+          </Typography>
         </Box>
-      </Container>
+      </Box>
+
+      {/* Right Column: Full-Bleed High-Res Render Image */}
+      <Box 
+        ref={imageRef}
+        sx={{ 
+          width: { xs: '100%', md: '50%' },
+          height: { xs: '320px', sm: '420px', md: 'auto' },
+          minHeight: { xs: 'auto', md: '100vh' },
+          flexGrow: { xs: 1, md: 0 },
+          alignSelf: 'stretch', // Spans full height of the flex row container
+          overflow: 'hidden',
+          position: 'relative',
+        }}
+      >
+        <Box
+          component="img"
+          src="/images/prestige-tranquility.jpg"
+          alt="Park View Yaafour Garden Promenade"
+          sx={{
+            width: '100%',
+            height: '100%',
+            objectFit: 'cover',
+            display: 'block',
+            position: 'absolute',
+            top: 0,
+            left: 0,
+          }}
+        />
+      </Box>
     </Box>
   );
 }

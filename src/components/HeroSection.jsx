@@ -3,6 +3,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { Box, Container, Typography } from "@mui/material";
 import gsap from "gsap";
 import { useLanguage } from "../context/LanguageContext";
+import { client, urlFor } from "../sanity/client";
 
 export default function HeroSection() {
   const { lang, t } = useLanguage();
@@ -11,6 +12,8 @@ export default function HeroSection() {
   const logoRef = useRef(null);
   const soonRef = useRef(null);
   const timerRef = useRef(null);
+
+  const [heroData, setHeroData] = useState(null);
 
   // Dynamic live countdown state targeting June 30, 2027 (matching live parkview.community)
   const [timeLeft, setTimeLeft] = useState({
@@ -21,7 +24,29 @@ export default function HeroSection() {
   });
 
   useEffect(() => {
-    const targetDate = new Date("June 30, 2027 11:13:00 UTC+0200");
+    let active = true;
+    client
+      .fetch(
+        `*[_type == "page" && _id == "home"][0].sections[_type == "heroSection"][0] {
+          ...,
+          "videoUrl": backgroundVideo.asset->url
+        }`
+      )
+      .then((data) => {
+        if (active && data) {
+          setHeroData(data);
+        }
+      })
+      .catch((err) => console.warn("Error fetching hero section data:", err));
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  const countdownTarget = heroData?.countdownTarget || "2027-06-30T11:13:00+02:00";
+
+  useEffect(() => {
+    const targetDate = new Date(countdownTarget);
 
     const interval = setInterval(() => {
       const now = new Date();
@@ -40,7 +65,7 @@ export default function HeroSection() {
     }, 1000);
 
     return () => clearInterval(interval);
-  }, []);
+  }, [countdownTarget]);
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -66,9 +91,21 @@ export default function HeroSection() {
     }, heroRef);
 
     return () => ctx.revert();
-  }, [t]);
+  }, [heroData]);
 
   const formatTwoDigits = (num) => String(num).padStart(2, "0");
+
+  const backgroundType = heroData?.backgroundType || 'image';
+  const finalImageUrl = heroData?.backgroundImage 
+    ? urlFor(heroData.backgroundImage).url() 
+    : '/images/bg2.jpg';
+  const finalVideoUrl = heroData?.videoUrl || heroData?.backgroundVideoUrl;
+
+  const logoUrl = heroData?.logo 
+    ? urlFor(heroData.logo).url() 
+    : "/images/park-view-full-logo.png";
+
+  const soonText = heroData?.soonText?.[lang] || heroData?.soonText?.en || (lang === 'ar' ? 'قريباً' : 'SOON');
 
   return (
     <Box
@@ -77,12 +114,12 @@ export default function HeroSection() {
       sx={{
         position: "relative",
         width: "100%",
-        height: "100vh",
-        minHeight: "700px",
+        height: { xs: "50vh", sm: "85vh", md: "100vh" },
+        minHeight: { xs: "500px", sm: "600px", md: "700px" },
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        backgroundImage: `url('/images/bg2.jpg')`,
+        backgroundImage: backgroundType === 'image' ? `url(${finalImageUrl})` : 'none',
         backgroundSize: "cover",
         backgroundPosition: "center center",
         backgroundRepeat: "no-repeat",
@@ -96,12 +133,32 @@ export default function HeroSection() {
           left: 0,
           right: 0,
           bottom: 0,
-          // background:
-          //   'linear-gradient(180deg, rgba(12, 16, 14, 0.45) 0%, rgba(10, 14, 12, 0.2) 40%, rgba(8, 12, 10, 0.65) 100%)',
+          backgroundColor: "rgba(0, 0, 0, 0.2)",
           zIndex: 1,
         },
       }}
     >
+      {/* Background Video */}
+      {backgroundType === 'video' && finalVideoUrl ? (
+        <Box
+          component="video"
+          autoPlay
+          loop
+          muted
+          playsInline
+          src={finalVideoUrl}
+          sx={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            width: "100%",
+            height: "100%",
+            objectFit: "cover",
+            zIndex: 0,
+          }}
+        />
+      ) : null}
+
       {/* Centralized Container for Perfect Flow and Responsiveness */}
       <Container
         maxWidth="md"
@@ -114,17 +171,18 @@ export default function HeroSection() {
           alignItems: "center",
           justifyContent: "center",
           py: { xs: 4, sm: 6 },
+          mt:{xs:7.3, sm:0}
         }}
       >
-        {/* Brand Logo placed at the top inside the container for perfect flow and responsiveness */}
+        {/* Brand Logo */}
         <Box
           ref={logoRef}
           component="img"
-          src="/images/park-view-full-logo.png"
+          src={logoUrl}
           className="logo"
           alt="PARK VIEW Logo"
           sx={{
-            width: { xs: "260px", sm: "340px", md: "450px" },
+            width: { xs: "190px", sm: "300px", md: "450px" },
             maxWidth: "90vw",
             mb: { xs: 2.5, sm: 0 },
             filter: "drop-shadow(0 4px 18px rgba(0, 0, 0, 0.5))",
@@ -146,7 +204,7 @@ export default function HeroSection() {
             textTransform: "lowercase",
           }}
         >
-          {lang === 'ar' ? 'قريباً' : "SOON"}
+          {soonText}
         </Typography>
 
         {/* Circled Large Countdown Timer */}
@@ -210,7 +268,7 @@ export default function HeroSection() {
                 lineHeight: 1.2,
               }}
             >
-              Days
+              {lang === 'ar' ? 'أيام' : 'Days'}
             </Typography>
           </Box>
 
@@ -260,7 +318,7 @@ export default function HeroSection() {
                 lineHeight: 1.2,
               }}
             >
-              Hours
+              {lang === 'ar' ? 'ساعات' : 'Hours'}
             </Typography>
           </Box>
 
@@ -310,7 +368,7 @@ export default function HeroSection() {
                 lineHeight: 1.2,
               }}
             >
-              Minutes
+              {lang === 'ar' ? 'دقائق' : 'Minutes'}
             </Typography>
           </Box>
 
@@ -360,7 +418,7 @@ export default function HeroSection() {
                 lineHeight: 1.2,
               }}
             >
-              Seconds
+              {lang === 'ar' ? 'ثواني' : 'Seconds'}
             </Typography>
           </Box>
         </Box>

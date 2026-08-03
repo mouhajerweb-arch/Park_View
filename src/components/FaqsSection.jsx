@@ -45,7 +45,7 @@ export default function FaqsSection() {
         }
       })
       .catch((err) => {
-        console.error('Error fetching FAQs from Sanity:', err);
+        console.warn('Error fetching FAQs from Sanity:', err);
         if (active) {
           setFaqsList(fq.list);
         }

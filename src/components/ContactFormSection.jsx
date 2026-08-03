@@ -1,11 +1,12 @@
 'use client';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Box, Container, Typography, TextField, Button, Grid2 as Grid } from '@mui/material';
 import { MuiTelInput } from 'mui-tel-input';
 import PhoneIcon from '@mui/icons-material/Phone';
 import EmailIcon from '@mui/icons-material/Email';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import { useLanguage } from '../context/LanguageContext';
+import { client } from '../sanity/client';
 
 export default function ContactFormSection() {
   const { lang } = useLanguage();
@@ -17,6 +18,23 @@ export default function ContactFormSection() {
     remarks: ''
   });
 
+  const [contactData, setContactData] = useState(null);
+
+  useEffect(() => {
+    let active = true;
+    client
+      .fetch(`*[_type == "page" && _id == "home"][0].sections[_type == "contactFormSection"][0]`)
+      .then((data) => {
+        if (active && data) {
+          setContactData(data);
+        }
+      })
+      .catch((err) => console.warn('Error fetching contact form section data:', err));
+    return () => {
+      active = false;
+    };
+  }, []);
+
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
@@ -27,19 +45,21 @@ export default function ContactFormSection() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    const WHATSAPP_NUMBER = '963997711226';
+    const WHATSAPP_NUMBER = contactData?.whatsappNumber || '963997711226';
 
     const firstName = form.firstName.trim();
     const lastName = form.lastName.trim();
     const email = form.email.trim();
     const remarks = form.remarks.trim();
 
+    const missingFieldsMsg = contactData?.errorMessage?.[lang] || contactData?.errorMessage?.en || (
+      lang === 'ar'
+        ? 'يرجى ملء جميع الحقول المطلوبة (الاسم، البريد الإلكتروني، رقم الهاتف)'
+        : 'Please fill in all required fields (Name, Email, Phone Number)'
+    );
+
     if (!firstName || !lastName || !email || !phone) {
-      alert(
-        lang === 'ar'
-          ? 'يرجى ملء جميع الحقول المطلوبة (الاسم، البريد الإلكتروني، رقم الهاتف)'
-          : 'Please fill in all required fields (Name, Email, Phone Number)'
-      );
+      alert(missingFieldsMsg);
       return;
     }
 
@@ -65,6 +85,57 @@ export default function ContactFormSection() {
     const whatsappUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
     window.open(whatsappUrl, '_blank');
   };
+
+  // Resolve dynamic values
+  const displayPhone = contactData?.phone || '+963 11 4068';
+  const displayEmail = contactData?.email || 'info@parkview.community';
+  const displayAddress = contactData?.address?.[lang] || contactData?.address?.en || (
+    lang === 'ar'
+      ? 'يعفور، دمشق، سوريا - خلف البيت السويسري مباشرةً'
+      : 'Yaafour, Damascus, Syria - Directly behind Swiss House'
+  );
+
+  const displayEyebrow = contactData?.eyebrow?.[lang] || contactData?.eyebrow?.en || (
+    lang === 'ar' ? 'اتصل بنا' : 'Get in Touch'
+  );
+  const displayTitle = contactData?.title?.[lang] || contactData?.title?.en || (
+    lang === 'ar'
+      ? 'جاهزون للتواصل عندما تكون مستعداً'
+      : "We're Ready to Connect When You Are"
+  );
+
+  const displayFormEyebrow = contactData?.formEyebrow?.[lang] || contactData?.formEyebrow?.en || (
+    lang === 'ar' ? 'التسجيل الحصري' : 'Register Interest'
+  );
+  const displayFormTitle = contactData?.formTitle?.[lang] || contactData?.formTitle?.en || (
+    lang === 'ar'
+      ? 'استفسر اليوم واحصل على عروض الإطلاق'
+      : 'Unlock Launch Offers'
+  );
+
+  const mapLatitude = contactData?.mapLatitude || 33.5277034;
+  const mapLongitude = contactData?.mapLongitude || 36.1118096;
+  const mapEmbedUrl = contactData?.mapEmbedUrl || `https://maps.google.com/maps?q=${mapLatitude},${mapLongitude}&z=15&output=embed`;
+
+  const labelFirstName = contactData?.formLabels?.firstName?.[lang] || contactData?.formLabels?.firstName?.en || (
+    lang === 'ar' ? 'الاسم الأول' : 'First Name'
+  );
+  const labelLastName = contactData?.formLabels?.lastName?.[lang] || contactData?.formLabels?.lastName?.en || (
+    lang === 'ar' ? 'الاسم الأخير' : 'Last Name'
+  );
+  const labelEmail = contactData?.formLabels?.email?.[lang] || contactData?.formLabels?.email?.en || (
+    lang === 'ar' ? 'البريد الإلكتروني' : 'Email Address'
+  );
+  const labelPhone = contactData?.formLabels?.phone?.[lang] || contactData?.formLabels?.phone?.en || (
+    lang === 'ar' ? 'رقم الهاتف' : 'Phone Number'
+  );
+  const labelRemarks = contactData?.formLabels?.remarks?.[lang] || contactData?.formLabels?.remarks?.en || (
+    lang === 'ar' ? 'ملاحظات (اختياري)' : 'Any Remarks (Optional)'
+  );
+
+  const submitText = contactData?.submitButtonText?.[lang] || contactData?.submitButtonText?.en || (
+    lang === 'ar' ? 'سجّل الآن' : 'Register Now'
+  );
 
   return (
     <Box
@@ -109,7 +180,7 @@ export default function ContactFormSection() {
                   textAlign: lang === 'ar' ? 'right' : 'left',
                 }}
               >
-                {lang === 'ar' ? 'اتصل بنا' : 'Get in Touch'}
+                {displayEyebrow}
               </Typography>
               <Typography
                 sx={{
@@ -124,9 +195,7 @@ export default function ContactFormSection() {
                   textAlign: lang === 'ar' ? 'right' : 'left',
                 }}
               >
-                {lang === 'ar'
-                  ? 'جاهزون للتواصل عندما تكون مستعداً'
-                  : "We're Ready to Connect When You Are"}
+                {displayTitle}
               </Typography>
 
               {/* Contact Icons Row */}
@@ -155,7 +224,7 @@ export default function ContactFormSection() {
                       dir: 'ltr',
                     }}
                   >
-                    +963 11 4068
+                    {displayPhone}
                   </Typography>
                 </Box>
 
@@ -182,7 +251,7 @@ export default function ContactFormSection() {
                       fontWeight: 400,
                     }}
                   >
-                    info@parkview.community
+                    {displayEmail}
                   </Typography>
                 </Box>
 
@@ -210,9 +279,7 @@ export default function ContactFormSection() {
                       textAlign: lang === 'ar' ? 'right' : 'left',
                     }}
                   >
-                    {lang === 'ar'
-                      ? 'يعفور، دمشق، سوريا - خلف البيت السويسري مباشرةً'
-                      : 'Yaafour, Damascus, Syria - Directly behind Swiss House'}
+                    {displayAddress}
                   </Typography>
                 </Box>
               </Box>
@@ -230,7 +297,7 @@ export default function ContactFormSection() {
               >
                 <iframe
                   title="Park View Location Map"
-                  src="https://maps.google.com/maps?q=33.5277034,36.1118096&z=15&output=embed"
+                  src={mapEmbedUrl}
                   width="100%"
                   height="100%"
                   style={{
@@ -266,7 +333,7 @@ export default function ContactFormSection() {
                   textAlign: lang === 'ar' ? 'right' : 'left',
                 }}
               >
-                {lang === 'ar' ? 'التسجيل الحصري' : 'Register Interest'}
+                {displayFormEyebrow}
               </Typography>
               <Typography
                 sx={{
@@ -281,9 +348,7 @@ export default function ContactFormSection() {
                   textAlign: lang === 'ar' ? 'right' : 'left',
                 }}
               >
-                {lang === 'ar'
-                  ? 'استفسر اليوم واحصل على عروض الإطلاق'
-                  : 'Unlock Launch Offers'}
+                {displayFormTitle}
               </Typography>
 
               {/* Form Input fields with dynamic dir attribute targeting Arabic RTL text flow */}
@@ -303,7 +368,7 @@ export default function ContactFormSection() {
                   <Grid size={{ xs: 12, sm: 6 }}>
                     <TextField
                       name="firstName"
-                      label={lang === 'ar' ? 'الاسم الأول' : 'First Name'}
+                      label={labelFirstName}
                       value={form.firstName}
                       onChange={handleChange}
                       required
@@ -355,7 +420,7 @@ export default function ContactFormSection() {
                   <Grid size={{ xs: 12, sm: 6 }}>
                     <TextField
                       name="lastName"
-                      label={lang === 'ar' ? 'الاسم الأخير' : 'Last Name'}
+                      label={labelLastName}
                       value={form.lastName}
                       onChange={handleChange}
                       required
@@ -410,7 +475,7 @@ export default function ContactFormSection() {
                 <TextField
                   name="email"
                   type="email"
-                  label={lang === 'ar' ? 'البريد الإلكتروني' : 'Email Address'}
+                  label={labelEmail}
                   value={form.email}
                   onChange={handleChange}
                   required
@@ -428,104 +493,90 @@ export default function ContactFormSection() {
                       },
                     },
                   }}
-                      sx={{
-                        '& .MuiOutlinedInput-root': {
-                          borderRadius: '50px',
-                          backgroundColor: '#FFFFFF',
-                          '& fieldset': { borderColor: 'rgba(61, 54, 46, 0.12)' },
-                          '&:hover fieldset': { borderColor: '#7C7368' },
-                          '&.Mui-focused fieldset': { borderColor: '#5A7365', borderWidth: '1.5px' },
-                        },
-                        '& .MuiInputLabel-root': {
-                          fontFamily: '"Silka", sans-serif',
-                          fontSize: '14px',
-                          color: '#7C7368',
-                          '&.Mui-focused': { color: '#5A7365' },
-                          transformOrigin: lang === 'ar' ? 'top right' : 'top left',
-                          left: lang === 'ar' ? 'auto' : 0,
-                          right: lang === 'ar' ? 20 : 'auto',
-                          transform: lang === 'ar' ? 'translate(0, 16px) scale(1)' : 'translate(20px, 16px) scale(1)',
-                          '&.MuiInputLabel-shrink': {
-                            transform: lang === 'ar' ? 'translate(0, -9px) scale(0.75)' : 'translate(20px, -9px) scale(0.75)',
-                          },
-                          mt: 0.2
-                        },
-                        '& .MuiOutlinedInput-notchedOutline legend': {
-                          display: 'block',
-                          textAlign: lang === 'ar' ? 'right' : 'left',
-                          marginRight: lang === 'ar' ? '0px' : 'auto',
-                          marginLeft: lang === 'ar' ? 'auto' : '0px',
-                        },
-                      }}
+                  sx={{
+                    '& .MuiOutlinedInput-root': {
+                      borderRadius: '50px',
+                      backgroundColor: '#FFFFFF',
+                      '& fieldset': { borderColor: 'rgba(61, 54, 46, 0.12)' },
+                      '&:hover fieldset': { borderColor: '#7C7368' },
+                      '&.Mui-focused fieldset': { borderColor: '#5A7365', borderWidth: '1.5px' },
+                    },
+                    '& .MuiInputLabel-root': {
+                      fontFamily: '"Silka", sans-serif',
+                      fontSize: '14px',
+                      color: '#7C7368',
+                      '&.Mui-focused': { color: '#5A7365' },
+                      transformOrigin: lang === 'ar' ? 'top right' : 'top left',
+                      left: lang === 'ar' ? 'auto' : 0,
+                      right: lang === 'ar' ? 20 : 'auto',
+                      transform: lang === 'ar' ? 'translate(0, 16px) scale(1)' : 'translate(20px, 16px) scale(1)',
+                      '&.MuiInputLabel-shrink': {
+                        transform: lang === 'ar' ? 'translate(0, -9px) scale(0.75)' : 'translate(20px, -9px) scale(0.75)',
+                      },
+                      mt: 0.2
+                    },
+                    '& .MuiOutlinedInput-notchedOutline legend': {
+                      display: 'block',
+                      textAlign: lang === 'ar' ? 'right' : 'left',
+                      marginRight: lang === 'ar' ? '0px' : 'auto',
+                      marginLeft: lang === 'ar' ? 'auto' : '0px',
+                    },
+                  }}
                 />
 
-                {/* Phone Input with Flag Dropdown Selection */}
+                {/* Telephone Country Code Input Selector */}
                 <MuiTelInput
                   defaultCountry="SY"
                   value={phone}
                   onChange={handlePhoneChange}
                   required
                   fullWidth
-                  dir={lang === 'ar' ? 'rtl' : 'ltr'}
-                  label={lang === 'ar' ? 'رقم الهاتف' : 'Phone Number'}
                   variant="outlined"
+                  lang={lang}
+                  dir="ltr"
+                  placeholder={labelPhone}
                   MenuProps={{
                     disableScrollLock: true,
                     PaperProps: {
-                      'data-lenis-prevent': 'true', // Stop Lenis from blocking mouse scroll
+                      'data-lenis-prevent': 'true',
+                      onWheel: (e) => {
+                        e.stopPropagation();
+                      },
                       style: {
                         maxHeight: 280,
                       }
                     }
                   }}
-                  slotProps={{
-                    htmlInput: {
-                      style: {
-                        fontFamily: '"Silka", sans-serif',
-                        fontSize: '14.5px',
-                        color: '#2B2825',
-                        padding: '16.5px 18px',
-                        textAlign: lang === 'ar' ? 'right' : 'left',
-                      },
+                  sx={{
+                    '& .MuiOutlinedInput-root': {
+                      borderRadius: '50px',
+                      backgroundColor: '#FFFFFF',
+                      '& fieldset': { borderColor: 'rgba(61, 54, 46, 0.12)' },
+                      '&:hover fieldset': { borderColor: '#7C7368' },
+                      '&.Mui-focused fieldset': { borderColor: '#5A7365', borderWidth: '1.5px' },
+                    },
+                    '& .MuiTypography-root': {
+                      fontFamily: '"Silka", sans-serif',
+                      fontSize: '14.5px',
+                      color: '#2B2825',
+                    },
+                    '& input': {
+                      fontFamily: '"Silka", sans-serif',
+                      fontSize: '14.5px',
+                      color: '#2B2825',
+                      padding: '16.5px 18px',
                     },
                   }}
-                      sx={{
-                        '& .MuiOutlinedInput-root': {
-                          borderRadius: '50px',
-                          backgroundColor: '#FFFFFF',
-                          '& fieldset': { borderColor: 'rgba(61, 54, 46, 0.12)' },
-                          '&:hover fieldset': { borderColor: '#7C7368' },
-                          '&.Mui-focused fieldset': { borderColor: '#5A7365', borderWidth: '1.5px' },
-                        },
-                        '& .MuiInputLabel-root': {
-                          fontFamily: '"Silka", sans-serif',
-                          fontSize: '14px',
-                          color: '#7C7368',
-                          '&.Mui-focused': { color: '#5A7365' },
-                          transformOrigin: lang === 'ar' ? 'top right' : 'top left',
-                          left: lang === 'ar' ? 'auto' : 0,
-                          right: lang === 'ar' ? 20 : 'auto',
-                          transform: lang === 'ar' ? 'translate(0, 16px) scale(1)' : 'translate(20px, 16px) scale(1)',
-                          '&.MuiInputLabel-shrink': {
-                            transform: lang === 'ar' ? 'translate(0, -9px) scale(0.75)' : 'translate(20px, -9px) scale(0.75)',
-                          },
-                          mt: 0.2
-                        },
-                        '& .MuiOutlinedInput-notchedOutline legend': {
-                          display: 'block',
-                          textAlign: lang === 'ar' ? 'right' : 'left',
-                          marginRight: lang === 'ar' ? '0px' : 'auto',
-                          marginLeft: lang === 'ar' ? 'auto' : '0px',
-                        },
-                      }}
                 />
 
-                {/* Remarks (optional) */}
+                {/* Remarks Multi-Line Field */}
                 <TextField
                   name="remarks"
-                  label={lang === 'ar' ? 'ملاحظات (اختياري)' : 'Remarks (optional)'}
+                  label={labelRemarks}
                   value={form.remarks}
                   onChange={handleChange}
+                  multiline
+                  rows={4}
                   fullWidth
                   variant="outlined"
                   dir={lang === 'ar' ? 'rtl' : 'ltr'}
@@ -535,66 +586,69 @@ export default function ContactFormSection() {
                         fontFamily: '"Silka", sans-serif',
                         fontSize: '14.5px',
                         color: '#2B2825',
-                        padding: '16.5px 18px',
+                        padding: '6px 4px',
                         textAlign: lang === 'ar' ? 'right' : 'left',
                       },
                     },
                   }}
-                      sx={{
-                        '& .MuiOutlinedInput-root': {
-                          borderRadius: '50px',
-                          backgroundColor: '#FFFFFF',
-                          '& fieldset': { borderColor: 'rgba(61, 54, 46, 0.12)' },
-                          '&:hover fieldset': { borderColor: '#7C7368' },
-                          '&.Mui-focused fieldset': { borderColor: '#5A7365', borderWidth: '1.5px' },
-                        },
-                        '& .MuiInputLabel-root': {
-                          fontFamily: '"Silka", sans-serif',
-                          fontSize: '14px',
-                          color: '#7C7368',
-                          '&.Mui-focused': { color: '#5A7365' },
-                          transformOrigin: lang === 'ar' ? 'top right' : 'top left',
-                          left: lang === 'ar' ? 'auto' : 0,
-                          right: lang === 'ar' ? 20 : 'auto',
-                          transform: lang === 'ar' ? 'translate(0, 16px) scale(1)' : 'translate(20px, 16px) scale(1)',
-                          '&.MuiInputLabel-shrink': {
-                            transform: lang === 'ar' ? 'translate(0, -9px) scale(0.75)' : 'translate(20px, -9px) scale(0.75)',
-                          },
-                          mt: 0.2
-                        },
-                        '& .MuiOutlinedInput-notchedOutline legend': {
-                          display: 'block',
-                          textAlign: lang === 'ar' ? 'right' : 'left',
-                          marginRight: lang === 'ar' ? '0px' : 'auto',
-                          marginLeft: lang === 'ar' ? 'auto' : '0px',
-                        },
-                      }}
+                  sx={{
+                    '& .MuiOutlinedInput-root': {
+                      borderRadius: '24px',
+                      backgroundColor: '#FFFFFF',
+                      padding: '12px 18px',
+                      '& fieldset': { borderColor: 'rgba(61, 54, 46, 0.12)' },
+                      '&:hover fieldset': { borderColor: '#7C7368' },
+                      '&.Mui-focused fieldset': { borderColor: '#5A7365', borderWidth: '1.5px' },
+                    },
+                    '& .MuiInputLabel-root': {
+                      fontFamily: '"Silka", sans-serif',
+                      fontSize: '14px',
+                      color: '#7C7368',
+                      '&.Mui-focused': { color: '#5A7365' },
+                      transformOrigin: lang === 'ar' ? 'top right' : 'top left',
+                      left: lang === 'ar' ? 'auto' : 0,
+                      right: lang === 'ar' ? 20 : 'auto',
+                      transform: lang === 'ar' ? 'translate(0, 16px) scale(1)' : 'translate(20px, 16px) scale(1)',
+                      '&.MuiInputLabel-shrink': {
+                        transform: lang === 'ar' ? 'translate(0, -9px) scale(0.75)' : 'translate(20px, -9px) scale(0.75)',
+                      },
+                      mt: 0.2
+                    },
+                    '& .MuiOutlinedInput-notchedOutline legend': {
+                      display: 'block',
+                      textAlign: lang === 'ar' ? 'right' : 'left',
+                      marginRight: lang === 'ar' ? '0px' : 'auto',
+                      marginLeft: lang === 'ar' ? 'auto' : '0px',
+                    },
+                  }}
                 />
 
-                {/* Standard Theme Solid Button */}
+                {/* Submitting button with luxury green backdrop fill */}
                 <Button
                   type="submit"
                   variant="contained"
+                  fullWidth
                   sx={{
-                    backgroundColor: '#2B2825', // Primary Theme dark charcoal slate
-                    color: '#FFFFFF',
+                    fontFamily: '"Silka", sans-serif',
+                    fontSize: '0.85rem',
                     fontWeight: 500,
-                    fontSize: '14px',
-                    fontFamily: '"Guise", sans-serif',
-                    textTransform: 'none',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.15em',
+                    backgroundColor: '#5A7365',
+                    color: '#FFFFFF',
                     borderRadius: '50px',
                     py: 2,
-                    mt: 3,
-                    boxShadow: 'none',
-                    transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                    mt: 1.5,
+                    boxShadow: '0 8px 24px rgba(90, 115, 101, 0.15)',
+                    transition: 'all 0.3s cubic-bezier(0.25, 1, 0.5, 1)',
                     '&:hover': {
-                      backgroundColor: '#5A7365', // Hover transitions elegantly to theme Sage Green accent!
-                      boxShadow: 'none',
-                      transform: 'translateY(-1px)',
+                      backgroundColor: '#3D4F44',
+                      transform: 'translateY(-2px)',
+                      boxShadow: '0 12px 28px rgba(90, 115, 101, 0.25)',
                     },
                   }}
                 >
-                  {lang === 'ar' ? 'سجل اهتمامك الآن' : 'Register Your Interest'}
+                  {submitText}
                 </Button>
               </Box>
             </Box>

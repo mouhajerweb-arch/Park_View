@@ -191,10 +191,12 @@ export default function ResidencesSection() {
         py: { xs: 8, sm: 10, md: 12 },
         position: 'relative',
         overflow: 'hidden',
+        px: { xs: 2, sm: 4, md: 8, lg: 10 },
+
         // borderBottom: '1px solid rgba(0, 0, 0, 0.05)',
       }}
     >
-      <Container maxWidth="xl">
+      <Container maxWidth="xl" >
         {/* Section Heading */}
         <Box ref={titleRef} sx={{ mb: { xs: 4, md: 6 } }}>
           <Typography
@@ -243,7 +245,7 @@ export default function ResidencesSection() {
 
           <Box
             component="img"
-            src="/images/cluster.png"
+            src="/images/cluster.jpg"
             alt="Park View Yaafour Garden Promenade"
             sx={{
               width: '100%',

@@ -67,24 +67,11 @@ export default function GallerySection() {
   useEffect(() => {
     let active = true;
 
-    // Fetch visual assets
-    client.fetch(`*[_type == "galleryItem"] | order(order asc)`).then((data) => {
-      if (!active) return;
-      if (data && data.length > 0) {
-        setGalleryList(
-          data.map((item) => ({
-            src: item.image ? urlFor(item.image).url() : '',
-            titleEn: item.title?.en || '',
-            titleAr: item.title?.ar || '',
-            subtitleEn: item.subtitle?.en || '',
-            subtitleAr: item.subtitle?.ar || '',
-          }))
-        );
-      }
-    }).catch((err) => console.error('Gallery items fetch failed:', err));
-
-    // Fetch section descriptors
-    client.fetch(`*[_type == "page" && _id == "home"][0].sections[_type == "gallerySection"][0]`).then((data) => {
+    // Fetch section data (including inline carousel images)
+    client.fetch(`*[_type == "page" && _id == "home"][0].sections[_type == "gallerySection"][0] {
+      ...,
+      "inlineImages": images[] { ..., "imageUrl": image.asset->url }
+    }`).then((data) => {
       if (!active) return;
       if (data) {
         setSectionMeta({
@@ -101,8 +88,38 @@ export default function GallerySection() {
             ar: data.description?.ar || ''
           }
         });
+
+        // Use inline images if available
+        if (data.inlineImages && data.inlineImages.length > 0) {
+          setGalleryList(
+            data.inlineImages.map((item) => ({
+              src: item.imageUrl || (item.image ? urlFor(item.image).url() : ''),
+              titleEn: item.title?.en || '',
+              titleAr: item.title?.ar || '',
+              subtitleEn: item.subtitle?.en || '',
+              subtitleAr: item.subtitle?.ar || '',
+            }))
+          );
+          return; // Don't fetch standalone galleryItems
+        }
       }
-    }).catch((err) => console.error('Gallery section meta fetch failed:', err));
+
+      // Fallback: fetch standalone galleryItem documents
+      client.fetch(`*[_type == "galleryItem"] | order(order asc)`).then((items) => {
+        if (!active) return;
+        if (items && items.length > 0) {
+          setGalleryList(
+            items.map((item) => ({
+              src: item.image ? urlFor(item.image).url() : '',
+              titleEn: item.title?.en || '',
+              titleAr: item.title?.ar || '',
+              subtitleEn: item.subtitle?.en || '',
+              subtitleAr: item.subtitle?.ar || '',
+            }))
+          );
+        }
+      }).catch((err) => console.warn('Gallery items fetch failed:', err));
+    }).catch((err) => console.warn('Gallery section fetch failed:', err));
 
     return () => {
       active = false;
@@ -150,17 +167,23 @@ export default function GallerySection() {
   }, [N, slideWidth, step]);
 
   // Autoplay circular loop starts automatically on mount without user interaction
+  const handleNextRef = useRef(null);
+  useEffect(() => {
+    handleNextRef.current = handleNext;
+  });
+
+  // Autoplay circular loop starts automatically on mount without user interaction
   useEffect(() => {
     if (zoomedImage) return;
 
     const interval = setInterval(() => {
       if (!isDragging.current) {
-        handleNext();
+        handleNextRef.current();
       }
-    }, 3000);
+    }, 2500);
 
     return () => clearInterval(interval);
-  }, [zoomedImage, activeDot, slideWidth, wrapperWidth, N]);
+  }, [zoomedImage]);
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -214,8 +237,8 @@ export default function GallerySection() {
 
     gsap.to(trackRef.current, {
       x: nextOffset,
-      duration: 0.55,
-      ease: 'power3.out',
+      duration: 0.7,
+      ease: 'power2.inOut',
       onComplete: () => {
         currentIndexRef.current = nextIndex;
         if (currentIndexRef.current >= 2 * N) {
@@ -241,8 +264,8 @@ export default function GallerySection() {
 
     gsap.to(trackRef.current, {
       x: prevOffset,
-      duration: 0.55,
-      ease: 'power3.out',
+      duration: 0.7,
+      ease: 'power2.inOut',
       onComplete: () => {
         currentIndexRef.current = prevIndex;
         if (currentIndexRef.current <= 0) {
@@ -565,7 +588,7 @@ export default function GallerySection() {
                 onClick={(e) => handleSlideClick(e, img)}
                 sx={{
                   width: `${slideWidth}px`, 
-                  height: { xs: '200px', sm: '340px', md: '440px' }, 
+                  height: { xs: '340px', sm: '400px', md: '480px' }, 
                   mx: `${slideGap / 2}px`, 
                   borderRadius: 0, 
                   overflow: 'hidden',

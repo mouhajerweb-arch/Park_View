@@ -17,6 +17,7 @@ import MenuIcon from '@mui/icons-material/Menu';
 import CloseIcon from '@mui/icons-material/Close';
 import { useLanguage } from '../context/LanguageContext';
 import { useRegister } from '../context/RegisterContext';
+import { client, urlFor } from '../sanity/client';
 
 export default function Header() {
   const { lang, toggleLanguage, t } = useLanguage();
@@ -27,6 +28,22 @@ export default function Header() {
   const [scrolled, setScrolled] = useState(false);
   const [visible, setVisible] = useState(true);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [headerData, setHeaderData] = useState(null);
+
+  useEffect(() => {
+    let active = true;
+    client
+      .fetch(`*[_type == "headerSettings"][0]`)
+      .then((data) => {
+        if (active && data) {
+          setHeaderData(data);
+        }
+      })
+      .catch((err) => console.warn('Error fetching header settings:', err));
+    return () => {
+      active = false;
+    };
+  }, []);
 
   useEffect(() => {
     let lastScrollY = typeof window !== 'undefined' ? window.scrollY : 0;
@@ -89,7 +106,11 @@ export default function Header() {
     }
   };
 
-  const navLinks = [
+  // Compute dynamic settings from Sanity with local fallback
+  const navLinks = headerData?.navItems?.map((item) => ({
+    id: item.path ? item.path.replace('#', '') : 'hero',
+    label: item.label?.[lang] || item.label?.en || '',
+  })) || [
     { id: 'hero', label: t.header.nav.home },
     { id: 'about', label: t.header.nav.about },
     { id: 'location', label: t.header.nav.location },
@@ -97,6 +118,17 @@ export default function Header() {
     { id: 'gallery', label: t.header.nav.gallery },
     { id: 'contact', label: t.header.nav.contact },
   ];
+
+  const registerButtonLabel = headerData?.registerButton?.label?.[lang] || headerData?.registerButton?.label?.en || t.header.contact;
+  
+  const getButtonVariant = (style) => {
+    if (style === 'outlined') return 'outlined';
+    if (style === 'text') return 'text';
+    return 'contained';
+  };
+  const registerButtonVariant = getButtonVariant(headerData?.registerButton?.styleOption);
+  
+  const showFlag = headerData?.languageSwitch?.showFlag !== false;
 
   const isActive = (id) => {
     const targetPath = buildPath(id);
@@ -151,7 +183,11 @@ export default function Header() {
           >
             <Box
               component="img"
-              src="/images/park-view-full-logo.png"
+              src={
+                headerData?.logo
+                  ? urlFor(headerData.logo).url()
+                  : "/images/park-view-full-logo.png"
+              }
               alt="PARK VIEW Logo"
               sx={{
                 height: { xs: '20px', sm: '24px', md: '26px' },
@@ -219,7 +255,13 @@ export default function Header() {
                 },
               }}
             >
-              <LanguageIcon sx={{ fontSize: 16 }} />
+              {showFlag ? (
+                <span style={{ fontSize: '18px', lineHeight: 1 }}>
+                  {lang === 'en' ? '🇸🇾' : '🇬🇧'}
+                </span>
+              ) : (
+                <LanguageIcon sx={{ fontSize: 16 }} />
+              )}
             </IconButton>
 
             {/* Language Label for Screenreaders/Tooltips */}
@@ -241,28 +283,46 @@ export default function Header() {
 
             {/* Register Interest CTA Button */}
             <Button
-              variant="contained"
+              variant={registerButtonVariant}
               onClick={openRegister}
               sx={{
-                backgroundColor: '#3D362E',
-                color: '#FFFFFF',
                 borderRadius: '100px',
                 px: { sm: 3, md: 3.5 },
                 py: 1,
                 fontSize: '0.82rem',
-                fontWeight: 500,
+                fontWeight: 600,
                 fontFamily: '"Guise", sans-serif',
                 textTransform: 'none',
                 boxShadow: 'none',
                 transition: 'all 0.3s ease',
                 display: { xs: 'none', sm: 'block' },
-                '&:hover': {
-                  backgroundColor: '#1E1A16',
-                  boxShadow: 'none',
-                },
+                ...(registerButtonVariant === 'contained' ? {
+                  backgroundColor: '#3D362E',
+                  color: '#FFFFFF',
+                  '&:hover': {
+                    backgroundColor: '#1E1A16',
+                    boxShadow: 'none',
+                  },
+                } : registerButtonVariant === 'outlined' ? {
+                  borderColor: '#3D362E',
+                  color: '#3D362E',
+                  backgroundColor: 'transparent',
+                  '&:hover': {
+                    borderColor: '#1E1A16',
+                    backgroundColor: 'rgba(61, 54, 46, 0.05)',
+                    boxShadow: 'none',
+                  },
+                } : {
+                  color: '#3D362E',
+                  backgroundColor: 'transparent',
+                  '&:hover': {
+                    backgroundColor: 'rgba(61, 54, 46, 0.05)',
+                    boxShadow: 'none',
+                  },
+                }),
               }}
             >
-              {t.header.contact}
+              {registerButtonLabel}
             </Button>
 
             {/* Mobile Hamburger Icons */}
@@ -276,9 +336,17 @@ export default function Header() {
                   backgroundColor: '#F4F0EA',
                   color: '#121413',
                   display: { xs: 'flex', sm: 'none' },
+                  alignItems: 'center',
+                  justifyContent: 'center',
                 }}
               >
-                <LanguageIcon sx={{ fontSize: 15 }} />
+                {showFlag ? (
+                  <span style={{ fontSize: '15px', lineHeight: 1 }}>
+                    {lang === 'en' ? '🇸🇾' : '🇬🇧'}
+                  </span>
+                ) : (
+                  <LanguageIcon sx={{ fontSize: 15 }} />
+                )}
               </IconButton>
               <IconButton
                 onClick={() => setMobileMenuOpen(true)}

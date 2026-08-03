@@ -137,6 +137,17 @@ html[dir="rtl"] .side-tab-bar {
   overflow: hidden;
   padding: 80px 70px 60px 80px;
 }
+.brochure-section-prestige {
+  position: relative;
+  width: 100%;
+  min-height: 100vh;
+  background-color: #F6F2EC;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  overflow: hidden;
+  /* padding: 80px 70px 60px 80px; */
+}
 
 @media (max-width: 960px) {
   .brochure-section {
@@ -144,5 +155,8 @@ html[dir="rtl"] .side-tab-bar {
   }
   .side-tab-bar {
     display: none;
+  }
+  .brochure-section-prestige {
+    padding: 0px;
   }
 }

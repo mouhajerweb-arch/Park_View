@@ -57,6 +57,14 @@ export const structure: StructureResolver = (S) =>
                     .schemaType("locationPage")
                     .documentId("locationPage")
                     .title("Location Page")
+                ),
+              S.listItem()
+                .title("Gallery Page")
+                .child(
+                  S.document()
+                    .schemaType("galleryPage")
+                    .documentId("galleryPage")
+                    .title("Gallery Page")
                 )
             ])
         ),
@@ -69,7 +77,6 @@ export const structure: StructureResolver = (S) =>
 
       S.divider(),
 
-      // Site Settings Singletons
       S.listItem()
         .title("Site Settings")
         .icon(Settings)
@@ -78,6 +85,15 @@ export const structure: StructureResolver = (S) =>
             .schemaType("siteSettings")
             .documentId("siteSettings")
             .title("Site Settings")
+        ),
+      S.listItem()
+        .title("Header Settings")
+        .icon(Settings)
+        .child(
+          S.document()
+            .schemaType("headerSettings")
+            .documentId("headerSettings")
+            .title("Header Settings")
         ),
       S.listItem()
         .title("Footer Settings")
@@ -98,10 +114,12 @@ export const structure: StructureResolver = (S) =>
             "contactPage",
             "residencesPage",
             "locationPage",
+            "galleryPage",
             "faq",
             "galleryItem",
             "siteSettings",
-            "footerSettings"
+            "footerSettings",
+            "headerSettings"
           ].includes(listItem.getId() || "")
       ),
     ]);

@@ -1,5 +1,5 @@
 'use client';
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Box, Container, Typography, Grid2 as Grid } from '@mui/material';
 import PhoneIcon from '@mui/icons-material/Phone';
 import EmailIcon from '@mui/icons-material/Email';
@@ -9,9 +9,84 @@ import TwitterIcon from '@mui/icons-material/Twitter';
 import InstagramIcon from '@mui/icons-material/Instagram';
 import WhatsAppIcon from '@mui/icons-material/WhatsApp';
 import { useLanguage } from '../context/LanguageContext';
+import { client } from '../sanity/client';
+
+const getSocialIcon = (platform) => {
+  switch (platform) {
+    case 'facebook':
+      return <FacebookIcon sx={{ fontSize: 16 }} />;
+    case 'twitter':
+      return <TwitterIcon sx={{ fontSize: 16 }} />;
+    case 'instagram':
+      return <InstagramIcon sx={{ fontSize: 16 }} />;
+    case 'whatsapp':
+      return <WhatsAppIcon sx={{ fontSize: 16 }} />;
+    default:
+      return null;
+  }
+};
 
 export default function FooterSection() {
   const { lang } = useLanguage();
+  const [footerData, setFooterData] = useState(null);
+
+  useEffect(() => {
+    let active = true;
+    client
+      .fetch(`*[_type == "footerSettings" && _id == "footerSettings"][0]`)
+      .then((data) => {
+        if (active && data) {
+          setFooterData(data);
+        }
+      })
+      .catch((err) => console.warn('Error fetching footer settings:', err));
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  // Column 1
+  const col1Title = footerData?.col1Title?.[lang] || footerData?.col1Title?.en || (
+    lang === 'ar' ? 'معيار جديد للمعيشة' : 'A New Standard of Living'
+  );
+  const col1Text = footerData?.col1Text?.[lang] || footerData?.col1Text?.en || (
+    lang === 'ar'
+      ? 'مجمع سكني معاصر يوفر مزيجاً تحديداً بين الطبيعة الخلابة ووسائل الراحة الحديثة لحياة عائلية متكاملة.'
+      : 'A modern residential retreat combining breathtaking landscape gardens and premium comforts for balanced living.'
+  );
+  const socialLinks = footerData?.socialLinks || [
+    { platform: 'facebook', url: '#' },
+    { platform: 'twitter', url: '#' },
+    { platform: 'instagram', url: '#' },
+    { platform: 'whatsapp', url: 'https://wa.me/963997711226' }
+  ];
+
+  // Column 2
+  const col2Title = footerData?.col2Title?.[lang] || footerData?.col2Title?.en || (
+    lang === 'ar' ? 'العنوان' : 'The Address'
+  );
+  const col2Text = footerData?.col2Text?.[lang] || footerData?.col2Text?.en || (
+    lang === 'ar'
+      ? `وجهة سكنية بارزة في وادي يعفور. عنوان مخصص للنخبة، موقع متميز في يعفور خلف البيت السويسري مباشرة • ١٥ دقيقة إلى وسط دمشق * وصول مباشر إلى طريق دمشق - بيروت * متصل بأوتوستراد الديماس`
+      : `A landmark residential destination in Yaafour Valley. An Address Reserved for the Few Prime location in Yaafour Directly behind the Swiss House • 15 minutes to central Damascus * Direct access to Damascus–Beirut Road * Connected to Dimas Highway`
+  );
+
+  // Column 3
+  const col3Title = footerData?.col3Title?.[lang] || footerData?.col3Title?.en || (
+    lang === 'ar' ? 'اتصل بنا' : 'Contact Us'
+  );
+  const displayPhone = footerData?.phone || '+963 11 4068';
+  const displayEmail = footerData?.email || 'info@parkview.community';
+  const displayAddress = footerData?.address?.[lang] || footerData?.address?.en || (
+    lang === 'ar'
+      ? 'يعفور، دمشق، سوريا - خلف البيت السويسري'
+      : 'Yaafour, Damascus, Syria - Behind Swiss House'
+  );
+
+  // Bottom
+  const copyrightText = footerData?.copyrightText?.[lang] || footerData?.copyrightText?.en || (
+    lang === 'ar' ? 'بارك فيو يعفور. جميع الحقوق محفوظة.' : 'Park View Yaafour. All rights reserved.'
+  );
 
   return (
     <Box 
@@ -52,7 +127,7 @@ export default function FooterSection() {
                 textAlign: lang === 'ar' ? 'right' : 'left',
               }}
             >
-              {lang === 'ar' ? 'معيار جديد للمعيشة' : 'A New Standard of Living'}
+              {col1Title}
             </Typography>
             <Typography
               sx={{
@@ -65,18 +140,11 @@ export default function FooterSection() {
                 textAlign: lang === 'ar' ? 'right' : 'left',
               }}
             >
-              {lang === 'ar'
-                ? 'مجمع سكني معاصر يوفر مزيجاً تحديداً بين الطبيعة الخلابة ووسائل الراحة الحديثة لحياة عائلية متكاملة.'
-                : 'A modern residential retreat combining breathtaking landscape gardens and premium comforts for balanced living.'}
+              {col1Text}
             </Typography>
 
             <Box sx={{ display: 'flex', gap: 1.5, justifyContent: lang === 'ar' ? 'flex-end' : 'flex-start' }}>
-              {[
-                { icon: <FacebookIcon sx={{ fontSize: 16 }} />, url: '#' },
-                { icon: <TwitterIcon sx={{ fontSize: 16 }} />, url: '#' },
-                { icon: <InstagramIcon sx={{ fontSize: 16 }} />, url: '#' },
-                { icon: <WhatsAppIcon sx={{ fontSize: 16 }} />, url: 'https://wa.me/963997711226' }
-              ].map((social, idx) => (
+              {socialLinks.map((social, idx) => (
                 <Box
                   key={idx}
                   component="a"
@@ -98,7 +166,7 @@ export default function FooterSection() {
                     }
                   }}
                 >
-                  {social.icon}
+                  {getSocialIcon(social.platform)}
                 </Box>
               ))}
             </Box>
@@ -119,7 +187,7 @@ export default function FooterSection() {
                 textAlign: lang === 'ar' ? 'right' : 'left',
               }}
             >
-              {lang === 'ar' ? 'العنوان' : 'The Address'}
+              {col2Title}
             </Typography>
             <Typography
               sx={{
@@ -132,9 +200,7 @@ export default function FooterSection() {
                 textAlign: lang === 'ar' ? 'right' : 'left',
               }}
             >
-              {lang === 'ar'
-                ? `وجهة سكنية بارزة في وادي يعفور. عنوان مخصص للنخبة، موقع متميز في يعفور خلف البيت السويسري مباشرة • ١٥ دقيقة إلى وسط دمشق * وصول مباشر إلى طريق دمشق - بيروت * متصل بأوتوستراد الديماس`
-                : `A landmark residential destination in Yaafour Valley. An Address Reserved for the Few Prime location in Yaafour Directly behind the Swiss House • 15 minutes to central Damascus * Direct access to Damascus–Beirut Road * Connected to Dimas Highway`}
+              {col2Text}
             </Typography>
           </Grid>
 
@@ -153,14 +219,14 @@ export default function FooterSection() {
                 textAlign: lang === 'ar' ? 'right' : 'left',
               }}
             >
-              {lang === 'ar' ? 'اتصل بنا' : 'Contact Us'}
+              {col3Title}
             </Typography>
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.8 }}>
               {/* Phone detail */}
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, flexDirection: 'row' }}>
                 <PhoneIcon sx={{ fontSize: 16, color: '#7C7368' }} />
                 <Typography sx={{ fontFamily: '"Silka", sans-serif', fontSize: '0.88rem', color: '#6B6661', fontWeight: 300, dir: 'ltr' }}>
-                  +963 11 4068
+                  {displayPhone}
                 </Typography>
               </Box>
 
@@ -168,7 +234,7 @@ export default function FooterSection() {
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, flexDirection: 'row' }}>
                 <EmailIcon sx={{ fontSize: 16, color: '#7C7368' }} />
                 <Typography sx={{ fontFamily: '"Silka", sans-serif', fontSize: '0.88rem', color: '#6B6661', fontWeight: 300 }}>
-                  info@parkview.community
+                  {displayEmail}
                 </Typography>
               </Box>
 
@@ -176,9 +242,7 @@ export default function FooterSection() {
               <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 1.5, flexDirection: 'row' }}>
                 <LocationOnIcon sx={{ fontSize: 16, color: '#7C7368', mt: 0.2 }} />
                 <Typography sx={{ fontFamily: '"Silka", sans-serif', fontSize: '0.88rem', color: '#6B6661', fontWeight: 300, textAlign: lang === 'ar' ? 'right' : 'left' }}>
-                  {lang === 'ar' 
-                    ? 'يعفور، دمشق، سوريا - خلف البيت السويسري'
-                    : 'Yaafour, Damascus, Syria - Behind Swiss House'}
+                  {displayAddress}
                 </Typography>
               </Box>
             </Box>
@@ -198,7 +262,7 @@ export default function FooterSection() {
           }}
         >
           <Typography sx={{ fontFamily: '"Silka", sans-serif', fontSize: '0.78rem', color: 'rgba(43, 40, 37, 0.6)' }}>
-            &copy; {new Date().getFullYear()} {lang === 'ar' ? 'بارك فيو يعفور.' : 'Park View Yaafour.'} {lang === 'ar' ? 'جميع الحقوق محفوظة.' : 'All rights reserved.'}
+            &copy; {new Date().getFullYear()} {copyrightText}
           </Typography>
           <Box sx={{ display: 'flex', gap: 3, flexDirection: 'row' }}>
             <Typography component="a" href="#" sx={{ fontFamily: '"Silka", sans-serif', fontSize: '0.78rem', color: 'rgba(43, 40, 37, 0.6)', textDecoration: 'none', '&:hover': { color: '#2B2825' } }}>
