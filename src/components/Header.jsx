@@ -39,7 +39,7 @@ export default function Header() {
           setHeaderData(data);
         }
       })
-      .catch((err) => console.error('Error fetching header settings:', err));
+      .catch((err) => console.warn('Error fetching header settings:', err));
     return () => {
       active = false;
     };

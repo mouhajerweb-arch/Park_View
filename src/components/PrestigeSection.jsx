@@ -74,7 +74,7 @@ export default function PrestigeSection() {
     <Box
       id="prestige-intro"
       ref={sectionRef}
-      className="brochure-section"
+      className="brochure-section-prestige"
       sx={{
         width: '100%',
         minHeight: '100vh',

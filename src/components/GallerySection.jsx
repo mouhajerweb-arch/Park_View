@@ -80,8 +80,7 @@ export default function GallerySection() {
             subtitleAr: item.subtitle?.ar || '',
           }))
         );
-      }
-    }).catch((err) => console.error('Gallery items fetch failed:', err));
+    }).catch((err) => console.warn('Gallery items fetch failed:', err));
 
     // Fetch section descriptors
     client.fetch(`*[_type == "page" && _id == "home"][0].sections[_type == "gallerySection"][0]`).then((data) => {
@@ -102,7 +101,7 @@ export default function GallerySection() {
           }
         });
       }
-    }).catch((err) => console.error('Gallery section meta fetch failed:', err));
+    }).catch((err) => console.warn('Gallery section meta fetch failed:', err));
 
     return () => {
       active = false;

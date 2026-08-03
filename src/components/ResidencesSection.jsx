@@ -243,7 +243,7 @@ export default function ResidencesSection() {
 
           <Box
             component="img"
-            src="/images/cluster.png"
+            src="/images/cluster.jpg"
             alt="Park View Yaafour Garden Promenade"
             sx={{
               width: '100%',
