@@ -167,7 +167,7 @@ export default function GallerySection() {
   }, [N, slideWidth, step]);
 
   // Autoplay circular loop starts automatically on mount without user interaction
-  const handleNextRef = useRef(handleNext);
+  const handleNextRef = useRef(null);
   useEffect(() => {
     handleNextRef.current = handleNext;
   });
