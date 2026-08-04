@@ -35,6 +35,7 @@ import galleryItem from './galleryItem';
 import siteSettings from './siteSettings';
 import footerSettings from './footerSettings';
 import headerSettings from './headerSettings';
+import autoScrollPopupSettings from './autoScrollPopupSettings';
 
 export const schemaTypes = [
   // Objects
@@ -74,4 +75,5 @@ export const schemaTypes = [
   siteSettings,
   footerSettings,
   headerSettings,
+  autoScrollPopupSettings,
 ];
