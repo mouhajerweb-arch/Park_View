@@ -2,7 +2,6 @@
 import React, { useState, useEffect } from 'react';
 import Header from '../../components/Header';
 import SubpageHero from '../../components/SubpageHero';
-import SectionRenderer from '../../components/SectionRenderer';
 import ConnectivitySection from '../../components/ConnectivitySection';
 import LocationSecuritySection from '../../components/LocationSecuritySection';
 import LuxuryLivingSection from '../../components/LuxuryLivingSection';
@@ -45,15 +44,9 @@ export default function LocationPage() {
         subtitleAr={pageData?.heroSubtitle?.ar || "الموقع الجغرافي"}
       />
       
-      {pageData?.sections && pageData.sections.length > 0 ? (
-        <SectionRenderer sections={pageData.sections} />
-      ) : (
-        <>
-          <ConnectivitySection />
-          <LocationSecuritySection />
-          <LuxuryLivingSection />
-        </>
-      )}
+      <ConnectivitySection />
+      <LocationSecuritySection />
+      <LuxuryLivingSection />
       
       <FooterSection showForm={false} />
     </main>

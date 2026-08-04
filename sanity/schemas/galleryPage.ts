@@ -12,31 +12,5 @@ export default defineType({
     defineField({ name: 'heroTitle', title: 'Hero Banner Title', type: 'localizedString' }),
     defineField({ name: 'heroSubtitle', title: 'Hero Banner Subtitle', type: 'localizedString' }),
     defineField({ name: 'heroImage', title: 'Hero Cover Image', type: 'image', options: { hotspot: true } }),
-
-    defineField({
-      name: 'sections',
-      title: 'Page Sections',
-      type: 'array',
-      of: [
-        { type: 'heroSection' },
-        { type: 'prestigeSection' },
-        { type: 'developerProfileSection' },
-        { type: 'connectivitySection' },
-        { type: 'residencesSection' },
-        { type: 'floorPlansSection' },
-        { type: 'interiorsSection' },
-        { type: 'gallerySection' },
-        { type: 'amenitiesSection' },
-        { type: 'contactFormSection' },
-        { type: 'natureSerenitySection' },
-        { type: 'naturalHarmonySection' },
-        { type: 'curatedLivingSection' },
-        { type: 'locationSecuritySection' },
-        { type: 'luxuryLivingSection' },
-        { type: 'threeWaysSection' },
-        { type: 'holisticLivingSection' },
-        { type: 'faqSection' },
-      ]
-    })
   ],
 });

@@ -23,14 +23,6 @@ export default defineType({
         { type: 'gallerySection' },
         { type: 'amenitiesSection' },
         { type: 'contactFormSection' },
-        { type: 'natureSerenitySection' },
-        { type: 'naturalHarmonySection' },
-        { type: 'curatedLivingSection' },
-        { type: 'locationSecuritySection' },
-        { type: 'luxuryLivingSection' },
-        { type: 'threeWaysSection' },
-        { type: 'holisticLivingSection' },
-        { type: 'faqSection' },
       ]
     })
   ],
