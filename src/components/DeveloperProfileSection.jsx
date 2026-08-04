@@ -92,10 +92,10 @@ export default function DeveloperProfileSection() {
   const dp = t.developerProfile;
 
   const coreSectors = [
-    { title: dp.sector1Title, desc: dp.sector1Desc },
-    { title: dp.sector2Title, desc: dp.sector2Desc },
-    { title: dp.sector3Title, desc: dp.sector3Desc },
-    { title: dp.sector4Title, desc: dp.sector4Desc },
+    { title: dp.constructionTitle, desc: dp.constructionDesc },
+    { title: dp.realEstateTitle, desc: dp.realEstateDesc },
+    { title: dp.hospitalityTitle, desc: dp.hospitalityDesc },
+    { title: dp.retailTitle, desc: dp.retailDesc },
   ];
 
   const isAboutPage = pathname?.includes('/about');
