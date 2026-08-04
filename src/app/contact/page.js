@@ -31,6 +31,22 @@ export default function ContactPage() {
     };
   }, []);
 
+  useEffect(() => {
+    if (pageData?.seo) {
+      const metaTitle = pageData.seo.metaTitle?.[lang] || pageData.seo.metaTitle?.en;
+      if (metaTitle) {
+        document.title = metaTitle;
+      }
+      const metaDesc = pageData.seo.metaDescription?.[lang] || pageData.seo.metaDescription?.en;
+      if (metaDesc) {
+        const metaTag = document.querySelector('meta[name="description"]');
+        if (metaTag) {
+          metaTag.setAttribute('content', metaDesc);
+        }
+      }
+    }
+  }, [pageData, lang]);
+
   return (
     <main dir={lang === 'ar' ? 'rtl' : 'ltr'} style={{ overflowX: 'hidden' }}>
       <Header />
