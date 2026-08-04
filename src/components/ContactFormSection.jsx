@@ -8,6 +8,12 @@ import LocationOnIcon from '@mui/icons-material/LocationOn';
 import { useLanguage } from '../context/LanguageContext';
 import { client } from '../sanity/client';
 
+const getPhoneHref = (phone) => `tel:${String(phone || '').replace(/[^\d+]/g, '')}`;
+const getMapHref = (address, latitude, longitude) => {
+  const query = latitude && longitude ? `${latitude},${longitude}` : address || '';
+  return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`;
+};
+
 export default function ContactFormSection() {
   const { lang } = useLanguage();
   const [phone, setPhone] = useState('');
@@ -201,7 +207,21 @@ export default function ContactFormSection() {
               {/* Contact Icons Row */}
               <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3.5, width: '100%', mb: 6 }}>
                 {/* Phone */}
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2.5, flexDirection: 'row' }}>
+                <Box
+                  component="a"
+                  href={getPhoneHref(displayPhone)}
+                  sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 2.5,
+                    flexDirection: 'row',
+                    color: 'inherit',
+                    textDecoration: 'none',
+                    width: 'fit-content',
+                    '&:hover .contact-text, &:focus-visible .contact-text': { color: '#5A7365' },
+                    '&:focus-visible': { outline: '2px solid rgba(90, 115, 101, 0.35)', outlineOffset: 4 }
+                  }}
+                >
                   <Box
                     sx={{
                       width: 44,
@@ -216,12 +236,14 @@ export default function ContactFormSection() {
                     <PhoneIcon sx={{ fontSize: 18, color: '#5A7365' }} />
                   </Box>
                   <Typography
+                    className="contact-text"
                     sx={{
                       fontFamily: '"Silka", sans-serif',
                       fontSize: '0.94rem',
                       color: '#2B2825',
                       fontWeight: 400,
                       dir: 'ltr',
+                      transition: 'color 0.2s ease',
                     }}
                   >
                     {displayPhone}
@@ -229,7 +251,21 @@ export default function ContactFormSection() {
                 </Box>
 
                 {/* Email */}
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2.5, flexDirection: 'row' }}>
+                <Box
+                  component="a"
+                  href={`mailto:${displayEmail}`}
+                  sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 2.5,
+                    flexDirection: 'row',
+                    color: 'inherit',
+                    textDecoration: 'none',
+                    width: 'fit-content',
+                    '&:hover .contact-text, &:focus-visible .contact-text': { color: '#5A7365' },
+                    '&:focus-visible': { outline: '2px solid rgba(90, 115, 101, 0.35)', outlineOffset: 4 }
+                  }}
+                >
                   <Box
                     sx={{
                       width: 44,
@@ -244,11 +280,13 @@ export default function ContactFormSection() {
                     <EmailIcon sx={{ fontSize: 18, color: '#5A7365' }} />
                   </Box>
                   <Typography
+                    className="contact-text"
                     sx={{
                       fontFamily: '"Silka", sans-serif',
                       fontSize: '0.94rem',
                       color: '#2B2825',
                       fontWeight: 400,
+                      transition: 'color 0.2s ease',
                     }}
                   >
                     {displayEmail}
@@ -256,7 +294,23 @@ export default function ContactFormSection() {
                 </Box>
 
                 {/* Address */}
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2.5, flexDirection: 'row' }}>
+                <Box
+                  component="a"
+                  href={getMapHref(displayAddress, mapLatitude, mapLongitude)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 2.5,
+                    flexDirection: 'row',
+                    color: 'inherit',
+                    textDecoration: 'none',
+                    width: 'fit-content',
+                    '&:hover .contact-text, &:focus-visible .contact-text': { color: '#5A7365' },
+                    '&:focus-visible': { outline: '2px solid rgba(90, 115, 101, 0.35)', outlineOffset: 4 }
+                  }}
+                >
                   <Box
                     sx={{
                       width: 44,
@@ -271,12 +325,14 @@ export default function ContactFormSection() {
                     <LocationOnIcon sx={{ fontSize: 18, color: '#5A7365' }} />
                   </Box>
                   <Typography
+                    className="contact-text"
                     sx={{
                       fontFamily: '"Silka", sans-serif',
                       fontSize: '0.94rem',
                       color: '#2B2825',
                       fontWeight: 400,
                       textAlign: lang === 'ar' ? 'right' : 'left',
+                      transition: 'color 0.2s ease',
                     }}
                   >
                     {displayAddress}

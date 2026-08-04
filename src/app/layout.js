@@ -12,6 +12,22 @@ import { usePathname } from 'next/navigation';
 import { client } from '../sanity/client';
 import './globals.css';
 
+// Suppress the harmless React 19 tabIndex warning inside Sanity Studio to prevent Next.js dev overlay from popping up
+if (typeof window !== 'undefined' && process.env.NODE_ENV === 'development') {
+  const originalError = console.error;
+  console.error = (...args) => {
+    if (
+      args[0] &&
+      typeof args[0] === 'string' &&
+      (args[0].includes('Invalid prop `tabIndex` supplied to `React.Fragment`') ||
+       args[0].includes('React.Fragment can only have `key` and `children` props'))
+    ) {
+      return;
+    }
+    originalError(...args);
+  };
+}
+
 function LayoutContent({ children }) {
   const { lang, t } = useLanguage();
   const pathname = usePathname();
