@@ -8,7 +8,7 @@ import LearnMoreLink from './LearnMoreLink';
 
 gsap.registerPlugin(ScrollTrigger);
 
-export default function DeveloperProfileSection() {
+export default function DeveloperProfileSection({ sectionData }) {
   const { t, lang } = useLanguage();
 
   const sectionRef = useRef(null);
@@ -101,6 +101,11 @@ export default function DeveloperProfileSection() {
   }, []);
 
   const dp = t.developerProfile;
+  const displayTitle = sectionData?.title?.[lang] || sectionData?.title?.en || dp.title;
+  const displaySubtitle = sectionData?.subtitle?.[lang] || sectionData?.subtitle?.en || dp.subtitle;
+  const displayBio = sectionData?.bio?.[lang] || sectionData?.bio?.en || dp.description;
+  const displayQuote = sectionData?.quote?.[lang] || sectionData?.quote?.en || dp.quoteText;
+  const displayImage = sectionData?.profileImageUrl || "/images/prestige-tranquility.jpg";
 
   const coreSectors = [
     { title: dp.constructionTitle, desc: dp.constructionDesc },
@@ -172,7 +177,7 @@ export default function DeveloperProfileSection() {
               >
                 <Box
                   component="img"
-                  src="/images/prestige-tranquility.jpg"
+                  src={displayImage}
                   alt="Park View Residential Facade"
                   sx={{
                     width: '100%',
@@ -263,7 +268,7 @@ export default function DeveloperProfileSection() {
                   width: '100%',
                 }}
               >
-                {dp.subtitle}
+                {displaySubtitle}
               </Typography>
 
               {/* Founder Header Title */}
@@ -280,7 +285,7 @@ export default function DeveloperProfileSection() {
                   width: '100%',
                 }}
               >
-                {dp.title}
+                {displayTitle}
               </Typography>
 
               {/* Main Narrative Paragraph */}
@@ -298,7 +303,7 @@ export default function DeveloperProfileSection() {
                   width: '100%',
                 }}
               >
-                {dp.description}
+                {displayBio}
               </Typography>
 
               {/* Creative Vision Quote Block */}
@@ -330,7 +335,7 @@ export default function DeveloperProfileSection() {
                     width: '100%',
                   }}
                 >
-                  {dp.quoteText}
+                  {displayQuote}
                 </Typography>
                 <Typography
                   sx={{

@@ -18,7 +18,14 @@ export default function ContactPage() {
     client
       .fetch(`*[_type == "contactPage" && _id == "contactPage"][0] {
         ...,
-        "heroCoverUrl": heroImage.asset->url
+        "heroCoverUrl": heroImage.asset->url,
+        sections[] {
+          ...,
+          "resolvedAmenities": amenities[] {
+            ...,
+            "iconUrl": icon.asset->url
+          }
+        }
       }`)
       .then((data) => {
         if (active && data) {
@@ -47,6 +54,11 @@ export default function ContactPage() {
     }
   }, [pageData, lang]);
 
+  const getSection = (type) => pageData?.sections?.find((section) => section._type === type && section.enabled !== false);
+  const faqSection = getSection('faqSection');
+  const amenitiesSection = getSection('amenitiesSection');
+  const contactFormSection = getSection('contactFormSection');
+
   return (
     <main dir={lang === 'ar' ? 'rtl' : 'ltr'} style={{ overflowX: 'hidden' }}>
       <Header />
@@ -60,10 +72,10 @@ export default function ContactPage() {
         subtitleAr={pageData?.heroSubtitle?.ar || "اتصل بنا"}
       />
       
-      <FaqsSection />
-      <AmenitiesSection />
+      {(!pageData || faqSection) && <FaqsSection sectionData={faqSection} />}
+      {(!pageData || amenitiesSection) && <AmenitiesSection sectionData={amenitiesSection} />}
       
-      <ContactFormSection />
+      {(!pageData || contactFormSection) && <ContactFormSection sectionData={contactFormSection} />}
       
       <FooterSection />
     </main>

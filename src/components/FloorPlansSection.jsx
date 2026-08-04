@@ -8,11 +8,11 @@ import { client } from '../sanity/client';
 
 gsap.registerPlugin(ScrollTrigger);
 
-export default function FloorPlansSection() {
+export default function FloorPlansSection({ sectionData }) {
   const { t, lang } = useLanguage();
   const [activeBlock, setActiveBlock] = useState('magnoliaA'); // 'magnoliaA' | 'magnoliaB'
   const [activeUnit, setActiveUnit] = useState('7a-001'); // unit keys
-  const [sanityData, setSanityData] = useState(null);
+  const [sanityData, setSanityData] = useState(sectionData || null);
   
   const sectionRef = useRef(null);
   const headerRef = useRef(null);
@@ -20,6 +20,11 @@ export default function FloorPlansSection() {
 
   // Fetch floor plans data from Sanity
   useEffect(() => {
+    if (sectionData) {
+      setSanityData(sectionData);
+      return;
+    }
+
     let active = true;
     client
       .fetch(
@@ -43,7 +48,7 @@ export default function FloorPlansSection() {
     return () => {
       active = false;
     };
-  }, []);
+  }, [sectionData]);
 
   // Update active block when sanityData loads
   useEffect(() => {

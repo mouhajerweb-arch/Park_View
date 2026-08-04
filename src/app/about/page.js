@@ -20,7 +20,14 @@ export default function AboutPage() {
     client
       .fetch(`*[_type == "aboutPage" && _id == "aboutPage"][0] {
         ...,
-        "heroCoverUrl": heroImage.asset->url
+        "heroCoverUrl": heroImage.asset->url,
+        sections[] {
+          ...,
+          "mainImageUrl": mainImage.asset->url,
+          "profileImageUrl": profileImage.asset->url,
+          "smallImageUrl": smallImage.asset->url,
+          "largeImageUrl": largeImage.asset->url
+        }
       }`)
       .then((data) => {
         if (active && data) {
@@ -49,6 +56,13 @@ export default function AboutPage() {
     }
   }, [pageData, lang]);
 
+  const getSection = (type) => pageData?.sections?.find((section) => section._type === type && section.enabled !== false);
+  const prestigeSection = getSection('prestigeSection');
+  const developerProfileSection = getSection('developerProfileSection');
+  const natureSerenitySection = getSection('natureSerenitySection');
+  const naturalHarmonySection = getSection('naturalHarmonySection');
+  const curatedLivingSection = getSection('curatedLivingSection');
+
   return (
     <main dir={lang === 'ar' ? 'rtl' : 'ltr'} style={{ overflowX: 'hidden' }}>
       <Header />
@@ -62,11 +76,11 @@ export default function AboutPage() {
         subtitleAr={pageData?.heroSubtitle?.ar || "عن بارك فيو"}
       />
       
-      <PrestigeSection />
-      <DeveloperProfileSection />
-      <NatureSerenitySection />
-      <NaturalHarmonySection />
-      <CuratedLivingSection />
+      {(!pageData || prestigeSection) && <PrestigeSection sectionData={prestigeSection} />}
+      {(!pageData || developerProfileSection) && <DeveloperProfileSection sectionData={developerProfileSection} />}
+      {(!pageData || natureSerenitySection) && <NatureSerenitySection sectionData={natureSerenitySection} />}
+      {(!pageData || naturalHarmonySection) && <NaturalHarmonySection sectionData={naturalHarmonySection} />}
+      {(!pageData || curatedLivingSection) && <CuratedLivingSection sectionData={curatedLivingSection} />}
       
       {/* Hide bulky form inside footer */}
       <FooterSection showForm={false} />

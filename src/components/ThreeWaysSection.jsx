@@ -7,7 +7,7 @@ import { useLanguage } from '../context/LanguageContext';
 
 gsap.registerPlugin(ScrollTrigger);
 
-export default function ThreeWaysSection() {
+export default function ThreeWaysSection({ sectionData }) {
   const { t, lang } = useLanguage();
   const [activeTab, setActiveTab] = useState('orchid'); // 'orchid' | 'lavender' | 'magnolia'
   
@@ -72,20 +72,38 @@ export default function ThreeWaysSection() {
   }, [activeTab]);
 
   const tw = t.threeWays;
+  const cmsPhases = sectionData?.phases || [];
+  const getCmsPhase = (phaseId) => cmsPhases.find((phase) => phase.phaseId === phaseId);
+  const displaySubtitle = sectionData?.eyebrow?.[lang] || sectionData?.eyebrow?.en || tw.subtitle;
+  const displayTitle = sectionData?.title?.[lang] || sectionData?.title?.en || tw.title;
+  const displayParagraph = sectionData?.description?.[lang] || sectionData?.description?.en || tw.paragraph;
+  const displayImage = sectionData?.largeImageUrl || "/images/threeways-balcony.jpg";
   
   const getPhaseData = () => {
     switch (activeTab) {
       case 'orchid':
+        if (getCmsPhase('orchid')) {
+          const phase = getCmsPhase('orchid');
+          return { title: phase.title?.[lang] || phase.title?.en, desc: phase.desc?.[lang] || phase.desc?.en };
+        }
         return {
           title: tw.phases.orchidTitle,
           desc: tw.phases.orchidDesc,
         };
       case 'lavender':
+        if (getCmsPhase('lavender')) {
+          const phase = getCmsPhase('lavender');
+          return { title: phase.title?.[lang] || phase.title?.en, desc: phase.desc?.[lang] || phase.desc?.en };
+        }
         return {
           title: tw.phases.lavenderTitle,
           desc: tw.phases.lavenderDesc,
         };
       case 'magnolia':
+        if (getCmsPhase('magnolia')) {
+          const phase = getCmsPhase('magnolia');
+          return { title: phase.title?.[lang] || phase.title?.en, desc: phase.desc?.[lang] || phase.desc?.en };
+        }
         return {
           title: tw.phases.magnoliaTitle,
           desc: tw.phases.magnoliaDesc,
@@ -140,7 +158,7 @@ export default function ThreeWaysSection() {
               width: '100%',
             }}
           >
-            {tw.subtitle}
+            {displaySubtitle}
           </Typography>
 
           {/* Title */}
@@ -159,7 +177,7 @@ export default function ThreeWaysSection() {
               letterSpacing: '-0.01em',
             }}
           >
-            {tw.title}
+            {displayTitle}
           </Typography>
 
           {/* Paragraph */}
@@ -177,7 +195,7 @@ export default function ThreeWaysSection() {
               width: '100%',
             }}
           >
-            {tw.paragraph}
+            {displayParagraph}
           </Typography>
 
           {/* Tab buttons */}
@@ -220,9 +238,13 @@ export default function ThreeWaysSection() {
                   }
                 }}
               >
-                {tab === 'orchid' && t.threeWays.phases.orchidTitle.split(' ')[0]}
-                {tab === 'lavender' && t.threeWays.phases.lavenderTitle.split(' ')[0]}
-                {tab === 'magnolia' && t.threeWays.phases.magnoliaTitle.split(' ')[0]}
+                {getCmsPhase(tab)?.phaseName?.[lang] || getCmsPhase(tab)?.phaseName?.en || (
+                  <>
+                    {tab === 'orchid' && t.threeWays.phases.orchidTitle.split(' ')[0]}
+                    {tab === 'lavender' && t.threeWays.phases.lavenderTitle.split(' ')[0]}
+                    {tab === 'magnolia' && t.threeWays.phases.magnoliaTitle.split(' ')[0]}
+                  </>
+                )}
               </Box>
             ))}
           </Box>
@@ -320,7 +342,7 @@ export default function ThreeWaysSection() {
         <Box
           ref={largeImgRef}
           component="img"
-          src="/images/threeways-balcony.jpg"
+          src={displayImage}
           alt="Luxury residential cluster balcony detail"
           sx={{
             width: '100%',

@@ -7,7 +7,7 @@ import { useLanguage } from '../context/LanguageContext';
 
 gsap.registerPlugin(ScrollTrigger);
 
-export default function HolisticLivingSection() {
+export default function HolisticLivingSection({ sectionData }) {
   const { t, lang } = useLanguage();
   const [activePhase, setActivePhase] = useState('orchid'); // 'orchid' | 'magnolia'
   
@@ -68,10 +68,24 @@ export default function HolisticLivingSection() {
   }, [activePhase]);
 
   const hl = t.holisticLiving;
+  const cmsClusters = sectionData?.clusters || [];
+  const getCmsCluster = (clusterId) => cmsClusters.find((cluster) => cluster.clusterId === clusterId);
+  const getClusterData = (clusterId, fallback) => {
+    const cluster = getCmsCluster(clusterId);
+    return {
+      tabLabel: cluster?.clusterName?.[lang] || cluster?.clusterName?.en || fallback.tabLabel,
+      desc: cluster?.desc?.[lang] || cluster?.desc?.en || fallback.desc,
+      interiorImage: cluster?.interiorImageUrl,
+      flowerImage: cluster?.flowerImageUrl,
+    };
+  };
+  const displayTitle = sectionData?.title?.[lang] || sectionData?.title?.en || hl.title;
   
-  const activeData = activePhase === 'orchid' ? hl.phases.orchid : hl.phases.magnolia;
-  const largeImg = activePhase === 'orchid' ? '/images/holistic-orchid-interior.jpg' : '/images/holistic-magnolia-interior.jpg';
-  const smallImg = activePhase === 'orchid' ? '/images/holistic-orchid-flower.jpg' : '/images/holistic-magnolia-woman.jpg';
+  const orchidData = getClusterData('orchid', hl.phases.orchid);
+  const magnoliaData = getClusterData('magnolia', hl.phases.magnolia);
+  const activeData = activePhase === 'orchid' ? orchidData : magnoliaData;
+  const largeImg = activeData.interiorImage || (activePhase === 'orchid' ? '/images/holistic-orchid-interior.jpg' : '/images/holistic-magnolia-interior.jpg');
+  const smallImg = activeData.flowerImage || (activePhase === 'orchid' ? '/images/holistic-orchid-flower.jpg' : '/images/holistic-magnolia-woman.jpg');
 
   return (
     <Box
@@ -115,7 +129,7 @@ export default function HolisticLivingSection() {
                 width: '100%',
               }}
             >
-              {hl.title}
+              {displayTitle}
             </Typography>
           </Box>
           
@@ -132,8 +146,8 @@ export default function HolisticLivingSection() {
             }}
           >
             {[
-              { id: 'orchid', label: hl.phases.orchid.tabLabel },
-              { id: 'magnolia', label: hl.phases.magnolia.tabLabel }
+              { id: 'orchid', label: orchidData.tabLabel },
+              { id: 'magnolia', label: magnoliaData.tabLabel }
             ].map((tab) => (
               <Box
                 key={tab.id}

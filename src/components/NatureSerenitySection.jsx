@@ -7,7 +7,7 @@ import { useLanguage } from '../context/LanguageContext';
 
 gsap.registerPlugin(ScrollTrigger);
 
-export default function NatureSerenitySection() {
+export default function NatureSerenitySection({ sectionData }) {
   const { t, lang } = useLanguage();
   
   const sectionRef = useRef(null);
@@ -59,6 +59,12 @@ export default function NatureSerenitySection() {
     return () => ctx.revert();
   }, [lang]);
 
+  const displayTitle = sectionData?.title?.[lang] || sectionData?.title?.en || t.natureSerenity.title;
+  const displayParagraph1 = sectionData?.paragraph1?.[lang] || sectionData?.paragraph1?.en || t.natureSerenity.paragraph1;
+  const displayParagraph2 = sectionData?.paragraph2?.[lang] || sectionData?.paragraph2?.en || t.natureSerenity.paragraph2;
+  const displaySmallImage = sectionData?.smallImageUrl || "/images/nature-table-placeholder.jpg";
+  const displayLargeImage = sectionData?.largeImageUrl || "/images/nature-interior-placeholder.jpg";
+
   return (
     <Box
       id="nature-serenity"
@@ -104,7 +110,7 @@ export default function NatureSerenitySection() {
               letterSpacing: '-0.01em',
             }}
           >
-            {t.natureSerenity.title}
+            {displayTitle}
           </Typography>
 
           {/* Small Portrait Image */}
@@ -124,7 +130,7 @@ export default function NatureSerenitySection() {
           >
             <Box
               component="img"
-              src="/images/nature-table-placeholder.jpg"
+              src={displaySmallImage}
               alt="Nature table vignette"
               sx={{
                 width: '100%',
@@ -150,7 +156,7 @@ export default function NatureSerenitySection() {
               width: '100%',
             }}
           >
-            {t.natureSerenity.paragraph1}
+            {displayParagraph1}
           </Typography>
 
           {/* Paragraph 2 */}
@@ -167,7 +173,7 @@ export default function NatureSerenitySection() {
               width: '100%',
             }}
           >
-            {t.natureSerenity.paragraph2}
+            {displayParagraph2}
           </Typography>
         </Box>
       </Box>
@@ -188,7 +194,7 @@ export default function NatureSerenitySection() {
         <Box
           ref={largeImgRef}
           component="img"
-          src="/images/nature-interior-placeholder.jpg"
+          src={displayLargeImage}
           alt="Shaped by Nature luxury interior rendering"
           sx={{
             width: '100%',

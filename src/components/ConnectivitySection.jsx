@@ -58,16 +58,21 @@ const DestinationIcon = ({ type }) => {
   }
 };
 
-export default function ConnectivitySection() {
+export default function ConnectivitySection({ sectionData }) {
   const { t, lang } = useLanguage();
   const sectionRef = useRef(null);
   const mapContainerRef = useRef(null);
   const textRef = useRef(null);
   const listRef = useRef(null);
 
-  const [connectivityData, setConnectivityData] = useState(null);
+  const [connectivityData, setConnectivityData] = useState(sectionData || null);
 
   useEffect(() => {
+    if (sectionData) {
+      setConnectivityData(sectionData);
+      return;
+    }
+
     let active = true;
     client
       .fetch(`*[_type == "page" && _id == "home"][0].sections[_type == "connectivitySection"][0]`)
@@ -80,7 +85,7 @@ export default function ConnectivitySection() {
     return () => {
       active = false;
     };
-  }, []);
+  }, [sectionData]);
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -141,14 +146,21 @@ export default function ConnectivitySection() {
   const labels = t.connectivity.mapLabels;
 
   const mapImage = lang === 'ar'
-    ? (connectivityData?.mapImageAr ? urlFor(connectivityData.mapImageAr).url() : null)
-    : (connectivityData?.mapImageEn ? urlFor(connectivityData.mapImageEn).url() : null);
+    ? (connectivityData?.mapImageArUrl || (connectivityData?.mapImageAr ? urlFor(connectivityData.mapImageAr).url() : null))
+    : (connectivityData?.mapImageEnUrl || connectivityData?.mapImageUrl || (connectivityData?.mapImageEn ? urlFor(connectivityData.mapImageEn).url() : null));
 
   const desktopMapSrc = mapImage || "/images/map-clean-base.png";
   const mobileMapSrc = mapImage || "/images/map-mobile-rotated-labels.png";
 
   const displayTitle = connectivityData?.title?.[lang] || connectivityData?.title?.en || t.connectivity.title;
   const displaySubtitle = connectivityData?.description?.[lang] || connectivityData?.description?.en || t.connectivity.subtitle;
+  const displayDestinations = connectivityData?.destinations?.length
+    ? connectivityData.destinations.map((item) => ({
+        icon: item.icon,
+        time: item.time,
+        name: item.label?.[lang] || item.label?.en || '',
+      })).filter((item) => item.name || item.time)
+    : t.connectivity.destinations;
 
   return (
     <Box
@@ -262,7 +274,7 @@ export default function ConnectivitySection() {
           {/* Right Column: 2-Column Destination Grid */}
           <Box sx={{ width: { xs: '100%', md: '58.333333%' } }}>
             <Grid container spacing={{ xs: 1.5, sm: 2 }} ref={listRef}>
-              {t.connectivity.destinations.map((item, index) => (
+              {displayDestinations.map((item, index) => (
                 <Grid size={{ xs: 12, sm: 6 }} key={index}>
                   <Box
                     sx={{

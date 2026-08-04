@@ -8,7 +8,7 @@ import LearnMoreLink from './LearnMoreLink';
 
 gsap.registerPlugin(ScrollTrigger);
 
-export default function InteriorsSection() {
+export default function InteriorsSection({ sectionData }) {
   const { t, lang } = useLanguage();
   const [activeRoom, setActiveRoom] = useState('dining'); // 'dining' | 'bedroom' | 'bathroom'
   
@@ -69,6 +69,19 @@ export default function InteriorsSection() {
   }, [activeRoom]);
 
   const intr = t.interiors;
+  const tabs = sectionData?.tabs || [];
+  const getTab = (tabId) => tabs.find((tab) => tab.tabId === tabId);
+  const getTabLabel = (tabId, fallback) => {
+    const tab = getTab(tabId);
+    return tab?.tabName?.[lang] || tab?.tabName?.en || fallback;
+  };
+  const getTabDescription = (tabId, fallback) => {
+    const tab = getTab(tabId);
+    return tab?.tabDescription?.[lang] || tab?.tabDescription?.en || fallback;
+  };
+  const getTabImages = (tabId) => getTab(tabId)?.images || [];
+  const displaySubtitle = sectionData?.eyebrow?.[lang] || sectionData?.eyebrow?.en || intr.subtitle;
+  const displayTitle = sectionData?.title?.[lang] || sectionData?.title?.en || intr.title;
 
   return (
     <Box
@@ -109,7 +122,7 @@ export default function InteriorsSection() {
               width: '100%',
             }}
           >
-            {intr.subtitle}
+            {displaySubtitle}
           </Typography>
           <Typography
             variant="h2"
@@ -125,7 +138,7 @@ export default function InteriorsSection() {
               width: '100%',
             }}
           >
-            {intr.title}
+            {displayTitle}
           </Typography>
 
           {/* Interactive room tab pills */}
@@ -141,9 +154,9 @@ export default function InteriorsSection() {
             }}
           >
             {[
-              { id: 'dining', label: intr.tabs.dining },
-              { id: 'bedroom', label: intr.tabs.bedroom },
-              { id: 'bathroom', label: intr.tabs.bathroom }
+              { id: 'dining', label: getTabLabel('dining', intr.tabs.dining) },
+              { id: 'bedroom', label: getTabLabel('bedroom', intr.tabs.bedroom) },
+              { id: 'bathroom', label: getTabLabel('bathroom', intr.tabs.bathroom) }
             ].map((tab) => (
               <Box
                 key={tab.id}
@@ -193,7 +206,7 @@ export default function InteriorsSection() {
               >
                 <Box
                   component="img"
-                  src="/images/interior-dining.jpg"
+                  src={getTabImages('dining')?.[0]?.imageUrl || "/images/interior-dining.jpg"}
                   alt="Luxury Dining room layout rendering"
                   sx={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
                 />
@@ -212,7 +225,7 @@ export default function InteriorsSection() {
                   mr: lang === 'ar' ? '0' : 'auto'
                 }}
               >
-                {intr.diningDesc}
+                {getTabDescription('dining', intr.diningDesc)}
               </Typography>
             </Box>
           )}
@@ -231,7 +244,7 @@ export default function InteriorsSection() {
               >
                 <Box
                   component="img"
-                  src="/images/interior-bedroom.jpg"
+                  src={getTabImages('bedroom')?.[0]?.imageUrl || "/images/interior-bedroom.jpg"}
                   alt="Luxury Master Bedroom rendering"
                   sx={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
                 />
@@ -250,7 +263,7 @@ export default function InteriorsSection() {
                   mr: lang === 'ar' ? '0' : 'auto'
                 }}
               >
-                {intr.bedroomDesc}
+                {getTabDescription('bedroom', intr.bedroomDesc)}
               </Typography>
             </Box>
           )}
@@ -274,7 +287,7 @@ export default function InteriorsSection() {
                 >
                   <Box
                     component="img"
-                    src="/images/interior-closet.jpg"
+                    src={getTabImages('bathroom')?.[0]?.imageUrl || "/images/interior-closet.jpg"}
                     alt="Luxury walk in closet detail rendering"
                     sx={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
                   />
@@ -295,7 +308,7 @@ export default function InteriorsSection() {
                 >
                   <Box
                     component="img"
-                    src="/images/interior-bathroom.jpg"
+                    src={getTabImages('bathroom')?.[1]?.imageUrl || getTabImages('bathroom')?.[0]?.imageUrl || "/images/interior-bathroom.jpg"}
                     alt="Luxury bathroom travertine marble rendering"
                     sx={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
                   />
@@ -311,7 +324,7 @@ export default function InteriorsSection() {
                     textAlign: lang === 'ar' ? 'right' : 'justify'
                   }}
                 >
-                  {intr.bathroomDesc}
+                  {getTabDescription('bathroom', intr.bathroomDesc)}
                 </Typography>
               </Grid>
             </Grid>

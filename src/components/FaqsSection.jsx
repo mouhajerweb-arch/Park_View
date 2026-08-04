@@ -8,7 +8,7 @@ import { client } from '../sanity/client';
 
 gsap.registerPlugin(ScrollTrigger);
 
-export default function FaqsSection() {
+export default function FaqsSection({ sectionData }) {
   const { t, lang } = useLanguage();
   
   const sectionRef = useRef(null);
@@ -25,6 +25,8 @@ export default function FaqsSection() {
   };
 
   const fq = t.faqs;
+  const displaySubtitle = sectionData?.subtitle?.[lang] || sectionData?.subtitle?.en || fq.subtitle;
+  const displayTitle = sectionData?.title?.[lang] || sectionData?.title?.en || fq.title;
 
   // Fetch FAQs from Sanity on mount/lang change, falling back to local translations if empty
   useEffect(() => {
@@ -183,7 +185,7 @@ export default function FaqsSection() {
               width: '100%',
             }}
           >
-            {fq.subtitle}
+            {displaySubtitle}
           </Typography>
           <Typography
             variant="h2"
@@ -198,7 +200,7 @@ export default function FaqsSection() {
               letterSpacing: '-0.01em',
             }}
           >
-            {fq.title}
+            {displayTitle}
           </Typography>
         </Box>
 

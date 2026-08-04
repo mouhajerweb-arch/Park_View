@@ -23,6 +23,7 @@ export default function Home() {
   const { lang } = useLanguage();
   const { openRegister } = useRegister();
   const [seoData, setSeoData] = useState(null);
+  const [pageData, setPageData] = useState(null);
 
   useEffect(() => {
     let active = true;
@@ -31,6 +32,9 @@ export default function Home() {
       .then((data) => {
         if (active && data?.seo) {
           setSeoData(data.seo);
+        }
+        if (active && data) {
+          setPageData(data);
         }
       })
       .catch((err) => console.warn('Error fetching homepage SEO:', err));
@@ -55,6 +59,49 @@ export default function Home() {
     }
   }, [seoData, lang]);
 
+  useEffect(() => {
+    let active = true;
+    client
+      .fetch(`*[_type == "page" && _id == "home"][0] {
+        sections[] {
+          ...,
+          "mainImageUrl": mainImage.asset->url,
+          "profileImageUrl": profileImage.asset->url,
+          "smallImageUrl": smallImage.asset->url,
+          "largeImageUrl": largeImage.asset->url,
+          "mapImageUrl": mapImage.asset->url,
+          "mapImageEnUrl": mapImageEn.asset->url,
+          "mapImageArUrl": mapImageAr.asset->url,
+          tabs[] {
+            ...,
+            images[] {
+              ...,
+              "imageUrl": image.asset->url
+            }
+          },
+          "resolvedAmenities": amenities[] {
+            ...,
+            "iconUrl": icon.asset->url
+          },
+          "inlineImages": images[] {
+            ...,
+            "imageUrl": image.asset->url
+          }
+        }
+      }`)
+      .then((data) => {
+        if (active && data) {
+          setPageData(data);
+        }
+      })
+      .catch((err) => console.warn('Error fetching homepage sections:', err));
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  const getSection = (type) => pageData?.sections?.find((section) => section._type === type && section.enabled !== false);
+
   return (
     <main dir={lang === 'ar' ? 'rtl' : 'ltr'} style={{ overflowX: 'hidden' }}>
       <Header />
@@ -63,28 +110,28 @@ export default function Home() {
       <HeroSection />
       
       {/* 2. About Group: Prestige Intro & Founder Biography */}
-      <PrestigeSection />
-      <DeveloperProfileSection />
+      <PrestigeSection sectionData={getSection('prestigeSection')} />
+      <DeveloperProfileSection sectionData={getSection('developerProfileSection')} />
       {/* <LearnMoreLink path="/about" bg="#FFFFFF" /> */}
       
       {/* 3. Location Group: Connectivity Travel Times map */}
-      <ConnectivitySection />
+      <ConnectivitySection sectionData={getSection('connectivitySection')} />
       {/* <LearnMoreLink path="/location" bg="#F6F2EC" /> */}
       
       {/* 4. Residences Group: Masterplan, Blueprints & Room Interiors */}
-      <ResidencesSection />
+      <ResidencesSection sectionData={getSection('residencesSection')} />
       {/* <FloorPlansSection /> */}
-      <InteriorsSection />
+      <InteriorsSection sectionData={getSection('interiorsSection')} />
       {/* <LearnMoreLink path="/residences" bg="#FFFFFF" /> */}
 
       {/* 5. Gallery Group: Highlights grid with Lightbox */}
-      <GallerySection />
+      <GallerySection sectionData={getSection('gallerySection')} />
 
       {/* 6. Contact Group: Amenities list Convenience & Security details */}
-      <AmenitiesSection />
+      <AmenitiesSection sectionData={getSection('amenitiesSection')} />
       
       {/* 7. Registration Contact Map & Form (Directly shown, no top popup needed) */}
-      <ContactFormSection />
+      <ContactFormSection sectionData={getSection('contactFormSection')} />
       
       <FooterSection />
       
