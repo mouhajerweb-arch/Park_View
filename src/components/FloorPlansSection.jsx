@@ -1,9 +1,10 @@
 'use client';
 import React, { useState, useEffect, useRef } from 'react';
-import { Box, Container, Grid2 as Grid, Typography, Button } from '@mui/material';
+import { Box, Container, Typography, Button } from '@mui/material';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useLanguage } from '../context/LanguageContext';
+import { client } from '../sanity/client';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -11,19 +12,63 @@ export default function FloorPlansSection() {
   const { t, lang } = useLanguage();
   const [activeBlock, setActiveBlock] = useState('magnoliaA'); // 'magnoliaA' | 'magnoliaB'
   const [activeUnit, setActiveUnit] = useState('7a-001'); // unit keys
+  const [sanityData, setSanityData] = useState(null);
   
   const sectionRef = useRef(null);
   const headerRef = useRef(null);
   const contentRef = useRef(null);
 
+  // Fetch floor plans data from Sanity
+  useEffect(() => {
+    let active = true;
+    client
+      .fetch(
+        `*[_type == "residencesPage" && _id == "residencesPage"][0].sections[_type == "floorPlansSection"][0] {
+          ...,
+          blocks[] {
+            ...,
+            units[] {
+              ...,
+              "imageUrl": image.asset->url
+            }
+          }
+        }`
+      )
+      .then((data) => {
+        if (active && data) {
+          setSanityData(data);
+        }
+      })
+      .catch((err) => console.warn('Error fetching floor plans from Sanity:', err));
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  // Update active block when sanityData loads
+  useEffect(() => {
+    if (sanityData?.blocks?.length > 0) {
+      const firstBlockId = sanityData.blocks[0].blockId;
+      setActiveBlock(firstBlockId);
+    }
+  }, [sanityData]);
+
   // Set default active unit when active block changes
   useEffect(() => {
+    if (sanityData?.blocks?.length > 0) {
+      const blockObj = sanityData.blocks.find(b => b.blockId === activeBlock);
+      if (blockObj?.units?.length > 0) {
+        setActiveUnit(blockObj.units[0].unitId);
+        return;
+      }
+    }
+    // Fallback to static keys
     if (activeBlock === 'magnoliaA') {
       setActiveUnit('7a-001');
     } else {
       setActiveUnit('7b-001');
     }
-  }, [activeBlock]);
+  }, [activeBlock, sanityData]);
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -78,17 +123,61 @@ export default function FloorPlansSection() {
   }, [activeUnit]);
 
   const fp = t.floorPlans;
-  const unitList = activeBlock === 'magnoliaA' 
-    ? ['7a-001', '7a-101', '7a-102', '7a-x01']
-    : ['7b-001', '7b-101', '7b-102', '7b-204', '7b-x01', '7b-x02'];
 
-  const currentUnitData = fp.units[activeUnit] || fp.units['7a-001'];
+  // Compute blocks list dynamically
+  const blocksList = sanityData?.blocks?.map(b => ({
+    id: b.blockId,
+    label: b.blockName?.[lang] || b.blockName?.en || ''
+  })) || [
+    { id: 'magnoliaA', label: fp.blocks.magnoliaA },
+    { id: 'magnoliaB', label: fp.blocks.magnoliaB }
+  ];
+
+  // Compute unit list dynamically
+  const activeBlockObj = sanityData?.blocks?.find(b => b.blockId === activeBlock);
+  const unitList = activeBlockObj?.units?.map(u => u.unitId) || (
+    activeBlock === 'magnoliaA' 
+      ? ['7a-001', '7a-101', '7a-102', '7a-x01']
+      : ['7b-001', '7b-101', '7b-102', '7b-204', '7b-x01', '7b-x02']
+  );
+
+  // Compute current unit specifications dynamically
+  let currentUnitData = null;
+  if (sanityData?.blocks) {
+    for (const block of sanityData.blocks) {
+      const found = block.units?.find(u => u.unitId === activeUnit);
+      if (found) {
+        currentUnitData = {
+          name: found.name?.[lang] || found.name?.en || '',
+          size: found.size?.[lang] || found.size?.en || '',
+          orientation: found.orientation?.[lang] || found.orientation?.en || '',
+          beds: found.beds?.[lang] || found.beds?.en || '',
+          bullets: found.bullets?.map(b => b?.[lang] || b?.en || '') || [],
+          imageUrl: found.imageUrl
+        };
+        break;
+      }
+    }
+  }
+
+  // Fallback to local translations if no Sanity data
+  if (!currentUnitData) {
+    const localUnit = fp.units[activeUnit] || fp.units['7a-001'];
+    currentUnitData = {
+      name: localUnit.name,
+      size: localUnit.size,
+      orientation: localUnit.orientation,
+      beds: localUnit.beds,
+      bullets: localUnit.bullets || [],
+      imageUrl: `/images/floorplan-${activeUnit}.png`
+    };
+  }
   
   // Floorplan image file mappings
-  const floorplanImg = `/images/floorplan-${activeUnit}.png`;
+  const floorplanImg = currentUnitData.imageUrl || `/images/floorplan-${activeUnit}.png`;
 
   const handleRequestPlans = () => {
-    const WHATSAPP_NUMBER = '963997711226';
+    const WHATSAPP_NUMBER = sanityData?.whatsappNumber || '963997711226';
     const unitName = currentUnitData.name;
     const message = lang === 'ar'
       ? `مرحباً، أود الحصول على مخططات الطوابق والكتيب الخاص بـ ${unitName} في مشروع بارك فيو يعفور.`
@@ -136,7 +225,7 @@ export default function FloorPlansSection() {
               width: '100%',
             }}
           >
-            {fp.subtitle}
+            {sanityData?.eyebrow?.[lang] || sanityData?.eyebrow?.en || fp.subtitle}
           </Typography>
           <Typography
             variant="h2"
@@ -152,7 +241,7 @@ export default function FloorPlansSection() {
               letterSpacing: '-0.01em',
             }}
           >
-            {fp.title}
+            {sanityData?.title?.[lang] || sanityData?.title?.en || fp.title}
           </Typography>
 
           {/* Block toggles (Magnolia A / Magnolia B) */}
@@ -167,10 +256,7 @@ export default function FloorPlansSection() {
               flexDirection: 'row',
             }}
           >
-            {[
-              { id: 'magnoliaA', label: fp.blocks.magnoliaA },
-              { id: 'magnoliaB', label: fp.blocks.magnoliaB }
-            ].map((block) => (
+            {blocksList.map((block) => (
               <Box
                 key={block.id}
                 onClick={() => setActiveBlock(block.id)}
@@ -206,28 +292,40 @@ export default function FloorPlansSection() {
               flexDirection: 'row',
             }}
           >
-            {unitList.map((unitKey) => (
-              <Box
-                key={unitKey}
-                onClick={() => setActiveUnit(unitKey)}
-                sx={{
-                  fontFamily: '"Silka", sans-serif',
-                  fontWeight: activeUnit === unitKey ? 600 : 400,
-                  fontSize: '0.88rem',
-                  color: activeUnit === unitKey ? '#3D362E' : '#7C7368',
-                  backgroundColor: activeUnit === unitKey ? '#FFFFFF' : 'transparent',
-                  border: activeUnit === unitKey ? '1px solid rgba(61, 54, 46, 0.15)' : '1px solid transparent',
-                  borderRadius: '30px',
-                  py: 0.6,
-                  px: 2.2,
-                  cursor: 'pointer',
-                  transition: 'all 0.3s ease',
-                  boxShadow: activeUnit === unitKey ? '0 4px 12px rgba(61, 54, 46, 0.05)' : 'none',
-                }}
-              >
-                {fp.units[unitKey]?.name.split(' ').slice(0, 2).join(' ')}
-              </Box>
-            ))}
+            {unitList.map((unitKey) => {
+              const uName = (() => {
+                if (sanityData?.blocks) {
+                  for (const block of sanityData.blocks) {
+                    const found = block.units?.find(u => u.unitId === unitKey);
+                    if (found) return found.name?.[lang] || found.name?.en || '';
+                  }
+                }
+                return fp.units[unitKey]?.name || '';
+              })();
+
+              return (
+                <Box
+                  key={unitKey}
+                  onClick={() => setActiveUnit(unitKey)}
+                  sx={{
+                    fontFamily: '"Silka", sans-serif',
+                    fontWeight: activeUnit === unitKey ? 600 : 400,
+                    fontSize: '0.88rem',
+                    color: activeUnit === unitKey ? '#3D362E' : '#7C7368',
+                    backgroundColor: activeUnit === unitKey ? '#FFFFFF' : 'transparent',
+                    border: activeUnit === unitKey ? '1px solid rgba(61, 54, 46, 0.15)' : '1px solid transparent',
+                    borderRadius: '30px',
+                    py: 0.6,
+                    px: 2.2,
+                    cursor: 'pointer',
+                    transition: 'all 0.3s ease',
+                    boxShadow: activeUnit === unitKey ? '0 4px 12px rgba(61, 54, 46, 0.05)' : 'none',
+                  }}
+                >
+                  {uName.split(' ').slice(0, 2).join(' ')}
+                </Box>
+              );
+            })}
           </Box>
         </Box>
 
@@ -238,12 +336,12 @@ export default function FloorPlansSection() {
             display: 'flex',
             flexDirection: { xs: 'column', md: 'row' },
             gap: { xs: 5, md: 6, lg: 8 },
-            alignItems: 'center',
+            alignItems: 'flex-start', // Vertically aligned to top
             width: '100%'
           }}
         >
           {/* Left Column: Specifications & Rooms */}
-          <Box sx={{ width: { xs: '100%', md: '41.666667%' } }}>
+          <Box sx={{ width: { xs: '100%', md: '41.666667%' }, pt: { md: 2 } }}>
             <Box sx={{ textAlign: 'start', width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
               
               {/* Unit Name Heading */}
@@ -285,7 +383,7 @@ export default function FloorPlansSection() {
                       mb: 0.5
                     }}
                   >
-                    {fp.specs.area}
+                    {sanityData?.areaLabel?.[lang] || sanityData?.areaLabel?.en || fp.specs.area}
                   </Typography>
                   <Typography
                     sx={{
@@ -311,7 +409,7 @@ export default function FloorPlansSection() {
                       mb: 0.5
                     }}
                   >
-                    {fp.specs.orientation}
+                    {sanityData?.orientationLabel?.[lang] || sanityData?.orientationLabel?.en || fp.specs.orientation}
                   </Typography>
                   <Typography
                     sx={{
@@ -337,7 +435,7 @@ export default function FloorPlansSection() {
                       mb: 0.5
                     }}
                   >
-                    {fp.specs.bedrooms}
+                    {sanityData?.bedroomsLabel?.[lang] || sanityData?.bedroomsLabel?.en || fp.specs.bedrooms}
                   </Typography>
                   <Typography
                     sx={{
@@ -506,7 +604,7 @@ export default function FloorPlansSection() {
                     mb: 1
                   }}
                 >
-                  {lang === 'ar' ? 'مخططات خاصة' : 'Private Layouts'}
+                  {sanityData?.requestSubtitle?.[lang] || sanityData?.requestSubtitle?.en || (lang === 'ar' ? 'مخططات خاصة' : 'Private Layouts')}
                 </Typography>
 
                 {/* Heading */}
@@ -521,7 +619,7 @@ export default function FloorPlansSection() {
                     textTransform: 'uppercase'
                   }}
                 >
-                  {lang === 'ar' ? 'طلب مخطط الطابق' : 'Request Floor Plan'}
+                  {sanityData?.requestTitle?.[lang] || sanityData?.requestTitle?.en || (lang === 'ar' ? 'طلب مخطط الطابق' : 'Request Floor Plan')}
                 </Typography>
 
                 {/* Details */}
@@ -536,9 +634,9 @@ export default function FloorPlansSection() {
                     fontWeight: 300
                   }}
                 >
-                  {lang === 'ar'
+                  {sanityData?.requestDescription?.[lang] || sanityData?.requestDescription?.en || (lang === 'ar'
                     ? 'يرجى الاتصال بفريق المبيعات لدينا عبر واتساب لتلقي مخطط الطابق التفصيلي الكامل بصيغة PDF.'
-                    : 'Please contact our prestige sales team directly on WhatsApp to receive the complete floor plan brochures.'}
+                    : 'Please contact our prestige sales team directly on WhatsApp to receive the complete floor plan brochures.')}
                 </Typography>
 
                 {/* CTA Button */}
@@ -569,7 +667,7 @@ export default function FloorPlansSection() {
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" />
                   </svg>
-                  {lang === 'ar' ? 'طلب المخطط عبر واتساب ↗' : 'Request via WhatsApp ↗'}
+                  {sanityData?.requestButtonText?.[lang] || sanityData?.requestButtonText?.en || (lang === 'ar' ? 'طلب المخطط عبر واتساب ↗' : 'Request via WhatsApp ↗')}
                 </Button>
               </Box>
             </Box>

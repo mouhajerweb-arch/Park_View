@@ -221,7 +221,14 @@ async function seedMissingSections() {
     const contactDoc = await client.fetch('*[_type == "contactPage" && _id == "contactPage"][0]');
     if (contactDoc) {
       const existingSections = contactDoc.sections || [];
-      const filtered = existingSections.filter(s => !['amenitiesSection', 'contactFormSection'].includes(s._type));
+      const existingFaq = existingSections.find(s => s._type === 'faqSection') || {
+        _key: 'cnt_faq_header',
+        _type: 'faqSection',
+        enabled: true,
+        anchor: 'faqs',
+        title: { en: 'Frequently Asked Questions', ar: 'الأسئلة الشائعة' },
+        subtitle: { en: 'FAQS', ar: 'الأسئلة الشائعة' }
+      };
 
       const newAmenitiesSection = {
         _key: 'cnt_amenities',
@@ -251,7 +258,7 @@ async function seedMissingSections() {
 
       await client
         .patch('contactPage')
-        .set({ sections: [...existingSections.filter(s => s._type === 'faqSection'), newAmenitiesSection, newContactFormSection, ...filtered] })
+        .set({ sections: [existingFaq, newAmenitiesSection, newContactFormSection] })
         .commit();
       console.log('✓ Successfully seeded amenitiesSection and contactFormSection in contactPage.');
     }
