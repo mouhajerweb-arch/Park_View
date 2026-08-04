@@ -191,11 +191,11 @@ export const translations = {
       tabs: {
         dining: 'Dining Area',
         bedroom: 'Master Bedroom',
-        bathroom: 'Soft Opulence Bath'
+        bathroom: 'Living Area'
       },
       diningDesc: 'Contemporary architecture is infused with the timeless grace of Mediterranean living—whitewashed facades, warm terracotta tones, and verdant landscaping come together in quiet harmony. Textured materials, soft curves, and sun-washed forms create serene, breathable spaces that feel both grounded in nature and warm.',
       bedroomDesc: 'Elegant private quarters where contemporary architecture meets soft warmth. Generous glazing frames skyline and landscape views, while refined materials and soft lighting establish an atmosphere of serene comfort and relaxation.',
-      bathroomDesc: 'Clean lines and open layouts are paired with premium finishes to create interiors that feel both sophisticated and welcoming. A soft, neutral palette of warm beiges and natural tones enhances light and flow.'
+      bathroomDesc: 'Open living areas are designed for relaxed gatherings and everyday comfort, blending generous proportions, warm natural tones, and refined finishes to create a welcoming social heart within the home.'
     },
     floorPlans: {
       pageNo: '30',
@@ -670,11 +670,11 @@ export const translations = {
       tabs: {
         dining: 'منطقة الطعام',
         bedroom: 'غرفة النوم الرئيسية',
-        bathroom: 'الحمام الفاخر'
+        bathroom: 'منطقة المعيشة'
       },
       diningDesc: 'تمتزج العمارة المعاصرة بالجمال الخالد لنمط العيش المتوسطي - واجهات بيضاء ناصعة، نغمات طينية دافئة، وحدائق خضراء مورقة تتناغم في سكينة تامة. تجتمع المواد المزخرفة والمنحنيات الناعمة والأشكال المشمسة لخلق مساحات هادئة ومتنفس يشع بالدفء والترابط مع الطبيعة.',
       bedroomDesc: 'أجنحة خاصة أنيقة تلتقي فيها العمارة المعاصرة بالدفء اللطيف. تؤطر الواجهات الزجاجية الشاسعة إطلالات خلابة على الأفق والمسطحات الخضراء، بينما توفر المواد المختارة بعناية والإضاءة الهادئة ملاذاً للنوم المريح والاسترخاء التام.',
-      bathroomDesc: 'تتلاقى الخطوط الواضحة والمخططات المفتوحة مع تشطيبات فاخرة لخلق مساحات داخلية تشع بالرقي والترحاب. تعزز درجات الألوان الطبيعية الدافئة وتدرجات البيج تدفق الضوء والرحابة في المكان.'
+      bathroomDesc: 'صُممت مناطق المعيشة المفتوحة لتجمع بين الراحة اليومية واستقبال العائلة والضيوف، مع مساحات رحبة وألوان طبيعية دافئة وتشطيبات راقية تمنح المنزل قلباً اجتماعياً مرحباً.'
     },
     floorPlans: {
       pageNo: '30',

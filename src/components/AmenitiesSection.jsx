@@ -26,16 +26,21 @@ const amenitiesList = [
   { nameEn: 'On site Health Clinic', nameAr: 'عيادة صحية بالموقع', iconSrc: '/icons/onsite health clinic.png' }
 ];
 
-export default function AmenitiesSection() {
+export default function AmenitiesSection({ sectionData }) {
   const { lang } = useLanguage();
   
   const sectionRef = useRef(null);
   const headerRef = useRef(null);
   const gridRef = useRef(null);
 
-  const [amenitiesData, setAmenitiesData] = useState(null);
+  const [amenitiesData, setAmenitiesData] = useState(sectionData || null);
 
   useEffect(() => {
+    if (sectionData) {
+      setAmenitiesData(sectionData);
+      return;
+    }
+
     let active = true;
     client
       .fetch(`*[_type == "page" && _id == "home"][0].sections[_type == "amenitiesSection"][0] {
@@ -54,7 +59,7 @@ export default function AmenitiesSection() {
     return () => {
       active = false;
     };
-  }, []);
+  }, [sectionData]);
 
   useEffect(() => {
     const ctx = gsap.context(() => {

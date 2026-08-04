@@ -7,7 +7,7 @@ import { useLanguage } from '../context/LanguageContext';
 
 gsap.registerPlugin(ScrollTrigger);
 
-export default function PrestigeSection() {
+export default function PrestigeSection({ sectionData }) {
   const { t, lang } = useLanguage();
 
   const sectionRef = useRef(null);
@@ -70,6 +70,10 @@ export default function PrestigeSection() {
     return () => ctx.revert();
   }, [lang]);
 
+  const displayTitle = sectionData?.title?.[lang] || sectionData?.title?.en;
+  const displayBody = sectionData?.body?.[lang] || sectionData?.body?.en || t.prestige.body;
+  const displayImage = sectionData?.mainImageUrl || "/images/prestige-tranquility.jpg";
+
   return (
     <Box
       id="prestige-intro"
@@ -112,11 +116,15 @@ export default function PrestigeSection() {
               width: '100%',
             }}
           >
-            {t.prestige.headingLine1}
-            <br />
-            {t.prestige.headingLine2}
-            <br />
-            {t.prestige.headingLine3}
+            {displayTitle || (
+              <>
+                {t.prestige.headingLine1}
+                <br />
+                {t.prestige.headingLine2}
+                <br />
+                {t.prestige.headingLine3}
+              </>
+            )}
           </Typography>
 
           <Typography
@@ -132,7 +140,7 @@ export default function PrestigeSection() {
               width: '100%',
             }}
           >
-            {t.prestige.body}
+            {displayBody}
           </Typography>
         </Box>
       </Box>
@@ -152,7 +160,7 @@ export default function PrestigeSection() {
       >
         <Box
           component="img"
-          src="/images/prestige-tranquility.jpg"
+          src={displayImage}
           alt="Park View Yaafour Garden Promenade"
           sx={{
             width: '100%',

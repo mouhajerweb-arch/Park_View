@@ -7,7 +7,7 @@ import { useLanguage } from '../context/LanguageContext';
 
 gsap.registerPlugin(ScrollTrigger);
 
-export default function CuratedLivingSection() {
+export default function CuratedLivingSection({ sectionData }) {
   const { t, lang } = useLanguage();
   
   const sectionRef = useRef(null);
@@ -59,6 +59,10 @@ export default function CuratedLivingSection() {
   }, [lang]);
 
   const cl = t.curatedLiving;
+  const displayTitle = sectionData?.title?.[lang] || sectionData?.title?.en || cl.title;
+  const displayParagraph1 = sectionData?.paragraph1?.[lang] || sectionData?.paragraph1?.en || cl.paragraph1;
+  const displayParagraph2 = sectionData?.paragraph2?.[lang] || sectionData?.paragraph2?.en || cl.paragraph2;
+  const displayImage = sectionData?.largeImageUrl || "/images/curated-garden.jpg";
 
   return (
     <Box
@@ -105,7 +109,7 @@ export default function CuratedLivingSection() {
               letterSpacing: '-0.01em',
             }}
           >
-            {cl.title}
+            {displayTitle}
           </Typography>
 
           {/* Paragraph 1 */}
@@ -123,7 +127,7 @@ export default function CuratedLivingSection() {
               width: '100%',
             }}
           >
-            {cl.paragraph1}
+            {displayParagraph1}
           </Typography>
 
           {/* Paragraph 2 */}
@@ -140,7 +144,7 @@ export default function CuratedLivingSection() {
               width: '100%',
             }}
           >
-            {cl.paragraph2}
+            {displayParagraph2}
           </Typography>
         </Box>
       </Box>
@@ -161,7 +165,7 @@ export default function CuratedLivingSection() {
         <Box
           ref={largeImgRef}
           component="img"
-          src="/images/curated-garden.jpg"
+          src={displayImage}
           alt="Curated living resident promenade garden render"
           sx={{
             width: '100%',

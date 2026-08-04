@@ -20,7 +20,7 @@ const galleryImages = [
   { src: '/images/harmony-pool.jpg', titleEn: 'Sunset Reflections', titleAr: 'انعكاسات الغروب', subtitleEn: 'Evening ambient pool lighting', subtitleAr: 'إضاءة المساء الهادئة للمسبح السكني' }
 ];
 
-export default function GallerySection() {
+export default function GallerySection({ sectionData }) {
   const { lang } = useLanguage();
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [activeDot, setActiveDot] = useState(0); 
@@ -66,6 +66,30 @@ export default function GallerySection() {
   // Fetch gallery list and page section metadata from Sanity
   useEffect(() => {
     let active = true;
+
+    if (sectionData) {
+      setSectionMeta({
+        eyebrow: sectionData.eyebrow || sectionMeta.eyebrow,
+        title: sectionData.title || sectionMeta.title,
+        description: sectionData.description || sectionMeta.description,
+      });
+
+      if (sectionData.inlineImages && sectionData.inlineImages.length > 0) {
+        setGalleryList(
+          sectionData.inlineImages.map((item) => ({
+            src: item.imageUrl || (item.image ? urlFor(item.image).url() : ''),
+            titleEn: item.title?.en || '',
+            titleAr: item.title?.ar || '',
+            subtitleEn: item.subtitle?.en || '',
+            subtitleAr: item.subtitle?.ar || '',
+          }))
+        );
+      }
+
+      return () => {
+        active = false;
+      };
+    }
 
     // Fetch section data (including inline carousel images)
     client.fetch(`*[_type == "page" && _id == "home"][0].sections[_type == "gallerySection"][0] {
@@ -124,7 +148,7 @@ export default function GallerySection() {
     return () => {
       active = false;
     };
-  }, []);
+  }, [sectionData]);
 
   // Measure container and dynamically set slide widths for LTR/RTL peaks balance
   useEffect(() => {

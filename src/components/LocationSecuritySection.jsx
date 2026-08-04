@@ -23,7 +23,7 @@ const CheckIcon = () => (
   </svg>
 );
 
-export default function LocationSecuritySection() {
+export default function LocationSecuritySection({ sectionData }) {
   const { t, lang } = useLanguage();
   
   const sectionRef = useRef(null);
@@ -122,6 +122,18 @@ export default function LocationSecuritySection() {
     return () => ctx.revert();
   }, [lang]);
 
+  const displayTitle = sectionData?.title?.[lang] || sectionData?.title?.en || t.locationSecurity.title;
+  const row1Title = sectionData?.row1Title?.[lang] || sectionData?.row1Title?.en || t.locationSecurity.strategicTitle;
+  const row1Bullets = sectionData?.row1Desc?.[lang] || sectionData?.row1Desc?.en
+    ? [sectionData.row1Desc?.[lang] || sectionData.row1Desc?.en]
+    : t.locationSecurity.strategicBullets;
+  const row1Image = sectionData?.row1ImageUrl || "/images/location-strategic.jpg";
+  const row2Title = sectionData?.row2Title?.[lang] || sectionData?.row2Title?.en || t.locationSecurity.securityTitle;
+  const row2Bullets = sectionData?.row2Desc?.[lang] || sectionData?.row2Desc?.en
+    ? [sectionData.row2Desc?.[lang] || sectionData.row2Desc?.en]
+    : t.locationSecurity.securityBullets;
+  const row2Image = sectionData?.row2ImageUrl || "/images/location-security.jpg";
+
   return (
     <Box
       id="location-features"
@@ -153,7 +165,7 @@ export default function LocationSecuritySection() {
               letterSpacing: '-0.01em',
             }}
           >
-            {t.locationSecurity.title}
+            {displayTitle}
           </Typography>
         </Box>
 
@@ -182,7 +194,7 @@ export default function LocationSecuritySection() {
               >
                 <Box
                   component="img"
-                  src="/images/location-strategic.jpg"
+                  src={row1Image}
                   alt="Strategic Location roundabout view"
                   sx={{
                     width: '100%',
@@ -208,7 +220,7 @@ export default function LocationSecuritySection() {
                     textAlign: lang === 'ar' ? 'right' : 'left',
                   }}
                 >
-                  {t.locationSecurity.strategicTitle}
+                  {row1Title}
                 </Typography>
 
                 <Box 
@@ -219,7 +231,7 @@ export default function LocationSecuritySection() {
                     textAlign: lang === 'ar' ? 'right' : 'left',
                   }}
                 >
-                  {t.locationSecurity.strategicBullets.map((bullet, i) => (
+                  {row1Bullets.map((bullet, i) => (
                     <Box 
                       key={i} 
                       sx={{ 
@@ -270,7 +282,7 @@ export default function LocationSecuritySection() {
               >
                 <Box
                   component="img"
-                  src="/images/location-security.jpg"
+                  src={row2Image}
                   alt="Security and gated community accessibility"
                   sx={{
                     width: '100%',
@@ -296,7 +308,7 @@ export default function LocationSecuritySection() {
                     textAlign: lang === 'ar' ? 'right' : 'left',
                   }}
                 >
-                  {t.locationSecurity.securityTitle}
+                  {row2Title}
                 </Typography>
 
                 <Box 
@@ -307,7 +319,7 @@ export default function LocationSecuritySection() {
                     textAlign: lang === 'ar' ? 'right' : 'left',
                   }}
                 >
-                  {t.locationSecurity.securityBullets.map((bullet, i) => (
+                  {row2Bullets.map((bullet, i) => (
                     <Box 
                       key={i} 
                       sx={{ 

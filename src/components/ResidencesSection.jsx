@@ -7,7 +7,7 @@ import { useLanguage } from '../context/LanguageContext';
 
 gsap.registerPlugin(ScrollTrigger);
 
-export default function ResidencesSection() {
+export default function ResidencesSection({ sectionData }) {
   const { t, lang } = useLanguage();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
@@ -18,6 +18,9 @@ export default function ResidencesSection() {
   const pathsRef = useRef([]);
 
   const [activeCluster, setActiveCluster] = useState(null);
+  const displayTitle = sectionData?.title?.[lang] || sectionData?.title?.en || t.residences.title;
+  const displaySubtitle = sectionData?.eyebrow?.[lang] || sectionData?.eyebrow?.en || t.residences.subtitle;
+  const displayImage = sectionData?.mainImageUrl || "/images/cluster.jpg";
 
   // Clusters detailed descriptions for popovers (English & Arabic)
   const clusterDetails = {
@@ -211,7 +214,7 @@ export default function ResidencesSection() {
               textAlign: lang === 'ar' ? 'right' : 'left',
             }}
           >
-            {t.residences.title}
+            {displayTitle}
           </Typography>
           <Typography
             sx={{
@@ -224,7 +227,7 @@ export default function ResidencesSection() {
               textAlign: lang === 'ar' ? 'right' : 'left',
             }}
           >
-            {t.residences.subtitle}
+            {displaySubtitle}
           </Typography>
         </Box>
 
@@ -245,7 +248,7 @@ export default function ResidencesSection() {
 
           <Box
             component="img"
-            src="/images/cluster.jpg"
+            src={displayImage}
             alt="Park View Yaafour Garden Promenade"
             sx={{
               width: '100%',

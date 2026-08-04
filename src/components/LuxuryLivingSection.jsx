@@ -4,7 +4,7 @@ import { Box, Typography } from '@mui/material';
 import gsap from 'react';
 import { useLanguage } from '../context/LanguageContext';
 
-export default function LuxuryLivingSection() {
+export default function LuxuryLivingSection({ sectionData }) {
   const { t, lang } = useLanguage();
   
   // React Hook declarations
@@ -84,6 +84,15 @@ export default function LuxuryLivingSection() {
   }, [lang]);
 
   const ll = t.luxuryLiving;
+  const displayTitle = sectionData?.title?.[lang] || sectionData?.title?.en || ll.title;
+  const displayParagraph = sectionData?.paragraph?.[lang] || sectionData?.paragraph?.en || ll.paragraph;
+  const displayStats = sectionData?.stats?.length
+    ? sectionData.stats.map((stat) => ({
+        num: stat.value,
+        label: stat.label?.[lang] || stat.label?.en || '',
+      }))
+    : ll.stats;
+  const displayImage = sectionData?.largeImageUrl || "/images/luxury-entry.jpg";
 
   return (
     <Box
@@ -130,7 +139,7 @@ export default function LuxuryLivingSection() {
               letterSpacing: '-0.01em',
             }}
           >
-            {ll.title}
+            {displayTitle}
           </Typography>
 
           {/* Paragraph */}
@@ -148,7 +157,7 @@ export default function LuxuryLivingSection() {
               width: '100%',
             }}
           >
-            {ll.paragraph}
+            {displayParagraph}
           </Typography>
 
           {/* Stats Box */}
@@ -162,7 +171,7 @@ export default function LuxuryLivingSection() {
               width: '100%',
             }}
           >
-            {ll.stats.map((stat, idx) => (
+            {displayStats.map((stat, idx) => (
               <Box key={idx} sx={{ width: '100%', textAlign: 'start' }}>
                 <Typography
                   sx={{
@@ -212,7 +221,7 @@ export default function LuxuryLivingSection() {
         <Box
           ref={largeImgRef}
           component="img"
-          src="/images/luxury-entry.jpg"
+          src={displayImage}
           alt="Gated community night entry view rendering"
           sx={{
             width: '100%',

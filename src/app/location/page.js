@@ -18,7 +18,16 @@ export default function LocationPage() {
     client
       .fetch(`*[_type == "locationPage" && _id == "locationPage"][0] {
         ...,
-        "heroCoverUrl": heroImage.asset->url
+        "heroCoverUrl": heroImage.asset->url,
+        sections[] {
+          ...,
+          "mapImageUrl": mapImage.asset->url,
+          "mapImageEnUrl": mapImageEn.asset->url,
+          "mapImageArUrl": mapImageAr.asset->url,
+          "row1ImageUrl": row1Image.asset->url,
+          "row2ImageUrl": row2Image.asset->url,
+          "largeImageUrl": largeImage.asset->url
+        }
       }`)
       .then((data) => {
         if (active && data) {
@@ -47,6 +56,11 @@ export default function LocationPage() {
     }
   }, [pageData, lang]);
 
+  const getSection = (type) => pageData?.sections?.find((section) => section._type === type && section.enabled !== false);
+  const connectivitySection = getSection('connectivitySection');
+  const locationSecuritySection = getSection('locationSecuritySection');
+  const luxuryLivingSection = getSection('luxuryLivingSection');
+
   return (
     <main dir={lang === 'ar' ? 'rtl' : 'ltr'} style={{ overflowX: 'hidden' }}>
       <Header />
@@ -60,9 +74,9 @@ export default function LocationPage() {
         subtitleAr={pageData?.heroSubtitle?.ar || "الموقع الجغرافي"}
       />
       
-      <ConnectivitySection />
-      <LocationSecuritySection />
-      <LuxuryLivingSection />
+      {(!pageData || connectivitySection) && <ConnectivitySection sectionData={connectivitySection} />}
+      {(!pageData || locationSecuritySection) && <LocationSecuritySection sectionData={locationSecuritySection} />}
+      {(!pageData || luxuryLivingSection) && <LuxuryLivingSection sectionData={luxuryLivingSection} />}
       
       <FooterSection showForm={false} />
     </main>

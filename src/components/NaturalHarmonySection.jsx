@@ -67,7 +67,7 @@ const FeatureIcon = ({ type }) => {
   }
 };
 
-export default function NaturalHarmonySection() {
+export default function NaturalHarmonySection({ sectionData }) {
   const { t, lang } = useLanguage();
   
   const sectionRef = useRef(null);
@@ -138,6 +138,15 @@ export default function NaturalHarmonySection() {
   }, [lang]);
 
   const nh = t.naturalHarmony;
+  const displayTitle = sectionData?.title?.[lang] || sectionData?.title?.en || nh.title;
+  const displayParagraph = sectionData?.paragraph?.[lang] || sectionData?.paragraph?.en || nh.paragraph;
+  const displayBullets = sectionData?.bullets?.length
+    ? sectionData.bullets.map((bullet) => ({
+        icon: bullet.icon,
+        label: bullet.label?.[lang] || bullet.label?.en || '',
+      })).filter((bullet) => bullet.label)
+    : nh.bullets;
+  const displayImage = sectionData?.largeImageUrl || "/images/harmony-pool.jpg";
 
   return (
     <Box
@@ -184,7 +193,7 @@ export default function NaturalHarmonySection() {
               letterSpacing: '-0.01em',
             }}
           >
-            {nh.title}
+            {displayTitle}
           </Typography>
 
           {/* Description */}
@@ -202,7 +211,7 @@ export default function NaturalHarmonySection() {
               width: '100%',
             }}
           >
-            {nh.paragraph}
+            {displayParagraph}
           </Typography>
 
           {/* Grid of 6 icons features */}
@@ -214,7 +223,7 @@ export default function NaturalHarmonySection() {
               flexDirection: lang === 'ar' ? 'row-reverse' : 'row' 
             }}
           >
-            {nh.bullets.map((bullet, idx) => (
+            {displayBullets.map((bullet, idx) => (
               <Grid key={idx} size={6}>
                 <Box
                   sx={{
@@ -274,7 +283,7 @@ export default function NaturalHarmonySection() {
         <Box
           ref={largeImgRef}
           component="img"
-          src="/images/harmony-pool.jpg"
+          src={displayImage}
           alt="Life lived in natural harmony swimming pool view"
           sx={{
             width: '100%',

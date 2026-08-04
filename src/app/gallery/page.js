@@ -16,7 +16,14 @@ export default function GalleryPage() {
     client
       .fetch(`*[_type == "galleryPage" && _id == "galleryPage"][0] {
         ...,
-        "heroCoverUrl": heroImage.asset->url
+        "heroCoverUrl": heroImage.asset->url,
+        sections[] {
+          ...,
+          "inlineImages": images[] {
+            ...,
+            "imageUrl": image.asset->url
+          }
+        }
       }`)
       .then((data) => {
         if (active && data) {
@@ -45,6 +52,8 @@ export default function GalleryPage() {
     }
   }, [pageData, lang]);
 
+  const gallerySection = pageData?.sections?.find((section) => section._type === 'gallerySection' && section.enabled !== false);
+
   return (
     <main dir={lang === 'ar' ? 'rtl' : 'ltr'} style={{ overflowX: 'hidden' }}>
       <Header />
@@ -58,7 +67,7 @@ export default function GalleryPage() {
         subtitleAr={pageData?.heroSubtitle?.ar || "معرض الصور"}
       />
       
-      <GallerySection />
+      {(!pageData || gallerySection) && <GallerySection sectionData={gallerySection} />}
       
       <FooterSection showForm={false} />
     </main>

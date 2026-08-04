@@ -14,7 +14,7 @@ const getMapHref = (address, latitude, longitude) => {
   return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`;
 };
 
-export default function ContactFormSection() {
+export default function ContactFormSection({ sectionData }) {
   const { lang } = useLanguage();
   const [phone, setPhone] = useState('');
   const [form, setForm] = useState({
@@ -24,9 +24,14 @@ export default function ContactFormSection() {
     remarks: ''
   });
 
-  const [contactData, setContactData] = useState(null);
+  const [contactData, setContactData] = useState(sectionData || null);
 
   useEffect(() => {
+    if (sectionData) {
+      setContactData(sectionData);
+      return;
+    }
+
     let active = true;
     client
       .fetch(`*[_type == "page" && _id == "home"][0].sections[_type == "contactFormSection"][0]`)
@@ -39,7 +44,7 @@ export default function ContactFormSection() {
     return () => {
       active = false;
     };
-  }, []);
+  }, [sectionData]);
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
