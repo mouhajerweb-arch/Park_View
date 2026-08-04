@@ -1,5 +1,5 @@
 'use client';
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Box, Typography, Button } from '@mui/material';
 import { useLanguage } from '../context/LanguageContext';
 import { useRegister } from '../context/RegisterContext';
@@ -17,10 +17,43 @@ import FooterSection from '../components/FooterSection';
 import ContactFormSection from '../components/ContactFormSection';
 import AutoScrollPopup from '../components/AutoScrollPopup';
 import LearnMoreLink from '../components/LearnMoreLink';
+import { client } from '../sanity/client';
 
 export default function Home() {
   const { lang } = useLanguage();
   const { openRegister } = useRegister();
+  const [seoData, setSeoData] = useState(null);
+
+  useEffect(() => {
+    let active = true;
+    client
+      .fetch(`*[_type == "page" && _id == "home"][0] { seo }`)
+      .then((data) => {
+        if (active && data?.seo) {
+          setSeoData(data.seo);
+        }
+      })
+      .catch((err) => console.warn('Error fetching homepage SEO:', err));
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    if (seoData) {
+      const metaTitle = seoData.metaTitle?.[lang] || seoData.metaTitle?.en;
+      if (metaTitle) {
+        document.title = metaTitle;
+      }
+      const metaDesc = seoData.metaDescription?.[lang] || seoData.metaDescription?.en;
+      if (metaDesc) {
+        const metaTag = document.querySelector('meta[name="description"]');
+        if (metaTag) {
+          metaTag.setAttribute('content', metaDesc);
+        }
+      }
+    }
+  }, [seoData, lang]);
 
   return (
     <main dir={lang === 'ar' ? 'rtl' : 'ltr'} style={{ overflowX: 'hidden' }}>

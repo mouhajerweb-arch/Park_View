@@ -28,6 +28,8 @@ export default defineType({
         { type: 'gallerySection' },
         { type: 'amenitiesSection' },
         { type: 'contactFormSection' },
+        { type: 'locationSecuritySection' },
+        { type: 'luxuryLivingSection' },
       ]
     })
   ],

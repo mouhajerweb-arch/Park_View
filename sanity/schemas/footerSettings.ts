@@ -37,6 +37,7 @@ export default defineType({
     defineField({ name: 'phone', title: 'Phone Number', type: 'string' }),
     defineField({ name: 'email', title: 'Email Address', type: 'string' }),
     defineField({ name: 'address', title: 'Address Text', type: 'localizedString' }),
+    defineField({ name: 'mapsUrl', title: 'Google Maps Link', type: 'string' }),
 
     // Bottom
     defineField({ name: 'copyrightText', title: 'Copyright Text Template', type: 'localizedString' }),

@@ -26,6 +26,9 @@ const getSocialIcon = (platform) => {
   }
 };
 
+const getPhoneHref = (phone) => `tel:${String(phone || '').replace(/[^\d+]/g, '')}`;
+const getMapHref = (address) => `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address || '')}`;
+
 export default function FooterSection() {
   const { lang } = useLanguage();
   const [footerData, setFooterData] = useState(null);
@@ -223,25 +226,69 @@ export default function FooterSection() {
             </Typography>
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.8 }}>
               {/* Phone detail */}
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, flexDirection: 'row' }}>
+              <Box
+                component="a"
+                href={getPhoneHref(displayPhone)}
+                sx={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 1.5,
+                  flexDirection: 'row',
+                  color: 'inherit',
+                  textDecoration: 'none',
+                  width: 'fit-content',
+                  '&:hover .contact-text, &:focus-visible .contact-text': { color: '#2B2825' },
+                  '&:focus-visible': { outline: '2px solid rgba(43, 40, 37, 0.35)', outlineOffset: 3 }
+                }}
+              >
                 <PhoneIcon sx={{ fontSize: 16, color: '#7C7368' }} />
-                <Typography sx={{ fontFamily: '"Silka", sans-serif', fontSize: '0.88rem', color: '#6B6661', fontWeight: 300, dir: 'ltr' }}>
+                <Typography className="contact-text" sx={{ fontFamily: '"Silka", sans-serif', fontSize: '0.88rem', color: '#6B6661', fontWeight: 300, dir: 'ltr', transition: 'color 0.2s ease' }}>
                   {displayPhone}
                 </Typography>
               </Box>
 
               {/* Email detail */}
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, flexDirection: 'row' }}>
+              <Box
+                component="a"
+                href={`mailto:${displayEmail}`}
+                sx={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 1.5,
+                  flexDirection: 'row',
+                  color: 'inherit',
+                  textDecoration: 'none',
+                  width: 'fit-content',
+                  '&:hover .contact-text, &:focus-visible .contact-text': { color: '#2B2825' },
+                  '&:focus-visible': { outline: '2px solid rgba(43, 40, 37, 0.35)', outlineOffset: 3 }
+                }}
+              >
                 <EmailIcon sx={{ fontSize: 16, color: '#7C7368' }} />
-                <Typography sx={{ fontFamily: '"Silka", sans-serif', fontSize: '0.88rem', color: '#6B6661', fontWeight: 300 }}>
+                <Typography className="contact-text" sx={{ fontFamily: '"Silka", sans-serif', fontSize: '0.88rem', color: '#6B6661', fontWeight: 300, transition: 'color 0.2s ease' }}>
                   {displayEmail}
                 </Typography>
               </Box>
 
               {/* Address detail */}
-              <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 1.5, flexDirection: 'row' }}>
+              <Box
+                component="a"
+                href={footerData?.mapsUrl || getMapHref(displayAddress)}
+                target="_blank"
+                rel="noopener noreferrer"
+                sx={{
+                  display: 'flex',
+                  alignItems: 'flex-start',
+                  gap: 1.5,
+                  flexDirection: 'row',
+                  color: 'inherit',
+                  textDecoration: 'none',
+                  width: 'fit-content',
+                  '&:hover .contact-text, &:focus-visible .contact-text': { color: '#2B2825' },
+                  '&:focus-visible': { outline: '2px solid rgba(43, 40, 37, 0.35)', outlineOffset: 3 }
+                }}
+              >
                 <LocationOnIcon sx={{ fontSize: 16, color: '#7C7368', mt: 0.2 }} />
-                <Typography sx={{ fontFamily: '"Silka", sans-serif', fontSize: '0.88rem', color: '#6B6661', fontWeight: 300, textAlign: lang === 'ar' ? 'right' : 'left' }}>
+                <Typography className="contact-text" sx={{ fontFamily: '"Silka", sans-serif', fontSize: '0.88rem', color: '#6B6661', fontWeight: 300, textAlign: lang === 'ar' ? 'right' : 'left', transition: 'color 0.2s ease' }}>
                   {displayAddress}
                 </Typography>
               </Box>
