@@ -104,6 +104,15 @@ export const structure: StructureResolver = (S) =>
             .documentId("footerSettings")
             .title("Footer Settings")
         ),
+      S.listItem()
+        .title("Auto Scroll Popup")
+        .icon(Settings)
+        .child(
+          S.document()
+            .schemaType("autoScrollPopupSettings")
+            .documentId("autoScrollPopupSettings")
+            .title("Auto Scroll Popup")
+        ),
 
       // Hide default lists of singletons from the root list
       ...S.documentTypeListItems().filter(
@@ -119,7 +128,8 @@ export const structure: StructureResolver = (S) =>
             "galleryItem",
             "siteSettings",
             "footerSettings",
-            "headerSettings"
+            "headerSettings",
+            "autoScrollPopupSettings"
           ].includes(listItem.getId() || "")
       ),
     ]);
