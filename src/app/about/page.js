@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import Header from '../../components/Header';
 import SubpageHero from '../../components/SubpageHero';
+import SectionRenderer from '../../components/SectionRenderer';
 import PrestigeSection from '../../components/PrestigeSection';
 import DeveloperProfileSection from '../../components/DeveloperProfileSection';
 import NatureSerenitySection from '../../components/NatureSerenitySection';
@@ -46,11 +47,17 @@ export default function AboutPage() {
         subtitleAr={pageData?.heroSubtitle?.ar || "عن بارك فيو"}
       />
       
-      <PrestigeSection />
-      <DeveloperProfileSection />
-      <NatureSerenitySection />
-      <NaturalHarmonySection />
-      <CuratedLivingSection />
+      {pageData?.sections && pageData.sections.length > 0 ? (
+        <SectionRenderer sections={pageData.sections} />
+      ) : (
+        <>
+          <PrestigeSection />
+          <DeveloperProfileSection />
+          <NatureSerenitySection />
+          <NaturalHarmonySection />
+          <CuratedLivingSection />
+        </>
+      )}
       
       {/* Hide bulky form inside footer */}
       <FooterSection showForm={false} />

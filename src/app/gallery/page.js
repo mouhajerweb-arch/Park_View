@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import Header from '../../components/Header';
 import SubpageHero from '../../components/SubpageHero';
+import SectionRenderer from '../../components/SectionRenderer';
 import GallerySection from '../../components/GallerySection';
 import FooterSection from '../../components/FooterSection';
 import { useLanguage } from '../../context/LanguageContext';
@@ -42,7 +43,13 @@ export default function GalleryPage() {
         subtitleAr={pageData?.heroSubtitle?.ar || "معرض الصور"}
       />
       
-      <GallerySection />
+      {pageData?.sections && pageData.sections.length > 0 ? (
+        <SectionRenderer sections={pageData.sections} />
+      ) : (
+        <>
+          <GallerySection />
+        </>
+      )}
       
       <FooterSection showForm={false} />
     </main>

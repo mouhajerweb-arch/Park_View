@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import Header from '../../components/Header';
 import SubpageHero from '../../components/SubpageHero';
+import SectionRenderer from '../../components/SectionRenderer';
 import ResidencesSection from '../../components/ResidencesSection';
 import ThreeWaysSection from '../../components/ThreeWaysSection';
 import HolisticLivingSection from '../../components/HolisticLivingSection';
@@ -46,11 +47,17 @@ export default function ResidencesPage() {
         subtitleAr={pageData?.heroSubtitle?.ar || "المساكن والوحدات"}
       />
       
-      <ResidencesSection />
-      <ThreeWaysSection />
-      <HolisticLivingSection />
-      <InteriorsSection />
-      <FloorPlansSection />
+      {pageData?.sections && pageData.sections.length > 0 ? (
+        <SectionRenderer sections={pageData.sections} />
+      ) : (
+        <>
+          <ResidencesSection />
+          <ThreeWaysSection />
+          <HolisticLivingSection />
+          <InteriorsSection />
+          <FloorPlansSection />
+        </>
+      )}
       
       <FooterSection showForm={false} />
     </main>

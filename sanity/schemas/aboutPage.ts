@@ -31,6 +31,11 @@ export default defineType({
         { type: 'natureSerenitySection' },
         { type: 'naturalHarmonySection' },
         { type: 'curatedLivingSection' },
+        { type: 'locationSecuritySection' },
+        { type: 'luxuryLivingSection' },
+        { type: 'threeWaysSection' },
+        { type: 'holisticLivingSection' },
+        { type: 'faqSection' },
       ]
     })
   ],

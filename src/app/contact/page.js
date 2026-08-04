@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import Header from '../../components/Header';
 import SubpageHero from '../../components/SubpageHero';
+import SectionRenderer from '../../components/SectionRenderer';
 import FaqsSection from '../../components/FaqsSection';
 import AmenitiesSection from '../../components/AmenitiesSection';
 import FooterSection from '../../components/FooterSection';
@@ -44,10 +45,15 @@ export default function ContactPage() {
         subtitleAr={pageData?.heroSubtitle?.ar || "اتصل بنا"}
       />
       
-      <FaqsSection />
-      <AmenitiesSection />
-      
-      <ContactFormSection />
+      {pageData?.sections && pageData.sections.length > 0 ? (
+        <SectionRenderer sections={pageData.sections} />
+      ) : (
+        <>
+          <FaqsSection />
+          <AmenitiesSection />
+          <ContactFormSection />
+        </>
+      )}
       
       <FooterSection />
     </main>
