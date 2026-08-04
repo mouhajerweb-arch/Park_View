@@ -1,9 +1,10 @@
 'use client';
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Box, Typography } from '@mui/material';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useLanguage } from '../context/LanguageContext';
+import { client } from '../sanity/client';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -18,6 +19,26 @@ export default function CuratedLivingSection() {
   
   const largeImgColRef = useRef(null);
   const largeImgRef = useRef(null);
+
+  const [secData, setSecData] = useState(null);
+
+  useEffect(() => {
+    let active = true;
+    client
+      .fetch(`*[_type == "aboutPage" && _id == "aboutPage"][0].sections[_type == "curatedLivingSection"][0] {
+        ...,
+        "largeImageUrl": largeImage.asset->url
+      }`)
+      .then((data) => {
+        if (active && data) {
+          setSecData(data);
+        }
+      })
+      .catch((err) => console.warn('Error fetching curated living section:', err));
+    return () => {
+      active = false;
+    };
+  }, []);
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -56,9 +77,16 @@ export default function CuratedLivingSection() {
     }, sectionRef);
 
     return () => ctx.revert();
-  }, [lang]);
+  }, [lang, secData]);
 
   const cl = t.curatedLiving;
+
+  // Resolve dynamic values
+  const displayTitle = secData?.title?.[lang] || secData?.title?.en || cl.title;
+  const displayParagraph1 = secData?.paragraph1?.[lang] || secData?.paragraph1?.en || cl.paragraph1;
+  const displayParagraph2 = secData?.paragraph2?.[lang] || secData?.paragraph2?.en || cl.paragraph2;
+
+  const displayLargeImg = secData?.largeImageUrl || "/images/curated-garden.jpg";
 
   return (
     <Box
@@ -105,7 +133,7 @@ export default function CuratedLivingSection() {
               letterSpacing: '-0.01em',
             }}
           >
-            {cl.title}
+            {displayTitle}
           </Typography>
 
           {/* Paragraph 1 */}
@@ -123,7 +151,7 @@ export default function CuratedLivingSection() {
               width: '100%',
             }}
           >
-            {cl.paragraph1}
+            {displayParagraph1}
           </Typography>
 
           {/* Paragraph 2 */}
@@ -140,7 +168,7 @@ export default function CuratedLivingSection() {
               width: '100%',
             }}
           >
-            {cl.paragraph2}
+            {displayParagraph2}
           </Typography>
         </Box>
       </Box>
@@ -161,7 +189,7 @@ export default function CuratedLivingSection() {
         <Box
           ref={largeImgRef}
           component="img"
-          src="/images/curated-garden.jpg"
+          src={displayLargeImg}
           alt="Curated living resident promenade garden render"
           sx={{
             width: '100%',
@@ -173,16 +201,6 @@ export default function CuratedLivingSection() {
           }}
         />
       </Box>
-
-      {/* Page index vertical label */}
-      {/* <Box className="side-tab-bar">
-        <Typography className="side-tab-title">
-          {cl.sideBrand}
-        </Typography>
-        <Typography className="side-tab-number">
-          {cl.pageNo}
-        </Typography>
-      </Box> */}
     </Box>
   );
 }

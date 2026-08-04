@@ -1,9 +1,10 @@
 'use client';
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Box, Typography, Grid2 as Grid } from '@mui/material';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useLanguage } from '../context/LanguageContext';
+import { client } from '../sanity/client';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -79,7 +80,29 @@ export default function NaturalHarmonySection() {
   const largeImgColRef = useRef(null);
   const largeImgRef = useRef(null);
 
+  const [secData, setSecData] = useState(null);
+
   useEffect(() => {
+    let active = true;
+    client
+      .fetch(`*[_type == "aboutPage" && _id == "aboutPage"][0].sections[_type == "naturalHarmonySection"][0] {
+        ...,
+        "largeImageUrl": largeImage.asset->url
+      }`)
+      .then((data) => {
+        if (active && data) {
+          setSecData(data);
+        }
+      })
+      .catch((err) => console.warn('Error fetching natural harmony section:', err));
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!secData && !t.naturalHarmony) return;
+
     const ctx = gsap.context(() => {
       // Staggered reveal of text and list items
       gsap.fromTo(
@@ -135,9 +158,22 @@ export default function NaturalHarmonySection() {
     }, sectionRef);
 
     return () => ctx.revert();
-  }, [lang]);
+  }, [lang, secData]);
 
   const nh = t.naturalHarmony;
+
+  // Resolve dynamic values
+  const displayTitle = secData?.title?.[lang] || secData?.title?.en || nh.title;
+  const displayParagraph = secData?.paragraph?.[lang] || secData?.paragraph?.en || nh.paragraph;
+  
+  const displayBullets = secData?.bullets && secData.bullets.length > 0
+    ? secData.bullets.map(b => ({
+        label: b.label?.[lang] || b.label?.en || '',
+        icon: b.icon || 'garden'
+      }))
+    : nh.bullets;
+
+  const displayLargeImg = secData?.largeImageUrl || "/images/harmony-pool.jpg";
 
   return (
     <Box
@@ -184,7 +220,7 @@ export default function NaturalHarmonySection() {
               letterSpacing: '-0.01em',
             }}
           >
-            {nh.title}
+            {displayTitle}
           </Typography>
 
           {/* Description */}
@@ -202,7 +238,7 @@ export default function NaturalHarmonySection() {
               width: '100%',
             }}
           >
-            {nh.paragraph}
+            {displayParagraph}
           </Typography>
 
           {/* Grid of 6 icons features */}
@@ -214,7 +250,7 @@ export default function NaturalHarmonySection() {
               flexDirection: lang === 'ar' ? 'row-reverse' : 'row' 
             }}
           >
-            {nh.bullets.map((bullet, idx) => (
+            {displayBullets.map((bullet, idx) => (
               <Grid key={idx} size={6}>
                 <Box
                   sx={{
@@ -274,7 +310,7 @@ export default function NaturalHarmonySection() {
         <Box
           ref={largeImgRef}
           component="img"
-          src="/images/harmony-pool.jpg"
+          src={displayLargeImg}
           alt="Life lived in natural harmony swimming pool view"
           sx={{
             width: '100%',
@@ -286,16 +322,6 @@ export default function NaturalHarmonySection() {
           }}
         />
       </Box>
-
-      {/* Page index vertical label */}
-      {/* <Box className="side-tab-bar">
-        <Typography className="side-tab-title">
-          {nh.sideBrand}
-        </Typography>
-        <Typography className="side-tab-number">
-          {nh.pageNo}
-        </Typography>
-      </Box> */}
     </Box>
   );
 }

@@ -1,19 +1,45 @@
 'use client';
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Box, Container, Typography } from '@mui/material';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useLanguage } from '../context/LanguageContext';
+import { usePathname } from 'next/navigation';
+import { client } from '../sanity/client';
 
 gsap.registerPlugin(ScrollTrigger);
 
 export default function PrestigeSection() {
   const { t, lang } = useLanguage();
+  const pathname = usePathname();
 
   const sectionRef = useRef(null);
   const headingRef = useRef(null);
   const bodyRef = useRef(null);
   const imageRef = useRef(null);
+
+  const [secData, setSecData] = useState(null);
+
+  useEffect(() => {
+    let active = true;
+    const isAboutPage = pathname?.includes('/about');
+    const pageType = isAboutPage ? 'aboutPage' : 'page';
+
+    client
+      .fetch(`*[_type == "${pageType}"][0].sections[_type == "prestigeSection"][0] {
+        ...,
+        "imageUrl": mainImage.asset->url
+      }`)
+      .then((data) => {
+        if (active && data) {
+          setSecData(data);
+        }
+      })
+      .catch((err) => console.warn('Error fetching prestige section:', err));
+    return () => {
+      active = false;
+    };
+  }, [pathname]);
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -68,7 +94,13 @@ export default function PrestigeSection() {
     }, sectionRef);
 
     return () => ctx.revert();
-  }, [lang]);
+  }, [lang, secData]);
+
+  // Resolve dynamic values
+  const defaultTitle = `${t.prestige.headingLine1}\n${t.prestige.headingLine2}\n${t.prestige.headingLine3}`;
+  const displayTitle = secData?.title?.[lang] || secData?.title?.en || defaultTitle;
+  const displayBody = secData?.body?.[lang] || secData?.body?.en || t.prestige.body;
+  const displayImg = secData?.imageUrl || "/images/prestige-tranquility.jpg";
 
   return (
     <Box
@@ -110,13 +142,10 @@ export default function PrestigeSection() {
               letterSpacing: '-0.02em',
               textAlign: 'start',
               width: '100%',
+              whiteSpace: 'pre-line',
             }}
           >
-            {t.prestige.headingLine1}
-            <br />
-            {t.prestige.headingLine2}
-            <br />
-            {t.prestige.headingLine3}
+            {displayTitle}
           </Typography>
 
           <Typography
@@ -132,7 +161,7 @@ export default function PrestigeSection() {
               width: '100%',
             }}
           >
-            {t.prestige.body}
+            {displayBody}
           </Typography>
         </Box>
       </Box>
@@ -152,7 +181,7 @@ export default function PrestigeSection() {
       >
         <Box
           component="img"
-          src="/images/prestige-tranquility.jpg"
+          src={displayImg}
           alt="Park View Yaafour Garden Promenade"
           sx={{
             width: '100%',
