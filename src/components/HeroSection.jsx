@@ -106,6 +106,10 @@ export default function HeroSection() {
     : "/images/park-view-full-logo.png";
 
   const soonText = heroData?.soonText?.[lang] || heroData?.soonText?.en || (lang === 'ar' ? 'قريباً' : 'SOON');
+  const daysLabel = heroData?.daysLabel?.[lang] || heroData?.daysLabel?.en || (lang === 'ar' ? 'أيام' : 'Days');
+  const hoursLabel = heroData?.hoursLabel?.[lang] || heroData?.hoursLabel?.en || (lang === 'ar' ? 'ساعات' : 'Hours');
+  const minutesLabel = heroData?.minutesLabel?.[lang] || heroData?.minutesLabel?.en || (lang === 'ar' ? 'دقائق' : 'Minutes');
+  const secondsLabel = heroData?.secondsLabel?.[lang] || heroData?.secondsLabel?.en || (lang === 'ar' ? 'ثواني' : 'Seconds');
 
   return (
     <Box
@@ -268,7 +272,7 @@ export default function HeroSection() {
                 lineHeight: 1.2,
               }}
             >
-              {lang === 'ar' ? 'أيام' : 'Days'}
+              {daysLabel}
             </Typography>
           </Box>
 
@@ -318,7 +322,7 @@ export default function HeroSection() {
                 lineHeight: 1.2,
               }}
             >
-              {lang === 'ar' ? 'ساعات' : 'Hours'}
+              {hoursLabel}
             </Typography>
           </Box>
 
@@ -368,7 +372,7 @@ export default function HeroSection() {
                 lineHeight: 1.2,
               }}
             >
-              {lang === 'ar' ? 'دقائق' : 'Minutes'}
+              {minutesLabel}
             </Typography>
           </Box>
 
@@ -418,7 +422,7 @@ export default function HeroSection() {
                 lineHeight: 1.2,
               }}
             >
-              {lang === 'ar' ? 'ثواني' : 'Seconds'}
+              {secondsLabel}
             </Typography>
           </Box>
         </Box>

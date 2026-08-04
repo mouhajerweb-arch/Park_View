@@ -15,6 +15,10 @@ export default defineType({
       type: 'string',
       initialValue: '2027-06-30T11:13:00+02:00',
     }),
+    defineField({ name: 'daysLabel', title: 'Days Unit Label', type: 'localizedString' }),
+    defineField({ name: 'hoursLabel', title: 'Hours Unit Label', type: 'localizedString' }),
+    defineField({ name: 'minutesLabel', title: 'Minutes Unit Label', type: 'localizedString' }),
+    defineField({ name: 'secondsLabel', title: 'Seconds Unit Label', type: 'localizedString' }),
     defineField({
       name: 'backgroundType',
       title: 'Background Type',
