@@ -4,6 +4,8 @@ import { Box, Container, Typography, Button, useMediaQuery, useTheme } from '@mu
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useLanguage } from '../context/LanguageContext';
+import { usePathname } from 'next/navigation';
+import { client } from '../sanity/client';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -11,6 +13,7 @@ export default function ResidencesSection() {
   const { t, lang } = useLanguage();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+  const pathname = usePathname();
 
   const sectionRef = useRef(null);
   const titleRef = useRef(null);
@@ -18,6 +21,28 @@ export default function ResidencesSection() {
   const pathsRef = useRef([]);
 
   const [activeCluster, setActiveCluster] = useState(null);
+  const [secData, setSecData] = useState(null);
+
+  useEffect(() => {
+    let active = true;
+    const isResidencesPage = pathname?.includes('/residences');
+    const pageType = isResidencesPage ? 'residencesPage' : 'page';
+
+    client
+      .fetch(`*[_type == "${pageType}"][0].sections[_type == "residencesSection"][0] {
+        ...,
+        "mainImageUrl": mainImage.asset->url
+      }`)
+      .then((data) => {
+        if (active && data) {
+          setSecData(data);
+        }
+      })
+      .catch((err) => console.warn('Error fetching residences section data:', err));
+    return () => {
+      active = false;
+    };
+  }, [pathname]);
 
   // Clusters detailed descriptions for popovers (English & Arabic)
   const clusterDetails = {
@@ -90,13 +115,14 @@ export default function ResidencesSection() {
     tulipA: {
       titleEn: 'Tulip A',
       titleAr: 'توليب A',
-      descEn: 'Elegant luxury homes adjacent to the forest trail with maximum privacy layouts.',
-      descAr: 'منازل فاخرة أنيقة مجاورة لمسار الغابة مع مخططات توفر أقصى درجات الخصوصية.',
+      descEn: 'Sleek corner duplexes positioned along the eastern perimeter with panoramic valley vistas.',
+      descAr: 'شقق دوبلكس جانبية أنيقة تقع على طول المحيط الشرقي مع إطلالات بانورامية على الوادي.',
     },
   };
 
-  const navLinks = [
-    { id: 'magnoliaB', label: t.residences.clusters.magnoliaB, x: 220, y: 555, dotX: 150, dotY: 330, path: 'M 250 555 L 170 555 L 170 380 L 150 330' },
+  // Hotspots definitions with customized lines paths coordinates
+  const hotspotsList = [
+    { id: 'magnoliaB', label: t.residences.clusters.magnoliaB, x: 120, y: 525, dotX: 180, dotY: 330, path: 'M 140 525 L 140 380 L 180 330' },
     { id: 'magnoliaA', label: t.residences.clusters.magnoliaA, x: 220, y: 525, dotX: 200, dotY: 310, path: 'M 250 525 L 250 380 L 200 310' },
     { id: 'orchidB', label: t.residences.clusters.orchidB, x: 280, y: 70, dotX: 280, dotY: 300, path: 'M 280 80 L 280 300' },
     { id: 'orchidA', label: t.residences.clusters.orchidA, x: 340, y: 70, dotX: 330, dotY: 310, path: 'M 340 80 L 340 280 L 330 310' },
@@ -180,7 +206,12 @@ export default function ResidencesSection() {
     }, sectionRef);
 
     return () => ctx.revert();
-  }, []);
+  }, [lang, secData]);
+
+  // Resolve dynamic values
+  const displayTitle = secData?.title?.[lang] || secData?.title?.en || t.residences.title;
+  const displaySubtitle = secData?.eyebrow?.[lang] || secData?.eyebrow?.en || t.residences.subtitle;
+  const displayMapImg = secData?.mainImageUrl || "/images/cluster.jpg";
 
   return (
     <Box
@@ -192,8 +223,6 @@ export default function ResidencesSection() {
         position: 'relative',
         overflow: 'hidden',
         px: { xs: 2, sm: 4, md: 8, lg: 10 },
-
-        // borderBottom: '1px solid rgba(0, 0, 0, 0.05)',
       }}
     >
       <Container maxWidth="xl" >
@@ -211,7 +240,7 @@ export default function ResidencesSection() {
               textAlign: lang === 'ar' ? 'right' : 'left',
             }}
           >
-            {t.residences.title}
+            {displayTitle}
           </Typography>
           <Typography
             sx={{
@@ -224,7 +253,7 @@ export default function ResidencesSection() {
               textAlign: lang === 'ar' ? 'right' : 'left',
             }}
           >
-            {t.residences.subtitle}
+            {displaySubtitle}
           </Typography>
         </Box>
 
@@ -235,56 +264,219 @@ export default function ResidencesSection() {
             position: 'relative',
             width: '100%',
             backgroundColor: '#ffffff',
-            // borderRadius: { xs: '16px', md: '24px' },
             overflow: 'hidden',
-            // boxShadow: '0 16px 48px rgba(61, 54, 46, 0.08)',
-            // border: '1px solid rgba(0, 0, 0, 0.03)',
-            // p: { xs: 1.5, sm: 2, md: 3 },
           }}
         >
 
           <Box
             component="img"
-            src="/images/cluster.jpg"
+            src={displayMapImg}
             alt="Park View Yaafour Garden Promenade"
             sx={{
               width: '100%',
-              height: '100%',
-              objectFit: 'cover',
+              height: 'auto',
               display: 'block',
-              borderRadius:"25px"
+              borderRadius: '16px',
             }}
           />
+
+          {/* SVG Overlay containing connecting paths */}
+          {!isMobile && (
+            <svg
+              style={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                width: '100%',
+                height: '100%',
+                pointerEvents: 'none',
+              }}
+              viewBox="0 0 1000 600"
+              preserveAspectRatio="xMidYMid slice"
+            >
+              {hotspotsList.map((spot, idx) => (
+                <path
+                  key={spot.id}
+                  ref={(el) => (pathsRef.current[idx] = el)}
+                  d={spot.path}
+                  fill="none"
+                  stroke="#3D362E"
+                  strokeWidth="1.2"
+                  strokeDasharray="4 4"
+                />
+              ))}
+            </svg>
+          )}
+
+          {/* Interactive Hotspot Pills (Desktop Only) */}
+          {!isMobile &&
+            hotspotsList.map((spot) => (
+              <Box
+                key={spot.id}
+                onMouseEnter={() => setActiveCluster(spot.id)}
+                onMouseLeave={() => setActiveCluster(null)}
+                sx={{
+                  position: 'absolute',
+                  // Map coordinates percentage (1000x600 layout viewport)
+                  left: `${(spot.x / 1000) * 100}%`,
+                  top: `${(spot.y / 600) * 100}%`,
+                  transform: 'translate(-50%, -50%)',
+                  backgroundColor: activeCluster === spot.id ? '#3D362E' : '#ffffff',
+                  color: activeCluster === spot.id ? '#ffffff' : '#3D362E',
+                  border: '1px solid #3D362E',
+                  borderRadius: '50px',
+                  py: 0.6,
+                  px: 1.8,
+                  fontSize: '11px',
+                  fontWeight: 500,
+                  fontFamily: '"Silka", sans-serif',
+                  cursor: 'pointer',
+                  boxShadow: '0 4px 12px rgba(0,0,0,0.06)',
+                  transition: 'all 0.3s cubic-bezier(0.25, 1, 0.5, 1)',
+                  zIndex: activeCluster === spot.id ? 20 : 10,
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 1,
+                }}
+              >
+                {spot.label}
+                <Box
+                  className="dot-indicator"
+                  sx={{
+                    width: 6,
+                    height: 6,
+                    borderRadius: '50%',
+                    backgroundColor: activeCluster === spot.id ? '#ffffff' : '#3D362E',
+                    transition: 'all 0.3s ease',
+                  }}
+                />
+              </Box>
+            ))}
+
+          {/* Hover Popover Information Overlay Box */}
+          {!isMobile && activeCluster && (
+            <Box
+              sx={{
+                position: 'absolute',
+                top: '25px',
+                right: lang === 'ar' ? 'auto' : '25px',
+                left: lang === 'ar' ? '25px' : 'auto',
+                width: '320px',
+                backgroundColor: '#ffffff',
+                border: '1px solid rgba(61, 54, 46, 0.1)',
+                borderRadius: '12px',
+                boxShadow: '0 20px 40px rgba(61, 54, 46, 0.12)',
+                p: 3,
+                zIndex: 30,
+                textAlign: 'start',
+                animation: 'fadeInUp 0.4s cubic-bezier(0.25, 1, 0.5, 1)',
+                '@keyframes fadeInUp': {
+                  from: { opacity: 0, transform: 'translateY(10px)' },
+                  to: { opacity: 1, transform: 'translateY(0)' },
+                },
+              }}
+            >
+              <Typography
+                variant="h6"
+                sx={{
+                  fontFamily: '"CS Brandis", serif',
+                  fontSize: '1.25rem',
+                  color: '#3D362E',
+                  mb: 1.5,
+                }}
+              >
+                {lang === 'ar' ? clusterDetails[activeCluster]?.titleAr : clusterDetails[activeCluster]?.titleEn}
+              </Typography>
+              <Typography
+                variant="body2"
+                sx={{
+                  fontFamily: '"Silka", sans-serif',
+                  color: '#6B6661',
+                  lineHeight: 1.6,
+                  fontSize: '0.88rem',
+                }}
+              >
+                {lang === 'ar' ? clusterDetails[activeCluster]?.descAr : clusterDetails[activeCluster]?.descEn}
+              </Typography>
+            </Box>
+          )}
         </Box>
+
+        {/* Mobile Dropdown Cluster Details (Mobile Only) */}
+        {isMobile && (
+          <Box sx={{ mt: 4, width: '100%' }}>
+            <Box
+              sx={{
+                display: 'flex',
+                gap: 1.5,
+                overflowX: 'auto',
+                pb: 2,
+                width: '100%',
+                flexDirection: lang === 'ar' ? 'row-reverse' : 'row',
+                '&::-webkit-scrollbar': { display: 'none' },
+              }}
+            >
+              {mobileSelectorList.map((spot) => (
+                <Box
+                  key={spot.id}
+                  onClick={() => setActiveCluster(activeCluster === spot.id ? null : spot.id)}
+                  sx={{
+                    flexShrink: 0,
+                    backgroundColor: activeCluster === spot.id ? '#3D362E' : '#ffffff',
+                    color: activeCluster === spot.id ? '#ffffff' : '#3D362E',
+                    border: '1px solid #3D362E',
+                    borderRadius: '50px',
+                    py: 1,
+                    px: 2.5,
+                    fontSize: '12px',
+                    fontWeight: 500,
+                    fontFamily: '"Silka", sans-serif',
+                    cursor: 'pointer',
+                    boxShadow: '0 2px 8px rgba(0,0,0,0.03)',
+                  }}
+                >
+                  {spot.label}
+                </Box>
+              ))}
+            </Box>
+
+            {activeCluster && (
+              <Box
+                sx={{
+                  mt: 2,
+                  backgroundColor: '#fdfdfc',
+                  border: '1px solid rgba(61, 54, 46, 0.08)',
+                  borderRadius: '12px',
+                  p: 3,
+                  textAlign: 'start',
+                }}
+              >
+                <Typography
+                  variant="h6"
+                  sx={{
+                    fontFamily: '"CS Brandis", serif',
+                    fontSize: '1.2rem',
+                    color: '#3D362E',
+                    mb: 1.5,
+                  }}
+                >
+                  {lang === 'ar' ? clusterDetails[activeCluster]?.titleAr : clusterDetails[activeCluster]?.titleEn}
+                </Typography>
+                <Typography
+                  variant="body2"
+                  sx={{
+                    fontFamily: '"Silka", sans-serif',
+                    color: '#6B6661',
+                    lineHeight: 1.6,
+                  }}
+                >
+                  {lang === 'ar' ? clusterDetails[activeCluster]?.descAr : clusterDetails[activeCluster]?.descEn}
+                </Typography>
+              </Box>
+            )}
+          </Box>
+        )}
       </Container>
-     
-      {/* Keyframe pulse animation stylesheet injection */}
-      <style jsx global>{`
-        @keyframes pulse {
-          0% {
-            transform: scale(0.9);
-            opacity: 0.8;
-          }
-          50% {
-            transform: scale(1.4);
-            opacity: 0.1;
-          }
-          100% {
-            transform: scale(0.9);
-            opacity: 0;
-          }
-        }
-        @keyframes fadeInUp {
-          from {
-            opacity: 0;
-            transform: translateY(8px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-      `}</style>
     </Box>
   );
 }

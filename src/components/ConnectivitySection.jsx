@@ -5,6 +5,7 @@ import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useLanguage } from '../context/LanguageContext';
 import LearnMoreLink from './LearnMoreLink';
+import { usePathname } from 'next/navigation';
 import { client, urlFor } from '../sanity/client';
 
 gsap.registerPlugin(ScrollTrigger);
@@ -60,6 +61,7 @@ const DestinationIcon = ({ type }) => {
 
 export default function ConnectivitySection() {
   const { t, lang } = useLanguage();
+  const pathname = usePathname();
   const sectionRef = useRef(null);
   const mapContainerRef = useRef(null);
   const textRef = useRef(null);
@@ -69,8 +71,11 @@ export default function ConnectivitySection() {
 
   useEffect(() => {
     let active = true;
+    const isLocationPage = pathname?.includes('/location');
+    const pageType = isLocationPage ? 'locationPage' : 'page';
+
     client
-      .fetch(`*[_type == "page" && _id == "home"][0].sections[_type == "connectivitySection"][0]`)
+      .fetch(`*[_type == "${pageType}"][0].sections[_type == "connectivitySection"][0]`)
       .then((data) => {
         if (active && data) {
           setConnectivityData(data);
@@ -80,7 +85,7 @@ export default function ConnectivitySection() {
     return () => {
       active = false;
     };
-  }, []);
+  }, [pathname]);
 
   useEffect(() => {
     const ctx = gsap.context(() => {

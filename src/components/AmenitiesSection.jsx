@@ -4,6 +4,7 @@ import { Box, Container, Grid2 as Grid, Typography } from '@mui/material';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useLanguage } from '../context/LanguageContext';
+import { usePathname } from 'next/navigation';
 import { client, urlFor } from '../sanity/client';
 
 gsap.registerPlugin(ScrollTrigger);
@@ -28,6 +29,7 @@ const amenitiesList = [
 
 export default function AmenitiesSection() {
   const { lang } = useLanguage();
+  const pathname = usePathname();
   
   const sectionRef = useRef(null);
   const headerRef = useRef(null);
@@ -37,8 +39,11 @@ export default function AmenitiesSection() {
 
   useEffect(() => {
     let active = true;
+    const isContactPage = pathname?.includes('/contact');
+    const pageType = isContactPage ? 'contactPage' : 'page';
+
     client
-      .fetch(`*[_type == "page" && _id == "home"][0].sections[_type == "amenitiesSection"][0] {
+      .fetch(`*[_type == "${pageType}"][0].sections[_type == "amenitiesSection"][0] {
         ...,
         "resolvedAmenities": amenities[] {
           ...,
@@ -54,7 +59,7 @@ export default function AmenitiesSection() {
     return () => {
       active = false;
     };
-  }, []);
+  }, [pathname]);
 
   useEffect(() => {
     const ctx = gsap.context(() => {
