@@ -98,6 +98,8 @@ export default function DeveloperProfileSection() {
     { title: dp.sector4Title, desc: dp.sector4Desc },
   ];
 
+  const isAboutPage = pathname?.includes('/about');
+
   // Resolve dynamic values
   const displayTitle = secData?.title?.[lang] || secData?.title?.en || dp.title;
   const displaySubtitle = secData?.subtitle?.[lang] || secData?.subtitle?.en || dp.subtitle;
@@ -118,101 +120,114 @@ export default function DeveloperProfileSection() {
       }}
     >
       <Container maxWidth="xl" sx={{ px: { xs: 3, sm: 6, md: 10, lg: 12 } }}>
-        <Grid
-          container
-          spacing={{ xs: 6, md: 10 }}
+        <Box
           sx={{
-            flexDirection: lang === 'ar' ? 'row-reverse' : 'row',
+            display: 'flex',
+            flexDirection: { xs: 'column', md: 'row' },
+            gap: { xs: 6, md: 10 },
+            width: '100%',
           }}
         >
-          {/* Left Column: Portrait and brief caption */}
-          <Box sx={{ width: { xs: '100%', md: '41.666667%' }, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+          {/* Left Column: Project Architecture Facade & Biography Footer Text */}
+          <Box sx={{ width: { xs: '100%', md: '41.666667%' } }}>
             <Box
               ref={imageBoxRef}
               sx={{
-                position: 'relative',
-                width: { xs: '100%', sm: '380px', md: '100%' },
-                aspectRatio: '3/4',
-                borderRadius: '16px',
-                overflow: 'hidden',
-                boxShadow: '0 20px 50px rgba(61, 54, 46, 0.06)',
-                border: '1px solid rgba(61, 54, 46, 0.1)',
-                '&::after': {
-                  content: '""',
-                  position: 'absolute',
-                  top: 15,
-                  left: 15,
-                  right: 15,
-                  bottom: 15,
-                  border: '1px solid rgba(255, 255, 255, 0.35)',
-                  borderRadius: '8px',
-                  pointerEvents: 'none',
-                  zIndex: 2
-                }
+                width: '100%',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'flex-start',
               }}
             >
+              {/* Premium Framed Architectural Rendering */}
               <Box
-                component="img"
-                src={displayImg}
-                alt="Park View Residential Facade"
                 sx={{
-                  width: '100%',
-                  height: '100%',
-                  objectFit: 'cover',
-                  display: 'block'
-                }}
-              />
-            </Box>
-
-            {/* Portrait Caption */}
-            <Box sx={{ mt: 3.5, mb: 4, textAlign: 'start', width: '100%' }}>
-              <Typography
-                sx={{
-                  fontFamily: '"CS Brandis", serif',
-                  fontSize: '1.35rem',
-                  fontWeight: 500,
-                  color: '#3D362E',
-                  lineHeight: 1.2,
-                  textAlign: 'start',
-                  width: '100%',
+                  position: 'relative',
+                  width: { xs: '100%', sm: '380px', md: '100%' },
+                  aspectRatio: '3/4',
+                  borderRadius: '16px',
+                  overflow: 'hidden',
+                  boxShadow: '0 20px 50px rgba(61, 54, 46, 0.06)',
+                  border: '1px solid rgba(61, 54, 46, 0.1)',
+                  '&::after': {
+                    content: '""',
+                    position: 'absolute',
+                    top: 15,
+                    left: 15,
+                    right: 15,
+                    bottom: 15,
+                    border: '1px solid rgba(255, 255, 255, 0.35)',
+                    borderRadius: '8px',
+                    pointerEvents: 'none',
+                    zIndex: 2
+                  }
                 }}
               >
-                {lang === 'ar' ? 'التصميم المعماري والمساحات الخضراء' : 'Architecture & Landscaping'}
-              </Typography>
+                <Box
+                  component="img"
+                  src={displayImg}
+                  alt="Park View Residential Facade"
+                  sx={{
+                    width: '100%',
+                    height: '100%',
+                    objectFit: 'cover',
+                    display: 'block'
+                  }}
+                />
+              </Box>
+
+              {/* Portrait Caption */}
+              <Box sx={{ mt: 3.5, mb: 4, textAlign: 'start', width: '100%' }}>
+                <Typography
+                  sx={{
+                    fontFamily: '"CS Brandis", serif',
+                    fontSize: '1.35rem',
+                    fontWeight: 500,
+                    color: '#3D362E',
+                    lineHeight: 1.2,
+                    textAlign: 'start',
+                    width: '100%',
+                  }}
+                >
+                  {lang === 'ar' ? 'التصميم المعماري والمساحات الخضراء' : 'Architecture & Landscaping'}
+                </Typography>
+                <Typography
+                  sx={{
+                    fontFamily: '"Silka", sans-serif',
+                    fontSize: '0.82rem',
+                    fontWeight: 400,
+                    letterSpacing: '0.12em',
+                    color: '#9E978E',
+                    textTransform: 'uppercase',
+                    mt: 0.5,
+                    textAlign: 'start',
+                    width: '100%',
+                  }}
+                >
+                  {lang === 'ar' ? 'مجمع بارك فيو السكني' : 'Park View Yaafour'}
+                </Typography>
+              </Box>
+
+              {/* Biography Footer Narrative (Moved here to balance columns height) */}
               <Typography
+                variant="body1"
                 sx={{
                   fontFamily: '"Silka", sans-serif',
-                  fontSize: '0.82rem',
-                  fontWeight: 400,
-                  letterSpacing: '0.12em',
-                  color: '#9E978E',
-                  textTransform: 'uppercase',
-                  mt: 0.5,
+                  fontWeight: 300,
+                  fontSize: '0.94rem',
+                  lineHeight: 1.8,
+                  color: '#6B6661',
+                  maxWidth: '440px',
+                  whiteSpace: 'pre-line',
                   textAlign: 'start',
                   width: '100%',
                 }}
               >
-                {lang === 'ar' ? 'مجمع بارك فيو السكني' : 'Park View Yaafour'}
+                {dp.footerText}
               </Typography>
             </Box>
 
-            {/* Biography Footer Narrative */}
-            <Typography
-              variant="body1"
-              sx={{
-                fontFamily: '"Silka", sans-serif',
-                fontWeight: 300,
-                fontSize: '0.94rem',
-                lineHeight: 1.8,
-                color: '#6B6661',
-                maxWidth: '440px',
-                whiteSpace: 'pre-line',
-                textAlign: 'start',
-                width: '100%',
-              }}
-            >
-              {dp.footerText}
-            </Typography>
+            {!isAboutPage && <LearnMoreLink path="/about" bg="#FFFFFF" />}
           </Box>
 
           {/* Right Column: Editorial Text & Timeline List */}
@@ -382,7 +397,7 @@ export default function DeveloperProfileSection() {
               </Grid>
             </Box>
           </Box>
-        </Grid>
+        </Box>
       </Container>
     </Box>
   );
