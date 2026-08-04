@@ -4,7 +4,6 @@ import { Box, Container, Grid2 as Grid, Typography } from '@mui/material';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useLanguage } from '../context/LanguageContext';
-import { client } from '../sanity/client';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -15,35 +14,6 @@ export default function HolisticLivingSection() {
   const sectionRef = useRef(null);
   const switcherRef = useRef(null);
   const contentGridRef = useRef(null);
-
-  const [secData, setSecData] = useState(null);
-
-  useEffect(() => {
-    let active = true;
-    client
-      .fetch(`*[_type == "residencesPage" && _id == "residencesPage"][0].sections[_type == "holisticLivingSection"][0] {
-        ...,
-        "orchid": {
-          ...,
-          "image1Url": orchid.image1.asset->url,
-          "image2Url": orchid.image2.asset->url
-        },
-        "magnolia": {
-          ...,
-          "image1Url": magnolia.image1.asset->url,
-          "image2Url": magnolia.image2.asset->url
-        }
-      }`)
-      .then((data) => {
-        if (active && data) {
-          setSecData(data);
-        }
-      })
-      .catch((err) => console.warn('Error fetching holistic living section data:', err));
-    return () => {
-      active = false;
-    };
-  }, []);
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -84,9 +54,9 @@ export default function HolisticLivingSection() {
     }, sectionRef);
 
     return () => ctx.revert();
-  }, [lang, secData]);
+  }, [lang]);
 
-  // Fade animation when changing tabs
+  // Fade transition on state switch
   useEffect(() => {
     if (contentGridRef.current) {
       gsap.fromTo(
@@ -99,30 +69,9 @@ export default function HolisticLivingSection() {
 
   const hl = t.holisticLiving;
   
-  // Resolve dynamic values
-  const displayTitle = secData?.orchid?.title?.[lang] || secData?.orchid?.title?.en || hl.title; // Shared title fallback
-
-  const getPhaseData = () => {
-    if (activePhase === 'orchid') {
-      const orchidData = secData?.orchid;
-      return {
-        tabLabel: orchidData?.subtitle?.[lang] || orchidData?.subtitle?.en || hl.phases.orchid.tabLabel,
-        desc: orchidData?.description?.[lang] || orchidData?.description?.en || hl.phases.orchid.desc,
-        largeImg: orchidData?.image1Url || '/images/holistic-orchid-interior.jpg',
-        smallImg: orchidData?.image2Url || '/images/holistic-orchid-flower.jpg',
-      };
-    } else {
-      const magnoliaData = secData?.magnolia;
-      return {
-        tabLabel: magnoliaData?.subtitle?.[lang] || magnoliaData?.subtitle?.en || hl.phases.magnolia.tabLabel,
-        desc: magnoliaData?.description?.[lang] || magnoliaData?.description?.en || hl.phases.magnolia.desc,
-        largeImg: magnoliaData?.image1Url || '/images/holistic-magnolia-interior.jpg',
-        smallImg: magnoliaData?.image2Url || '/images/holistic-magnolia-woman.jpg',
-      };
-    }
-  };
-
-  const activeData = getPhaseData();
+  const activeData = activePhase === 'orchid' ? hl.phases.orchid : hl.phases.magnolia;
+  const largeImg = activePhase === 'orchid' ? '/images/holistic-orchid-interior.jpg' : '/images/holistic-magnolia-interior.jpg';
+  const smallImg = activePhase === 'orchid' ? '/images/holistic-orchid-flower.jpg' : '/images/holistic-magnolia-woman.jpg';
 
   return (
     <Box
@@ -166,7 +115,7 @@ export default function HolisticLivingSection() {
                 width: '100%',
               }}
             >
-              {displayTitle}
+              {hl.title}
             </Typography>
           </Box>
           
@@ -244,7 +193,7 @@ export default function HolisticLivingSection() {
               >
                 <Box
                   component="img"
-                  src={activeData.smallImg}
+                  src={smallImg}
                   alt={`${activePhase} phase portrait illustration`}
                   sx={{
                     width: '100%',
@@ -274,7 +223,7 @@ export default function HolisticLivingSection() {
               >
                 <Box
                   component="img"
-                  src={activeData.largeImg}
+                  src={largeImg}
                   alt={`${activePhase} luxury residential interior rendering`}
                   sx={{
                     width: '100%',
@@ -306,6 +255,16 @@ export default function HolisticLivingSection() {
           </Box>
         </Box>
       </Container>
+
+      {/* Page index vertical label */}
+      {/* <Box className="side-tab-bar">
+        <Typography className="side-tab-title">
+          {hl.sideBrand}
+        </Typography>
+        <Typography className="side-tab-number">
+          {hl.pageNo}
+        </Typography>
+      </Box> */}
     </Box>
   );
 }

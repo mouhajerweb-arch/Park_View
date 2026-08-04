@@ -4,48 +4,17 @@ import { Box, Container, Grid2 as Grid, Typography } from '@mui/material';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useLanguage } from '../context/LanguageContext';
-import { usePathname } from 'next/navigation';
-import { client } from '../sanity/client';
+import LearnMoreLink from './LearnMoreLink';
 
 gsap.registerPlugin(ScrollTrigger);
 
 export default function InteriorsSection() {
   const { t, lang } = useLanguage();
-  const pathname = usePathname();
   const [activeRoom, setActiveRoom] = useState('dining'); // 'dining' | 'bedroom' | 'bathroom'
   
   const sectionRef = useRef(null);
   const headerRef = useRef(null);
   const contentRef = useRef(null);
-
-  const [secData, setSecData] = useState(null);
-
-  useEffect(() => {
-    let active = true;
-    const isResidencesPage = pathname?.includes('/residences');
-    const pageType = isResidencesPage ? 'residencesPage' : 'page';
-
-    client
-      .fetch(`*[_type == "${pageType}"][0].sections[_type == "interiorsSection"][0] {
-        ...,
-        "resolvedTabs": tabs[] {
-          ...,
-          "resolvedImages": images[] {
-            ...,
-            "imageUrl": image.asset->url
-          }
-        }
-      }`)
-      .then((data) => {
-        if (active && data) {
-          setSecData(data);
-        }
-      })
-      .catch((err) => console.warn('Error fetching interiors section data:', err));
-    return () => {
-      active = false;
-    };
-  }, [pathname]);
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -86,7 +55,7 @@ export default function InteriorsSection() {
     }, sectionRef);
 
     return () => ctx.revert();
-  }, [lang, secData]);
+  }, [lang]);
 
   // Transition when changing tabs
   useEffect(() => {
@@ -100,31 +69,6 @@ export default function InteriorsSection() {
   }, [activeRoom]);
 
   const intr = t.interiors;
-
-  // Resolve dynamic values
-  const displayTitle = secData?.title?.[lang] || secData?.title?.en || intr.title;
-  const displaySubtitle = secData?.eyebrow?.[lang] || secData?.eyebrow?.en || intr.subtitle;
-
-  const getTabData = (tabId) => {
-    const tabObj = secData?.resolvedTabs?.find((tab) => tab.tabId === tabId);
-    if (tabObj) {
-      return {
-        desc: tabObj.tabDescription?.[lang] || tabObj.tabDescription?.en || '',
-        img: tabObj.resolvedImages?.[0]?.imageUrl || '',
-      };
-    }
-    
-    // Default Fallbacks
-    if (tabId === 'dining') {
-      return { desc: intr.diningDesc, img: '/images/interior-dining.jpg' };
-    } else if (tabId === 'bedroom') {
-      return { desc: intr.bedroomDesc, img: '/images/interior-bedroom.jpg' };
-    } else {
-      return { desc: intr.bathroomDesc, img: '/images/prestige-tranquility.jpg' };
-    }
-  };
-
-  const activeData = getTabData(activeRoom);
 
   return (
     <Box
@@ -165,7 +109,7 @@ export default function InteriorsSection() {
               width: '100%',
             }}
           >
-            {displaySubtitle}
+            {intr.subtitle}
           </Typography>
           <Typography
             variant="h2"
@@ -181,7 +125,7 @@ export default function InteriorsSection() {
               width: '100%',
             }}
           >
-            {displayTitle}
+            {intr.title}
           </Typography>
 
           {/* Interactive room tab pills */}
@@ -235,43 +179,157 @@ export default function InteriorsSection() {
 
         {/* Room content rendering */}
         <Box ref={contentRef}>
-          <Box>
-            <Box
-              sx={{
-                width: '100%',
-                height: { xs: '240px', sm: '380px', md: '500px' },
-                borderRadius: '12px',
-                overflow: 'hidden',
-                boxShadow: '0 12px 30px rgba(61, 54, 46, 0.05)',
-                mb: 4
-              }}
-            >
+          {activeRoom === 'dining' && (
+            <Box>
               <Box
-                component="img"
-                src={activeData.img}
-                alt={`${activeRoom} room layout rendering`}
-                sx={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
-              />
+                sx={{
+                  width: '100%',
+                  height: { xs: '240px', sm: '380px', md: '500px' },
+                  borderRadius: '12px',
+                  overflow: 'hidden',
+                  boxShadow: '0 12px 30px rgba(61, 54, 46, 0.05)',
+                  mb: 4
+                }}
+              >
+                <Box
+                  component="img"
+                  src="/images/interior-dining.jpg"
+                  alt="Luxury Dining room layout rendering"
+                  sx={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+                />
+              </Box>
+              <Typography
+                variant="body1"
+                sx={{
+                  fontFamily: '"Silka", sans-serif',
+                  fontWeight: 300,
+                  fontSize: '0.96rem',
+                  lineHeight: 1.85,
+                  color: '#6B6661',
+                  textAlign: lang === 'ar' ? 'right' : 'justify',
+                  maxWidth: '850px',
+                  ml: lang === 'ar' ? 'auto' : '0',
+                  mr: lang === 'ar' ? '0' : 'auto'
+                }}
+              >
+                {intr.diningDesc}
+              </Typography>
             </Box>
-            <Typography
-              variant="body1"
-              sx={{
-                fontFamily: '"Silka", sans-serif',
-                fontWeight: 300,
-                fontSize: '0.96rem',
-                lineHeight: 1.85,
-                color: '#6B6661',
-                textAlign: lang === 'ar' ? 'right' : 'justify',
-                maxWidth: '850px',
-                ml: lang === 'ar' ? 'auto' : '0',
-                mr: lang === 'ar' ? '0' : 'auto'
-              }}
+          )}
+
+          {activeRoom === 'bedroom' && (
+            <Box>
+              <Box
+                sx={{
+                  width: '100%',
+                  height: { xs: '240px', sm: '380px', md: '500px' },
+                  borderRadius: '12px',
+                  overflow: 'hidden',
+                  boxShadow: '0 12px 30px rgba(61, 54, 46, 0.05)',
+                  mb: 4
+                }}
+              >
+                <Box
+                  component="img"
+                  src="/images/interior-bedroom.jpg"
+                  alt="Luxury Master Bedroom rendering"
+                  sx={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+                />
+              </Box>
+              <Typography
+                variant="body1"
+                sx={{
+                  fontFamily: '"Silka", sans-serif',
+                  fontWeight: 300,
+                  fontSize: '0.96rem',
+                  lineHeight: 1.85,
+                  color: '#6B6661',
+                  textAlign: lang === 'ar' ? 'right' : 'justify',
+                  maxWidth: '850px',
+                  ml: lang === 'ar' ? 'auto' : '0',
+                  mr: lang === 'ar' ? '0' : 'auto'
+                }}
+              >
+                {intr.bedroomDesc}
+              </Typography>
+            </Box>
+          )}
+
+          {activeRoom === 'bathroom' && (
+            <Grid 
+              container 
+              spacing={4}
             >
-              {activeData.desc}
-            </Typography>
-          </Box>
+              {/* Closet left portrait */}
+              <Grid size={{ xs: 12, md: 4 }}>
+                <Box
+                  sx={{
+                    width: '100%',
+                    height: '380px',
+                    borderRadius: '12px',
+                    overflow: 'hidden',
+                    boxShadow: '0 10px 25px rgba(0, 0, 0, 0.04)',
+                    border: '1px solid rgba(61, 54, 46, 0.05)'
+                  }}
+                >
+                  <Box
+                    component="img"
+                    src="/images/interior-closet.jpg"
+                    alt="Luxury walk in closet detail rendering"
+                    sx={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+                  />
+                </Box>
+              </Grid>
+
+              {/* Bathroom right landscape */}
+              <Grid size={{ xs: 12, md: 8 }}>
+                <Box
+                  sx={{
+                    width: '100%',
+                    height: '380px',
+                    borderRadius: '12px',
+                    overflow: 'hidden',
+                    boxShadow: '0 12px 30px rgba(61, 54, 46, 0.05)',
+                    mb: 3
+                  }}
+                >
+                  <Box
+                    component="img"
+                    src="/images/interior-bathroom.jpg"
+                    alt="Luxury bathroom travertine marble rendering"
+                    sx={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+                  />
+                </Box>
+                <Typography
+                  variant="body1"
+                  sx={{
+                    fontFamily: '"Silka", sans-serif',
+                    fontWeight: 300,
+                    fontSize: '0.96rem',
+                    lineHeight: 1.8,
+                    color: '#6B6661',
+                    textAlign: lang === 'ar' ? 'right' : 'justify'
+                  }}
+                >
+                  {intr.bathroomDesc}
+                </Typography>
+              </Grid>
+            </Grid>
+          )}
         </Box>
+              <LearnMoreLink path="/residences" bg="#FFFFFF" />
+        
       </Container>
+
+      {/* Page index vertical label */}
+      {/* <Box className="side-tab-bar">
+        <Typography className="side-tab-title">
+          {intr.sideBrand}
+        </Typography>
+        <Typography className="side-tab-number">
+          {intr.pageNo}
+        </Typography>
+      </Box> */}
     </Box>
   );
 }

@@ -6,12 +6,10 @@ import PhoneIcon from '@mui/icons-material/Phone';
 import EmailIcon from '@mui/icons-material/Email';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import { useLanguage } from '../context/LanguageContext';
-import { usePathname } from 'next/navigation';
 import { client } from '../sanity/client';
 
 export default function ContactFormSection() {
   const { lang } = useLanguage();
-  const pathname = usePathname();
   const [phone, setPhone] = useState('');
   const [form, setForm] = useState({
     firstName: '',
@@ -24,11 +22,8 @@ export default function ContactFormSection() {
 
   useEffect(() => {
     let active = true;
-    const isContactPage = pathname?.includes('/contact');
-    const pageType = isContactPage ? 'contactPage' : 'page';
-
     client
-      .fetch(`*[_type == "${pageType}"][0].sections[_type == "contactFormSection"][0]`)
+      .fetch(`*[_type == "page" && _id == "home"][0].sections[_type == "contactFormSection"][0]`)
       .then((data) => {
         if (active && data) {
           setContactData(data);
@@ -38,7 +33,7 @@ export default function ContactFormSection() {
     return () => {
       active = false;
     };
-  }, [pathname]);
+  }, []);
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -637,9 +632,9 @@ export default function ContactFormSection() {
                     fontFamily: '"Silka", sans-serif',
                     fontSize: '0.85rem',
                     fontWeight: 500,
-                    // textTransform: 'uppercase',
-                    letterSpacing: '0.05em',
-                    backgroundColor: '#242725',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.15em',
+                    backgroundColor: '#5A7365',
                     color: '#FFFFFF',
                     borderRadius: '50px',
                     py: 2,

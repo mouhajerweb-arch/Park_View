@@ -217,7 +217,7 @@ export default function HeroSection() {
             direction: "ltr",
             alignItems: "center",
             justifyContent: "center",
-            // margin: { xs: "20px auto", sm: "40px auto" },
+            margin: { xs: "20px auto", sm: "40px auto" },
             height: { xs: "95px", sm: "150px" },
             zIndex: 10,
           }}

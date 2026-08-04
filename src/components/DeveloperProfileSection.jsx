@@ -1,47 +1,21 @@
 'use client';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { Box, Container, Grid2 as Grid, Typography } from '@mui/material';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useLanguage } from '../context/LanguageContext';
 import LearnMoreLink from './LearnMoreLink';
-import { usePathname } from 'next/navigation';
-import { client } from '../sanity/client';
 
 gsap.registerPlugin(ScrollTrigger);
 
 export default function DeveloperProfileSection() {
   const { t, lang } = useLanguage();
-  const pathname = usePathname();
 
   const sectionRef = useRef(null);
   const imageBoxRef = useRef(null);
   const contentColRef = useRef(null);
   const quoteBoxRef = useRef(null);
   const sectorsRef = useRef(null);
-
-  const [secData, setSecData] = useState(null);
-
-  useEffect(() => {
-    let active = true;
-    const isAboutPage = pathname?.includes('/about');
-    const pageType = isAboutPage ? 'aboutPage' : 'page';
-
-    client
-      .fetch(`*[_type == "${pageType}"][0].sections[_type == "developerProfileSection"][0] {
-        ...,
-        "imageUrl": profileImage.asset->url
-      }`)
-      .then((data) => {
-        if (active && data) {
-          setSecData(data);
-        }
-      })
-      .catch((err) => console.warn('Error fetching developer profile section:', err));
-    return () => {
-      active = false;
-    };
-  }, [pathname]);
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -84,10 +58,47 @@ export default function DeveloperProfileSection() {
           }
         );
       }
+
+      // Quote box reveal
+      if (quoteBoxRef.current) {
+        gsap.fromTo(
+          quoteBoxRef.current,
+          { opacity: 0, scale: 0.98 },
+          {
+            opacity: 1,
+            scale: 1,
+            duration: 1,
+            ease: 'power3.out',
+            scrollTrigger: {
+              trigger: quoteBoxRef.current,
+              start: 'top 85%',
+            },
+          }
+        );
+      }
+
+      // Sectors grid reveal
+      if (sectorsRef.current) {
+        gsap.fromTo(
+          sectorsRef.current.children,
+          { opacity: 0, y: 20 },
+          {
+            opacity: 1,
+            y: 0,
+            duration: 0.8,
+            stagger: 0.1,
+            ease: 'power3.out',
+            scrollTrigger: {
+              trigger: sectorsRef.current,
+              start: 'top 80%',
+            },
+          }
+        );
+      }
     }, sectionRef);
 
     return () => ctx.revert();
-  }, [lang, secData]);
+  }, []);
 
   const dp = t.developerProfile;
 
@@ -95,37 +106,33 @@ export default function DeveloperProfileSection() {
     { title: dp.constructionTitle, desc: dp.constructionDesc },
     { title: dp.realEstateTitle, desc: dp.realEstateDesc },
     { title: dp.hospitalityTitle, desc: dp.hospitalityDesc },
-    { title: dp.retailTitle, desc: dp.retailDesc },
+    { title: dp.retailTitle, desc: dp.retailDesc }
   ];
-
-  const isAboutPage = pathname?.includes('/about');
-
-  // Resolve dynamic values
-  const displayTitle = secData?.title?.[lang] || secData?.title?.en || dp.title;
-  const displaySubtitle = secData?.subtitle?.[lang] || secData?.subtitle?.en || dp.subtitle;
-  const displayQuote = secData?.quote?.[lang] || secData?.quote?.en || dp.quoteText;
-  const displayBio = secData?.bio?.[lang] || secData?.bio?.en || dp.description;
-  const displayImg = secData?.imageUrl || "/images/prestige-tranquility.jpg";
 
   return (
     <Box
-      id="about-developer"
+      id="developer-profile"
       ref={sectionRef}
       className="brochure-section"
       sx={{
+        position: 'relative',
         width: '100%',
-        backgroundColor: '#FFFFFF', // High-end white contrasting with prestige beige
-        py: { xs: 8, md: 14 },
+        backgroundColor: '#FFFFFF', // High-end white background
+        py: { xs: 8, md: 16 },
+        px: { xs: 3, sm: 6, md: 10, lg: 12 },
+        display: 'flex',
+        alignItems: 'center',
         borderBottom: '1px solid rgba(61, 54, 46, 0.05)',
       }}
     >
-      <Container maxWidth="xl" sx={{ px: { xs: 3, sm: 6, md: 10, lg: 12 } }}>
-        <Box
+      <Container maxWidth="xl" sx={{ pr: { md: 8 } }}>
+        <Box 
           sx={{
             display: 'flex',
             flexDirection: { xs: 'column', md: 'row' },
-            gap: { xs: 6, md: 10 },
-            width: '100%',
+            gap: { xs: 6, md: 8, lg: 12 },
+            alignItems: 'flex-start',
+            width: '100%'
           }}
         >
           {/* Left Column: Project Architecture Facade & Biography Footer Text */}
@@ -165,7 +172,7 @@ export default function DeveloperProfileSection() {
               >
                 <Box
                   component="img"
-                  src={displayImg}
+                  src="/images/prestige-tranquility.jpg"
                   alt="Park View Residential Facade"
                   sx={{
                     width: '100%',
@@ -227,7 +234,7 @@ export default function DeveloperProfileSection() {
               </Typography>
             </Box>
 
-            {!isAboutPage && <LearnMoreLink path="/about" bg="#FFFFFF" />}
+            <LearnMoreLink path="/about" bg="#FFFFFF" />
           </Box>
 
           {/* Right Column: Editorial Text & Timeline List */}
@@ -256,7 +263,7 @@ export default function DeveloperProfileSection() {
                   width: '100%',
                 }}
               >
-                {displaySubtitle}
+                {dp.subtitle}
               </Typography>
 
               {/* Founder Header Title */}
@@ -273,7 +280,7 @@ export default function DeveloperProfileSection() {
                   width: '100%',
                 }}
               >
-                {displayTitle}
+                {dp.title}
               </Typography>
 
               {/* Main Narrative Paragraph */}
@@ -291,7 +298,7 @@ export default function DeveloperProfileSection() {
                   width: '100%',
                 }}
               >
-                {displayBio}
+                {dp.description}
               </Typography>
 
               {/* Creative Vision Quote Block */}
@@ -323,7 +330,7 @@ export default function DeveloperProfileSection() {
                     width: '100%',
                   }}
                 >
-                  {displayQuote}
+                  {dp.quoteText}
                 </Typography>
                 <Typography
                   sx={{

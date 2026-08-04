@@ -1,10 +1,9 @@
 'use client';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { Box, Typography } from '@mui/material';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useLanguage } from '../context/LanguageContext';
-import { client, urlFor } from '../sanity/client';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -20,27 +19,6 @@ export default function NatureSerenitySection() {
   
   const largeImgColRef = useRef(null);
   const largeImgRef = useRef(null);
-
-  const [secData, setSecData] = useState(null);
-
-  useEffect(() => {
-    let active = true;
-    client
-      .fetch(`*[_type == "aboutPage" && _id == "aboutPage"][0].sections[_type == "natureSerenitySection"][0] {
-        ...,
-        "smallImageUrl": smallImage.asset->url,
-        "largeImageUrl": largeImage.asset->url
-      }`)
-      .then((data) => {
-        if (active && data) {
-          setSecData(data);
-        }
-      })
-      .catch((err) => console.warn('Error fetching nature serenity section:', err));
-    return () => {
-      active = false;
-    };
-  }, []);
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -79,15 +57,7 @@ export default function NatureSerenitySection() {
     }, sectionRef);
 
     return () => ctx.revert();
-  }, [lang, secData]);
-
-  // Resolve dynamic values
-  const displayTitle = secData?.title?.[lang] || secData?.title?.en || t.natureSerenity.title;
-  const displayParagraph1 = secData?.paragraph1?.[lang] || secData?.paragraph1?.en || t.natureSerenity.paragraph1;
-  const displayParagraph2 = secData?.paragraph2?.[lang] || secData?.paragraph2?.en || t.natureSerenity.paragraph2;
-  
-  const displaySmallImg = secData?.smallImageUrl || "/images/nature-table-placeholder.jpg";
-  const displayLargeImg = secData?.largeImageUrl || "/images/nature-interior-placeholder.jpg";
+  }, [lang]);
 
   return (
     <Box
@@ -134,7 +104,7 @@ export default function NatureSerenitySection() {
               letterSpacing: '-0.01em',
             }}
           >
-            {displayTitle}
+            {t.natureSerenity.title}
           </Typography>
 
           {/* Small Portrait Image */}
@@ -154,7 +124,7 @@ export default function NatureSerenitySection() {
           >
             <Box
               component="img"
-              src={displaySmallImg}
+              src="/images/nature-table-placeholder.jpg"
               alt="Nature table vignette"
               sx={{
                 width: '100%',
@@ -180,7 +150,7 @@ export default function NatureSerenitySection() {
               width: '100%',
             }}
           >
-            {displayParagraph1}
+            {t.natureSerenity.paragraph1}
           </Typography>
 
           {/* Paragraph 2 */}
@@ -197,7 +167,7 @@ export default function NatureSerenitySection() {
               width: '100%',
             }}
           >
-            {displayParagraph2}
+            {t.natureSerenity.paragraph2}
           </Typography>
         </Box>
       </Box>
@@ -218,7 +188,7 @@ export default function NatureSerenitySection() {
         <Box
           ref={largeImgRef}
           component="img"
-          src={displayLargeImg}
+          src="/images/nature-interior-placeholder.jpg"
           alt="Shaped by Nature luxury interior rendering"
           sx={{
             width: '100%',

@@ -5,7 +5,6 @@ import CloseIcon from '@mui/icons-material/Close';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useLanguage } from '../context/LanguageContext';
-import { usePathname } from 'next/navigation';
 import { client, urlFor } from '../sanity/client';
 
 gsap.registerPlugin(ScrollTrigger);
@@ -64,16 +63,12 @@ export default function GallerySection() {
   const tripleImages = [...galleryList, ...galleryList, ...galleryList];
   const currentIndexRef = useRef(N);
 
-  const pathname = usePathname();
-
   // Fetch gallery list and page section metadata from Sanity
   useEffect(() => {
     let active = true;
-    const isGalleryPage = pathname?.includes('/gallery');
-    const pageType = isGalleryPage ? 'galleryPage' : 'page';
 
     // Fetch section data (including inline carousel images)
-    client.fetch(`*[_type == "${pageType}"][0].sections[_type == "gallerySection"][0] {
+    client.fetch(`*[_type == "page" && _id == "home"][0].sections[_type == "gallerySection"][0] {
       ...,
       "inlineImages": images[] { ..., "imageUrl": image.asset->url }
     }`).then((data) => {
@@ -129,7 +124,7 @@ export default function GallerySection() {
     return () => {
       active = false;
     };
-  }, [pathname]);
+  }, []);
 
   // Measure container and dynamically set slide widths for LTR/RTL peaks balance
   useEffect(() => {
