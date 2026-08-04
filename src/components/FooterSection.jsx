@@ -272,7 +272,7 @@ export default function FooterSection() {
               {/* Address detail */}
               <Box
                 component="a"
-                href={getMapHref(displayAddress)}
+                href={footerData?.mapsUrl || getMapHref(displayAddress)}
                 target="_blank"
                 rel="noopener noreferrer"
                 sx={{
