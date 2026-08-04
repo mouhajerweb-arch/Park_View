@@ -16,5 +16,15 @@ export default defineType({
     defineField({ name: 'contactEmail', title: 'Contact Email', type: 'string' }),
     defineField({ name: 'contactPhone', title: 'Contact Phone Number', type: 'string' }),
     defineField({ name: 'address', title: 'Physical Address', type: 'localizedString' }),
+    defineField({
+      name: 'sections',
+      title: 'Page Sections',
+      type: 'array',
+      of: [
+        { type: 'faqSection' },
+        { type: 'contactFormSection' },
+        { type: 'amenitiesSection' },
+      ]
+    })
   ],
 });

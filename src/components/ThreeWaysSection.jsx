@@ -4,6 +4,7 @@ import { Box, Typography } from '@mui/material';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useLanguage } from '../context/LanguageContext';
+import { client } from '../sanity/client';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -20,6 +21,26 @@ export default function ThreeWaysSection() {
   
   const largeImgColRef = useRef(null);
   const largeImgRef = useRef(null);
+
+  const [secData, setSecData] = useState(null);
+
+  useEffect(() => {
+    let active = true;
+    client
+      .fetch(`*[_type == "residencesPage" && _id == "residencesPage"][0].sections[_type == "threeWaysSection"][0] {
+        ...,
+        "largeImageUrl": largeImage.asset->url
+      }`)
+      .then((data) => {
+        if (active && data) {
+          setSecData(data);
+        }
+      })
+      .catch((err) => console.warn('Error fetching three ways section data:', err));
+    return () => {
+      active = false;
+    };
+  }, []);
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -58,7 +79,7 @@ export default function ThreeWaysSection() {
     }, sectionRef);
 
     return () => ctx.revert();
-  }, [lang]);
+  }, [lang, secData]);
 
   // Fade animation when changing tabs
   useEffect(() => {
@@ -73,22 +94,27 @@ export default function ThreeWaysSection() {
 
   const tw = t.threeWays;
   
+  // Resolve dynamic values
+  const displayTitle = secData?.title?.[lang] || secData?.title?.en || tw.title;
+  const displayParagraph = secData?.description?.[lang] || secData?.description?.en || tw.paragraph;
+  const displayLargeImg = secData?.largeImageUrl || "/images/harmony-pool.jpg";
+
   const getPhaseData = () => {
     switch (activeTab) {
       case 'orchid':
         return {
-          title: tw.phases.orchidTitle,
-          desc: tw.phases.orchidDesc,
+          title: secData?.phases?.orchidTitle?.[lang] || secData?.phases?.orchidTitle?.en || tw.phases.orchidTitle,
+          desc: secData?.phases?.orchidDesc?.[lang] || secData?.phases?.orchidDesc?.en || tw.phases.orchidDesc,
         };
       case 'lavender':
         return {
-          title: tw.phases.lavenderTitle,
-          desc: tw.phases.lavenderDesc,
+          title: secData?.phases?.lavenderTitle?.[lang] || secData?.phases?.lavenderTitle?.en || tw.phases.lavenderTitle,
+          desc: secData?.phases?.lavenderDesc?.[lang] || secData?.phases?.lavenderDesc?.en || tw.phases.lavenderDesc,
         };
       case 'magnolia':
         return {
-          title: tw.phases.magnoliaTitle,
-          desc: tw.phases.magnoliaDesc,
+          title: secData?.phases?.magnoliaTitle?.[lang] || secData?.phases?.magnoliaTitle?.en || tw.phases.magnoliaTitle,
+          desc: secData?.phases?.magnoliaDesc?.[lang] || secData?.phases?.magnoliaDesc?.en || tw.phases.magnoliaDesc,
         };
       default:
         return {};
@@ -159,7 +185,7 @@ export default function ThreeWaysSection() {
               letterSpacing: '-0.01em',
             }}
           >
-            {tw.title}
+            {displayTitle}
           </Typography>
 
           {/* Paragraph */}
@@ -177,134 +203,96 @@ export default function ThreeWaysSection() {
               width: '100%',
             }}
           >
-            {tw.paragraph}
+            {displayParagraph}
           </Typography>
 
-          {/* Tab buttons */}
+          {/* Tab Switcher Headers */}
           <Box
             ref={tabsContainerRef}
             sx={{
               display: 'flex',
-              gap: 1.5,
-              mb: 4,
-              borderBottom: '1px solid rgba(61, 54, 46, 0.1)',
+              gap: 4,
+              borderBottom: '1px solid #E5DEC9',
               pb: 1.5,
+              mb: 4,
+              flexDirection: lang === 'ar' ? 'row-reverse' : 'row',
               justifyContent: 'flex-start',
-              flexDirection: 'row',
             }}
           >
-            {['orchid', 'lavender', 'magnolia'].map((tab) => (
-              <Box
-                key={tab}
-                onClick={() => setActiveTab(tab)}
-                sx={{
-                  fontFamily: '"Silka", sans-serif',
-                  fontWeight: 500,
-                  fontSize: '0.9rem',
-                  color: activeTab === tab ? '#3D362E' : '#9E978E',
-                  cursor: 'pointer',
-                  position: 'relative',
-                  pb: 1,
-                  transition: 'color 0.3s ease',
-                  '&::after': {
-                    content: '""',
-                    position: 'absolute',
-                    bottom: -13,
-                    left: 0,
-                    width: '100%',
-                    height: '2px',
-                    backgroundColor: '#3D362E',
-                    transform: activeTab === tab ? 'scaleX(1)' : 'scaleX(0)',
-                    transition: 'transform 0.3s ease',
-                    transformOrigin: 'left'
-                  }
-                }}
-              >
-                {tab === 'orchid' && t.threeWays.phases.orchidTitle.split(' ')[0]}
-                {tab === 'lavender' && t.threeWays.phases.lavenderTitle.split(' ')[0]}
-                {tab === 'magnolia' && t.threeWays.phases.magnoliaTitle.split(' ')[0]}
-              </Box>
-            ))}
+            {['orchid', 'lavender', 'magnolia'].map((tab) => {
+              const label =
+                tab === 'orchid'
+                  ? (lang === 'ar' ? 'أوركيد' : 'Orchid')
+                  : tab === 'lavender'
+                  ? (lang === 'ar' ? 'لافندر' : 'Lavender')
+                  : (lang === 'ar' ? 'ماغنوليا' : 'Magnolia');
+              return (
+                <Typography
+                  key={tab}
+                  onClick={() => setActiveTab(tab)}
+                  sx={{
+                    fontFamily: '"Silka", sans-serif',
+                    fontSize: '0.85rem',
+                    fontWeight: activeTab === tab ? 600 : 400,
+                    color: activeTab === tab ? '#3D362E' : '#9E978E',
+                    cursor: 'pointer',
+                    position: 'relative',
+                    transition: 'all 0.3s ease',
+                    pb: 1.5,
+                    '&::after': {
+                      content: '""',
+                      position: 'absolute',
+                      bottom: -13,
+                      left: 0,
+                      width: '100%',
+                      height: '2px',
+                      backgroundColor: '#3D362E',
+                      opacity: activeTab === tab ? 1 : 0,
+                      transition: 'opacity 0.3s ease',
+                    },
+                  }}
+                >
+                  {label}
+                </Typography>
+              );
+            })}
           </Box>
 
-          {/* Active Tab content */}
-          <Box ref={tabContentRef} sx={{ minHeight: '180px', textAlign: lang === 'ar' ? 'right' : 'left' }}>
+          {/* Dynamic Tab Body Content */}
+          <Box ref={tabContentRef} sx={{ minHeight: '180px', width: '100%', textAlign: 'start' }}>
             <Typography
               variant="h3"
               sx={{
                 fontFamily: '"CS Brandis", serif',
-                fontSize: '1.5rem',
-                fontWeight: 400,
+                fontSize: { xs: '1.4rem', md: '1.65rem' },
                 color: '#3D362E',
-                mb: 2,
-                textAlign: lang === 'ar' ? 'right' : 'left',
+                mb: 2.5,
+                textAlign: 'start',
+                width: '100%',
               }}
             >
               {activeData.title}
             </Typography>
+
             <Typography
-              variant="body2"
+              variant="body1"
               sx={{
                 fontFamily: '"Silka", sans-serif',
                 fontWeight: 300,
-                fontSize: '0.94rem',
+                fontSize: { xs: '0.88rem', md: '0.94rem' },
                 lineHeight: 1.8,
                 color: '#6B6661',
-                mb: 3,
-                textAlign: lang === 'ar' ? 'right' : 'justify',
+                textAlign: 'start',
+                width: '100%',
               }}
             >
               {activeData.desc}
             </Typography>
-
-            {/* Spec grid ("Coming Soon" placeholders for Orchid/Lavender/Magnolia) */}
-            <Box
-              sx={{
-                display: 'grid',
-                gridTemplateColumns: 'repeat(2, 1fr)',
-                gap: 2,
-                mt: 3,
-                borderTop: '1px dashed rgba(61, 54, 46, 0.1)',
-                pt: 2.5
-              }}
-            >
-              {[
-                { label: lang === 'ar' ? 'نوع الوحدات' : 'Unit Types', val: tw.phases.comingSoon },
-                { label: lang === 'ar' ? 'مساحات الوحدات' : 'Unit Sizes', val: tw.phases.comingSoon },
-                { label: lang === 'ar' ? 'أسعار البداية' : 'Starting Prices', val: tw.phases.comingSoon },
-                { label: lang === 'ar' ? 'خطة الدفع' : 'Payment Plan', val: tw.phases.comingSoon }
-              ].map((item, idx) => (
-                <Box key={idx} sx={{ textAlign: lang === 'ar' ? 'right' : 'left' }}>
-                  <Typography
-                    sx={{
-                      fontFamily: '"Silka", sans-serif',
-                      fontSize: '0.8rem',
-                      color: '#9E978E',
-                      textTransform: 'uppercase',
-                      letterSpacing: '0.05em',
-                      mb: 0.5
-                    }}
-                  >
-                    {item.label}
-                  </Typography>
-                  <Typography
-                    sx={{
-                      fontFamily: '"Silka", sans-serif',
-                      fontSize: '0.9rem',
-                      fontWeight: 500,
-                      color: '#7C7368'
-                    }}
-                  >
-                    {item.val}
-                  </Typography>
-                </Box>
-              ))}
-            </Box>
           </Box>
         </Box>
       </Box>
 
-      {/* Right Column: Full-Bleed Balcony Close-up */}
+      {/* Right Column: Full-Bleed Image */}
       <Box
         ref={largeImgColRef}
         sx={{
@@ -320,8 +308,8 @@ export default function ThreeWaysSection() {
         <Box
           ref={largeImgRef}
           component="img"
-          src="/images/threeways-balcony.jpg"
-          alt="Luxury residential cluster balcony detail"
+          src={displayLargeImg}
+          alt="Luxury living residences exterior landscape rendering"
           sx={{
             width: '100%',
             height: '100%',
@@ -334,14 +322,14 @@ export default function ThreeWaysSection() {
       </Box>
 
       {/* Page index vertical label */}
-      {/* <Box className="side-tab-bar">
+      <Box className="side-tab-bar">
         <Typography className="side-tab-title">
           {tw.sideBrand}
         </Typography>
         <Typography className="side-tab-number">
           {tw.pageNo}
         </Typography>
-      </Box> */}
+      </Box>
     </Box>
   );
 }

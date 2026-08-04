@@ -1,25 +1,43 @@
 'use client';
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Box, Typography } from '@mui/material';
-import gsap from 'react';
 import { useLanguage } from '../context/LanguageContext';
+import { client } from '../sanity/client';
 
 export default function LuxuryLivingSection() {
   const { t, lang } = useLanguage();
   
-  // React Hook declarations
-  const sectionRef = React.useRef(null);
-  const textColRef = React.useRef(null);
-  const titleRef = React.useRef(null);
-  const pRef = React.useRef(null);
-  const statsRef = React.useRef(null);
+  const sectionRef = useRef(null);
+  const textColRef = useRef(null);
+  const titleRef = useRef(null);
+  const pRef = useRef(null);
+  const statsRef = useRef(null);
   
-  const largeImgColRef = React.useRef(null);
-  const largeImgRef = React.useRef(null);
+  const largeImgColRef = useRef(null);
+  const largeImgRef = useRef(null);
 
-  React.useEffect(() => {
-    // Import gsap inside useEffect dynamically to avoid pre-render issues if any,
-    // although we already have it in client components.
+  const [secData, setSecData] = useState(null);
+
+  useEffect(() => {
+    let active = true;
+    client
+      .fetch(`*[_type == "locationPage" && _id == "locationPage"][0].sections[_type == "luxuryLivingSection"][0] {
+        ...,
+        "largeImageUrl": largeImage.asset->url
+      }`)
+      .then((data) => {
+        if (active && data) {
+          setSecData(data);
+        }
+      })
+      .catch((err) => console.warn('Error fetching luxury living section data:', err));
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    // Import gsap inside useEffect dynamically to avoid pre-render issues
     const gsapModule = require('gsap');
     const ScrollTriggerModule = require('gsap/ScrollTrigger');
     gsapModule.gsap.registerPlugin(ScrollTriggerModule.ScrollTrigger);
@@ -51,9 +69,9 @@ export default function LuxuryLivingSection() {
           {
             opacity: 1,
             y: 0,
-            duration: 0.8,
-            stagger: 0.15,
-            delay: 0.3,
+            duration: 0.7,
+            stagger: 0.1,
+            delay: 0.4,
             ease: 'power3.out',
             scrollTrigger: {
               trigger: statsRef.current,
@@ -81,13 +99,30 @@ export default function LuxuryLivingSection() {
     }, sectionRef);
 
     return () => ctx.revert();
-  }, [lang]);
+  }, [lang, secData]);
 
   const ll = t.luxuryLiving;
 
+  // Resolve dynamic values
+  const displayTitle = secData?.title?.[lang] || secData?.title?.en || ll.title;
+  const displayParagraph = secData?.paragraph?.[lang] || secData?.paragraph?.en || ll.paragraph;
+  const displayLargeImg = secData?.largeImageUrl || "/images/curated-garden.jpg";
+
+  const defaultStats = [
+    { value: '50K', label: ll.stat1Label },
+    { value: '30K', label: ll.stat2Label },
+    { value: '3', label: ll.stat3Label },
+  ];
+  const displayStats = secData?.stats && secData.stats.length > 0
+    ? secData.stats.map(s => ({
+        value: s.value,
+        label: s.label?.[lang] || s.label?.en || ''
+      }))
+    : defaultStats;
+
   return (
     <Box
-      id="luxury-living"
+      id="luxury-narrative"
       ref={sectionRef}
       sx={{
         width: '100%',
@@ -96,10 +131,10 @@ export default function LuxuryLivingSection() {
         flexDirection: { xs: 'column', md: 'row' },
         overflow: 'hidden',
         position: 'relative',
-        backgroundColor: '#F6F2EC',
+        backgroundColor: '#FFFFFF',
       }}
     >
-      {/* Left Column: Text and Stats */}
+      {/* Left Column: Text & Stats */}
       <Box
         ref={textColRef}
         sx={{
@@ -108,13 +143,13 @@ export default function LuxuryLivingSection() {
           flexDirection: 'column',
           justifyContent: 'center',
           alignItems: 'center',
-          backgroundColor: '#F6F2EC',
+          backgroundColor: '#FFFFFF',
           py: { xs: 8, md: 6 },
           px: { xs: 4, sm: 8, md: 10, lg: 12 },
         }}
       >
         <Box sx={{ maxWidth: '580px', width: '100%' }}>
-          {/* Title */}
+          {/* Section Heading */}
           <Typography
             ref={titleRef}
             variant="h2"
@@ -130,10 +165,10 @@ export default function LuxuryLivingSection() {
               letterSpacing: '-0.01em',
             }}
           >
-            {ll.title}
+            {displayTitle}
           </Typography>
 
-          {/* Paragraph */}
+          {/* Narrative Paragraph */}
           <Typography
             ref={pRef}
             variant="body1"
@@ -148,44 +183,49 @@ export default function LuxuryLivingSection() {
               width: '100%',
             }}
           >
-            {ll.paragraph}
+            {displayParagraph}
           </Typography>
 
-          {/* Stats Box */}
+          {/* Key Stats Counter Grid */}
           <Box
             ref={statsRef}
             sx={{
               display: 'flex',
-              flexDirection: 'column',
-              gap: 4,
-              textAlign: 'start',
+              gap: { xs: 4, sm: 6 },
               width: '100%',
+              flexDirection: lang === 'ar' ? 'row-reverse' : 'row',
+              justifyContent: 'flex-start',
             }}
           >
-            {ll.stats.map((stat, idx) => (
-              <Box key={idx} sx={{ width: '100%', textAlign: 'start' }}>
+            {displayStats.map((stat, idx) => (
+              <Box 
+                key={idx} 
+                sx={{ 
+                  textAlign: 'start',
+                  minWidth: '100px'
+                }}
+              >
                 <Typography
                   sx={{
                     fontFamily: '"CS Brandis", serif',
-                    fontSize: { xs: '1.8rem', md: '2.2rem' },
+                    fontSize: { xs: '2.5rem', md: '3.2rem' },
                     fontWeight: 300,
                     color: '#3D362E',
                     lineHeight: 1,
-                    mb: 0.5,
-                    textAlign: 'start',
-                    width: '100%',
+                    mb: 1.5,
                   }}
                 >
-                  {stat.num}
+                  {stat.value}
                 </Typography>
                 <Typography
                   sx={{
                     fontFamily: '"Silka", sans-serif',
-                    fontSize: '0.9rem',
-                    fontWeight: 300,
-                    color: '#7C7368',
-                    textAlign: 'start',
-                    width: '100%',
+                    fontSize: '0.75rem',
+                    fontWeight: 500,
+                    color: '#9E978E',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.08em',
+                    lineHeight: 1.4,
                   }}
                 >
                   {stat.label}
@@ -196,7 +236,7 @@ export default function LuxuryLivingSection() {
         </Box>
       </Box>
 
-      {/* Right Column: Full-Bleed Gated Entry Night View */}
+      {/* Right Column: Full-Bleed Cover Image */}
       <Box
         ref={largeImgColRef}
         sx={{
@@ -212,8 +252,8 @@ export default function LuxuryLivingSection() {
         <Box
           ref={largeImgRef}
           component="img"
-          src="/images/luxury-entry.jpg"
-          alt="Gated community night entry view rendering"
+          src={displayLargeImg}
+          alt="Luxury living environment residential promenade rendering"
           sx={{
             width: '100%',
             height: '100%',
@@ -225,15 +265,15 @@ export default function LuxuryLivingSection() {
         />
       </Box>
 
-      {/* Page index vertical label */}
-      {/* <Box className="side-tab-bar">
+      {/* Brochure Side Tab Bar */}
+      <Box className="side-tab-bar">
         <Typography className="side-tab-title">
           {ll.sideBrand}
         </Typography>
         <Typography className="side-tab-number">
           {ll.pageNo}
         </Typography>
-      </Box> */}
+      </Box>
     </Box>
   );
 }

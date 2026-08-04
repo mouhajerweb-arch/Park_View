@@ -1,9 +1,10 @@
 'use client';
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Box, Container, Grid2 as Grid, Typography } from '@mui/material';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useLanguage } from '../context/LanguageContext';
+import { client } from '../sanity/client';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -34,6 +35,27 @@ export default function LocationSecuritySection() {
   
   const row2ImageRef = useRef(null);
   const row2TextRef = useRef(null);
+
+  const [secData, setSecData] = useState(null);
+
+  useEffect(() => {
+    let active = true;
+    client
+      .fetch(`*[_type == "locationPage" && _id == "locationPage"][0].sections[_type == "locationSecuritySection"][0] {
+        ...,
+        "row1ImageUrl": row1Image.asset->url,
+        "row2ImageUrl": row2Image.asset->url
+      }`)
+      .then((data) => {
+        if (active && data) {
+          setSecData(data);
+        }
+      })
+      .catch((err) => console.warn('Error fetching location security section data:', err));
+    return () => {
+      active = false;
+    };
+  }, []);
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -120,7 +142,26 @@ export default function LocationSecuritySection() {
     }, sectionRef);
 
     return () => ctx.revert();
-  }, [lang]);
+  }, [lang, secData]);
+
+  const ls = t.locationSecurity;
+
+  // Resolve dynamic values
+  const displayTitle = secData?.title?.[lang] || secData?.title?.en || ls.title;
+  
+  const displayRow1Title = secData?.row1Title?.[lang] || secData?.row1Title?.en || ls.strategicTitle;
+  const displayRow1Desc = secData?.row1Desc?.[lang] || secData?.row1Desc?.en || '';
+  const row1Bullets = displayRow1Desc 
+    ? displayRow1Desc.split('\n').map(b => b.trim()).filter(Boolean)
+    : ls.strategicBullets;
+  const displayRow1Img = secData?.row1ImageUrl || "/images/location-strategic.jpg";
+
+  const displayRow2Title = secData?.row2Title?.[lang] || secData?.row2Title?.en || ls.securityTitle;
+  const displayRow2Desc = secData?.row2Desc?.[lang] || secData?.row2Desc?.en || '';
+  const row2Bullets = displayRow2Desc 
+    ? displayRow2Desc.split('\n').map(b => b.trim()).filter(Boolean)
+    : ls.securityBullets;
+  const displayRow2Img = secData?.row2ImageUrl || "/images/location-security.jpg";
 
   return (
     <Box
@@ -153,7 +194,7 @@ export default function LocationSecuritySection() {
               letterSpacing: '-0.01em',
             }}
           >
-            {t.locationSecurity.title}
+            {displayTitle}
           </Typography>
         </Box>
 
@@ -182,7 +223,7 @@ export default function LocationSecuritySection() {
               >
                 <Box
                   component="img"
-                  src="/images/location-strategic.jpg"
+                  src={displayRow1Img}
                   alt="Strategic Location roundabout view"
                   sx={{
                     width: '100%',
@@ -208,7 +249,7 @@ export default function LocationSecuritySection() {
                     textAlign: lang === 'ar' ? 'right' : 'left',
                   }}
                 >
-                  {t.locationSecurity.strategicTitle}
+                  {displayRow1Title}
                 </Typography>
 
                 <Box 
@@ -219,7 +260,7 @@ export default function LocationSecuritySection() {
                     textAlign: lang === 'ar' ? 'right' : 'left',
                   }}
                 >
-                  {t.locationSecurity.strategicBullets.map((bullet, i) => (
+                  {row1Bullets.map((bullet, i) => (
                     <Box 
                       key={i} 
                       sx={{ 
@@ -270,7 +311,7 @@ export default function LocationSecuritySection() {
               >
                 <Box
                   component="img"
-                  src="/images/location-security.jpg"
+                  src={displayRow2Img}
                   alt="Security and gated community accessibility"
                   sx={{
                     width: '100%',
@@ -296,7 +337,7 @@ export default function LocationSecuritySection() {
                     textAlign: lang === 'ar' ? 'right' : 'left',
                   }}
                 >
-                  {t.locationSecurity.securityTitle}
+                  {displayRow2Title}
                 </Typography>
 
                 <Box 
@@ -307,7 +348,7 @@ export default function LocationSecuritySection() {
                     textAlign: lang === 'ar' ? 'right' : 'left',
                   }}
                 >
-                  {t.locationSecurity.securityBullets.map((bullet, i) => (
+                  {row2Bullets.map((bullet, i) => (
                     <Box 
                       key={i} 
                       sx={{ 
@@ -339,13 +380,13 @@ export default function LocationSecuritySection() {
         </Box>
       </Container>
 
-      {/* Brochure Side Tab Bar (Rotated Text Label & Page index) */}
+      {/* Brochure Side Tab Bar */}
       <Box className="side-tab-bar">
         <Typography className="side-tab-title">
-          {t.locationSecurity.sideBrand}
+          {ls.sideBrand}
         </Typography>
         <Typography className="side-tab-number">
-          {t.locationSecurity.pageNo}
+          {ls.pageNo}
         </Typography>
       </Box>
     </Box>

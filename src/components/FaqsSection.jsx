@@ -19,6 +19,7 @@ export default function FaqsSection() {
   // Controlled accordion state to ensure only one item is open at a time across both columns
   const [expanded, setExpanded] = useState(false);
   const [faqsList, setFaqsList] = useState([]);
+  const [headerData, setHeaderData] = useState(null);
 
   const handleAccordionChange = (panel) => (event, isExpanded) => {
     setExpanded(isExpanded ? panel : false);
@@ -26,9 +27,18 @@ export default function FaqsSection() {
 
   const fq = t.faqs;
 
-  // Fetch FAQs from Sanity on mount/lang change, falling back to local translations if empty
+  // Fetch FAQ header settings and questions from Sanity
   useEffect(() => {
     let active = true;
+    client
+      .fetch(`*[_type == "contactPage" && _id == "contactPage"][0].sections[_type == "faqSection"][0]`)
+      .then((data) => {
+        if (active && data) {
+          setHeaderData(data);
+        }
+      })
+      .catch((err) => console.warn('Error fetching FAQ section header:', err));
+
     client
       .fetch(`*[_type == "faq"] | order(order asc)`)
       .then((data) => {
@@ -50,6 +60,7 @@ export default function FaqsSection() {
           setFaqsList(fq.list);
         }
       });
+
     return () => {
       active = false;
     };
@@ -183,7 +194,7 @@ export default function FaqsSection() {
               width: '100%',
             }}
           >
-            {fq.subtitle}
+            {headerData?.subtitle?.[lang] || headerData?.subtitle?.en || fq.subtitle}
           </Typography>
           <Typography
             variant="h2"
@@ -198,7 +209,7 @@ export default function FaqsSection() {
               letterSpacing: '-0.01em',
             }}
           >
-            {fq.title}
+            {headerData?.title?.[lang] || headerData?.title?.en || fq.title}
           </Typography>
         </Box>
 

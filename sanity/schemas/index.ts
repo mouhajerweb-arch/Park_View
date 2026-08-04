@@ -17,6 +17,11 @@ import contactFormSection from './objects/sections/contactFormSection';
 import natureSerenitySection from './objects/sections/natureSerenitySection';
 import naturalHarmonySection from './objects/sections/naturalHarmonySection';
 import curatedLivingSection from './objects/sections/curatedLivingSection';
+import locationSecuritySection from './objects/sections/locationSecuritySection';
+import luxuryLivingSection from './objects/sections/luxuryLivingSection';
+import threeWaysSection from './objects/sections/threeWaysSection';
+import holisticLivingSection from './objects/sections/holisticLivingSection';
+import faqSection from './objects/sections/faqSection';
 
 // Schemas Document Types
 import page from './page';
@@ -51,6 +56,11 @@ export const schemaTypes = [
   natureSerenitySection,
   naturalHarmonySection,
   curatedLivingSection,
+  locationSecuritySection,
+  luxuryLivingSection,
+  threeWaysSection,
+  holisticLivingSection,
+  faqSection,
 
   // Documents
   page,
