@@ -14,3 +14,17 @@ const builder = createImageUrlBuilder(client);
 export function urlFor(source) {
   return builder.image(source);
 }
+
+export function optimizedImageUrl(source, options = {}) {
+  if (!source) return '';
+
+  const { width = 1600, quality = 82 } = options;
+
+  if (typeof source === 'string') {
+    if (!source.includes('cdn.sanity.io')) return source;
+    const separator = source.includes('?') ? '&' : '?';
+    return `${source}${separator}auto=format&w=${width}&q=${quality}`;
+  }
+
+  return builder.image(source).auto('format').width(width).quality(quality).url();
+}

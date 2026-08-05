@@ -3,10 +3,10 @@ import React, { useEffect, useRef, useState } from "react";
 import { Box, Container, Typography } from "@mui/material";
 import gsap from "gsap";
 import { useLanguage } from "../context/LanguageContext";
-import { client, urlFor } from "../sanity/client";
+import { client, optimizedImageUrl } from "../sanity/client";
 
 export default function HeroSection() {
-  const { lang, t } = useLanguage();
+  const { lang, t, markHeroReady } = useLanguage();
 
   const heroRef = useRef(null);
   const logoRef = useRef(null);
@@ -14,6 +14,8 @@ export default function HeroSection() {
   const timerRef = useRef(null);
 
   const [heroData, setHeroData] = useState(null);
+  const [mediaReadySent, setMediaReadySent] = useState(false);
+  const playbackCheckRef = useRef(null);
 
   // Dynamic live countdown state targeting June 30, 2027 (matching live parkview.community)
   const [timeLeft, setTimeLeft] = useState({
@@ -35,13 +37,18 @@ export default function HeroSection() {
       .then((data) => {
         if (active && data) {
           setHeroData(data);
+        } else if (active) {
+          markHeroReady();
         }
       })
-      .catch((err) => console.warn("Error fetching hero section data:", err));
+      .catch((err) => {
+        console.warn("Error fetching hero section data:", err);
+        markHeroReady();
+      });
     return () => {
       active = false;
     };
-  }, []);
+  }, [markHeroReady]);
 
   const countdownTarget = heroData?.countdownTarget || "2027-06-30T11:13:00+02:00";
 
@@ -96,13 +103,59 @@ export default function HeroSection() {
   const formatTwoDigits = (num) => String(num).padStart(2, "0");
 
   const backgroundType = heroData?.backgroundType || 'image';
-  const finalImageUrl = heroData?.backgroundImage 
-    ? urlFor(heroData.backgroundImage).url() 
+  const finalImageUrl = heroData?.backgroundImage
+    ? optimizedImageUrl(heroData.backgroundImage, { width: 2200, quality: 84 })
     : '/images/bg2.jpg';
   const finalVideoUrl = heroData?.videoUrl || heroData?.backgroundVideoUrl;
 
-  const logoUrl = heroData?.logo 
-    ? urlFor(heroData.logo).url() 
+  useEffect(() => {
+    if (backgroundType === 'video' && finalVideoUrl) return;
+    if (!finalImageUrl || mediaReadySent) return;
+
+    const image = new Image();
+    image.onload = () => {
+      setMediaReadySent(true);
+      markHeroReady();
+    };
+    image.onerror = () => markHeroReady();
+    image.src = finalImageUrl;
+  }, [backgroundType, finalImageUrl, finalVideoUrl, markHeroReady, mediaReadySent]);
+
+  useEffect(() => {
+    if (backgroundType !== 'video' || !finalVideoUrl || mediaReadySent) return;
+
+    const fallbackTimer = setTimeout(() => {
+      markHeroReady();
+    }, 12000);
+
+    return () => clearTimeout(fallbackTimer);
+  }, [backgroundType, finalVideoUrl, markHeroReady, mediaReadySent]);
+
+  useEffect(() => {
+    return () => {
+      if (playbackCheckRef.current) {
+        clearTimeout(playbackCheckRef.current);
+      }
+    };
+  }, []);
+
+  const markVideoReadyAfterPlayback = (video) => {
+    if (mediaReadySent) return;
+    if (!video || video.paused || video.readyState < 3 || video.currentTime <= 0) {
+      playbackCheckRef.current = setTimeout(() => markVideoReadyAfterPlayback(video), 120);
+      return;
+    }
+
+    setMediaReadySent(true);
+    markHeroReady();
+  };
+
+  const handleHeroVideoPlaying = (event) => {
+    markVideoReadyAfterPlayback(event.currentTarget);
+  };
+
+  const logoUrl = heroData?.logo
+    ? optimizedImageUrl(heroData.logo, { width: 900, quality: 90 })
     : "/images/park-view-full-logo.png";
 
   const soonText = heroData?.soonText?.[lang] || heroData?.soonText?.en || (lang === 'ar' ? 'قريباً' : 'SOON');
@@ -151,6 +204,11 @@ export default function HeroSection() {
           muted
           playsInline
           src={finalVideoUrl}
+          preload="auto"
+          poster={finalImageUrl}
+          onPlaying={handleHeroVideoPlaying}
+          onTimeUpdate={handleHeroVideoPlaying}
+          onError={() => markHeroReady()}
           sx={{
             position: "absolute",
             top: 0,

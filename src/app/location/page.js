@@ -8,6 +8,7 @@ import LuxuryLivingSection from '../../components/LuxuryLivingSection';
 import FooterSection from '../../components/FooterSection';
 import { useLanguage } from '../../context/LanguageContext';
 import { client } from '../../sanity/client';
+import { mergeSharedSections, pageSectionsProjection } from '../../sanity/queries';
 
 export default function LocationPage() {
   const { lang } = useLanguage();
@@ -19,22 +20,17 @@ export default function LocationPage() {
       .fetch(`*[_type == "locationPage" && _id == "locationPage"][0] {
         ...,
         "heroCoverUrl": heroImage.asset->url,
-        sections[] {
-          ...,
-          "mapImageUrl": mapImage.asset->url,
-          "mapImageEnUrl": mapImageEn.asset->url,
-          "mapImageArUrl": mapImageAr.asset->url,
-          "row1ImageUrl": row1Image.asset->url,
-          "row2ImageUrl": row2Image.asset->url,
-          "largeImageUrl": largeImage.asset->url
-        }
+        ${pageSectionsProjection}
       }`)
       .then((data) => {
         if (active && data) {
-          setPageData(data);
+          setPageData(mergeSharedSections(data));
         }
       })
-      .catch((err) => console.warn('Error fetching location page settings:', err));
+      .catch((err) => {
+        console.warn('Error fetching location page settings:', err);
+        if (active) setPageData({});
+      });
     return () => {
       active = false;
     };
@@ -67,7 +63,7 @@ export default function LocationPage() {
       
       {/* Dynamic Subpage Cover Hero from Sanity */}
       <SubpageHero 
-        bgImage={pageData?.heroCoverUrl || "/images/location-strategic.jpg"}
+        bgImage={pageData ? (pageData.heroCoverUrl || "/images/location-strategic.jpg") : null}
         titleEn={pageData?.heroTitle?.en || "A Strategic Gateway, A Peaceful Valley"}
         titleAr={pageData?.heroTitle?.ar || "بوابة استراتيجية وسط وادٍ هادئ"}
         subtitleEn={pageData?.heroSubtitle?.en || "The Location"}

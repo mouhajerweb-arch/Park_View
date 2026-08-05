@@ -1,12 +1,11 @@
 'use client';
 import React from 'react';
-import { useRouter } from 'next/navigation';
 import { Box, Container, Button } from '@mui/material';
 import { useLanguage } from '../context/LanguageContext';
 
 export default function LearnMoreLink({ path, bg = '#FFFFFF' }) {
-  const router = useRouter();
-  const { lang } = useLanguage();
+  const { lang, navigateWithLoader } = useLanguage();
+  const targetPath = path.endsWith(`/${lang}`) ? path : `${path}/${lang}`;
 
   return (
     <Box 
@@ -27,7 +26,7 @@ export default function LearnMoreLink({ path, bg = '#FFFFFF' }) {
         }}
       >
         <Button 
-          onClick={() => router.push(path)}
+          onClick={() => navigateWithLoader(targetPath)}
           variant="text" 
           sx={{ 
             fontFamily: '"Guise", sans-serif', // Using Guise for links/buttons as per font swap request

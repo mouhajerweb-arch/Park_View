@@ -4,6 +4,7 @@ import { Box, Container, Grid2 as Grid, Typography } from '@mui/material';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useLanguage } from '../context/LanguageContext';
+import { optimizedImageUrl } from '../sanity/client';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -127,12 +128,12 @@ export default function LocationSecuritySection({ sectionData }) {
   const row1Bullets = sectionData?.row1Desc?.[lang] || sectionData?.row1Desc?.en
     ? [sectionData.row1Desc?.[lang] || sectionData.row1Desc?.en]
     : t.locationSecurity.strategicBullets;
-  const row1Image = sectionData?.row1ImageUrl || "/images/location-strategic.jpg";
+  const row1Image = optimizedImageUrl(sectionData?.row1ImageUrl, { width: 1400 }) || "/images/location-strategic.jpg";
   const row2Title = sectionData?.row2Title?.[lang] || sectionData?.row2Title?.en || t.locationSecurity.securityTitle;
   const row2Bullets = sectionData?.row2Desc?.[lang] || sectionData?.row2Desc?.en
     ? [sectionData.row2Desc?.[lang] || sectionData.row2Desc?.en]
     : t.locationSecurity.securityBullets;
-  const row2Image = sectionData?.row2ImageUrl || "/images/location-security.jpg";
+  const row2Image = optimizedImageUrl(sectionData?.row2ImageUrl, { width: 1400 }) || "/images/location-security.jpg";
 
   return (
     <Box

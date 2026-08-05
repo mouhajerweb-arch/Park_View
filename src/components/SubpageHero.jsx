@@ -3,11 +3,22 @@ import React, { useEffect, useRef } from 'react';
 import { Box, Container, Typography } from '@mui/material';
 import gsap from 'gsap';
 import { useLanguage } from '../context/LanguageContext';
+import { optimizedImageUrl } from '../sanity/client';
 
 export default function SubpageHero({ bgImage, titleEn, titleAr, subtitleEn, subtitleAr }) {
-  const { lang } = useLanguage();
+  const { lang, markHeroReady } = useLanguage();
   const textRef = useRef(null);
   const scrollIndicatorRef = useRef(null);
+  const displayBgImage = bgImage ? optimizedImageUrl(bgImage, { width: 2200, quality: 84 }) : '';
+
+  useEffect(() => {
+    if (!displayBgImage) return;
+
+    const image = new Image();
+    image.onload = () => markHeroReady();
+    image.onerror = () => markHeroReady();
+    image.src = displayBgImage;
+  }, [displayBgImage, markHeroReady]);
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -56,7 +67,7 @@ export default function SubpageHero({ bgImage, titleEn, titleAr, subtitleEn, sub
           left: 0,
           width: '100%',
           height: '100%',
-          backgroundImage: `url(${bgImage})`,
+          backgroundImage: `url(${displayBgImage})`,
           backgroundSize: 'cover',
           backgroundPosition: 'center',
           zIndex: 1,

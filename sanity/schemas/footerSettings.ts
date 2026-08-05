@@ -35,6 +35,7 @@ export default defineType({
     // Column 3
     defineField({ name: 'col3Title', title: 'Column 3 Title', type: 'localizedString' }),
     defineField({ name: 'phone', title: 'Phone Number', type: 'string' }),
+    defineField({ name: 'whatsappNumber', title: 'WhatsApp Number', type: 'string' }),
     defineField({ name: 'email', title: 'Email Address', type: 'string' }),
     defineField({ name: 'address', title: 'Address Text', type: 'localizedString' }),
     defineField({ name: 'mapsUrl', title: 'Google Maps Link', type: 'string' }),

@@ -5,6 +5,7 @@ import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useLanguage } from '../context/LanguageContext';
 import LearnMoreLink from './LearnMoreLink';
+import { optimizedImageUrl } from '../sanity/client';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -15,7 +16,6 @@ export default function DeveloperProfileSection({ sectionData }) {
   const imageBoxRef = useRef(null);
   const contentColRef = useRef(null);
   const quoteBoxRef = useRef(null);
-  const sectorsRef = useRef(null);
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -76,25 +76,6 @@ export default function DeveloperProfileSection({ sectionData }) {
           }
         );
       }
-
-      // Sectors grid reveal
-      if (sectorsRef.current) {
-        gsap.fromTo(
-          sectorsRef.current.children,
-          { opacity: 0, y: 20 },
-          {
-            opacity: 1,
-            y: 0,
-            duration: 0.8,
-            stagger: 0.1,
-            ease: 'power3.out',
-            scrollTrigger: {
-              trigger: sectorsRef.current,
-              start: 'top 80%',
-            },
-          }
-        );
-      }
     }, sectionRef);
 
     return () => ctx.revert();
@@ -105,14 +86,7 @@ export default function DeveloperProfileSection({ sectionData }) {
   const displaySubtitle = sectionData?.subtitle?.[lang] || sectionData?.subtitle?.en || dp.subtitle;
   const displayBio = sectionData?.bio?.[lang] || sectionData?.bio?.en || dp.description;
   const displayQuote = sectionData?.quote?.[lang] || sectionData?.quote?.en || dp.quoteText;
-  const displayImage = sectionData?.profileImageUrl || "/images/prestige-tranquility.jpg";
-
-  const coreSectors = [
-    { title: dp.constructionTitle, desc: dp.constructionDesc },
-    { title: dp.realEstateTitle, desc: dp.realEstateDesc },
-    { title: dp.hospitalityTitle, desc: dp.hospitalityDesc },
-    { title: dp.retailTitle, desc: dp.retailDesc }
-  ];
+  const displayImage = optimizedImageUrl(sectionData?.profileImageUrl, { width: 1200 }) || "/images/prestige-tranquility.jpg";
 
   return (
     <Box
@@ -220,26 +194,7 @@ export default function DeveloperProfileSection({ sectionData }) {
                 </Typography>
               </Box>
 
-              {/* Biography Footer Narrative (Moved here to balance columns height) */}
-              <Typography
-                variant="body1"
-                sx={{
-                  fontFamily: '"Silka", sans-serif',
-                  fontWeight: 300,
-                  fontSize: '0.94rem',
-                  lineHeight: 1.8,
-                  color: '#6B6661',
-                  maxWidth: '440px',
-                  whiteSpace: 'pre-line',
-                  textAlign: 'start',
-                  width: '100%',
-                }}
-              >
-                {dp.footerText}
-              </Typography>
             </Box>
-
-            <LearnMoreLink path="/about" bg="#FFFFFF" />
           </Box>
 
           {/* Right Column: Editorial Text & Timeline List */}
@@ -353,60 +308,24 @@ export default function DeveloperProfileSection({ sectionData }) {
                 </Typography>
               </Box>
 
-              <Grid
-                ref={sectorsRef}
-                container
-                spacing={{ xs: 4, sm: 5 }}
-                sx={{ width: '100%' }}
+              <Typography
+                variant="body1"
+                sx={{
+                  fontFamily: '"Silka", sans-serif',
+                  fontWeight: 300,
+                  fontSize: '0.94rem',
+                  lineHeight: 1.8,
+                  color: '#6B6661',
+                  maxWidth: '640px',
+                  whiteSpace: 'pre-line',
+                  textAlign: 'start',
+                  width: '100%',
+                }}
               >
-                {coreSectors.map((sector, idx) => (
-                  <Grid size={{ xs: 12, sm: 6 }} key={idx}>
-                    <Box sx={{ width: '100%', textAlign: 'start' }}>
-                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 1.5 }}>
-                        {/* Number bullet */}
-                        <Typography
-                          sx={{
-                            fontFamily: '"CS Brandis", serif',
-                            fontSize: '1.15rem',
-                            fontWeight: 300,
-                            color: '#7C7368',
-                          }}
-                        >
-                          {String(idx + 1).padStart(2, '0')}.
-                        </Typography>
-                        <Typography
-                          variant="h5"
-                          sx={{
-                            fontFamily: '"Guise", sans-serif',
-                            fontSize: '1.05rem',
-                            fontWeight: 600,
-                            letterSpacing: '0.02em',
-                            color: '#3D362E',
-                            textAlign: 'start',
-                          }}
-                        >
-                          {sector.title}
-                        </Typography>
-                      </Box>
+                {dp.footerText}
+              </Typography>
 
-                      {/* Description */}
-                      <Typography
-                        sx={{
-                          fontFamily: '"Silka", sans-serif',
-                          fontSize: '0.88rem',
-                          fontWeight: 300,
-                          lineHeight: 1.6,
-                          color: '#6B6661',
-                          textAlign: 'start',
-                          width: '100%',
-                        }}
-                      >
-                        {sector.desc}
-                      </Typography>
-                    </Box>
-                  </Grid>
-                ))}
-              </Grid>
+              <LearnMoreLink path="/about" bg="#FFFFFF" />
             </Box>
           </Box>
         </Box>

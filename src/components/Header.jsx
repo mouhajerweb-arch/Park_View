@@ -1,6 +1,6 @@
 'use client';
 import React, { useState, useEffect } from 'react';
-import { useRouter, usePathname } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 import {
   Box,
   Button,
@@ -12,17 +12,15 @@ import {
   ListItemText,
   Typography,
 } from '@mui/material';
-import LanguageIcon from '@mui/icons-material/Language';
 import MenuIcon from '@mui/icons-material/Menu';
 import CloseIcon from '@mui/icons-material/Close';
 import { useLanguage } from '../context/LanguageContext';
 import { useRegister } from '../context/RegisterContext';
-import { client, urlFor } from '../sanity/client';
+import { client, optimizedImageUrl, urlFor } from '../sanity/client';
 
 export default function Header() {
-  const { lang, toggleLanguage, t } = useLanguage();
+  const { lang, toggleLanguage, navigateWithLoader, t } = useLanguage();
   const { openRegister } = useRegister();
-  const router = useRouter();
   const pathname = usePathname();
   
   const [scrolled, setScrolled] = useState(false);
@@ -33,7 +31,11 @@ export default function Header() {
   useEffect(() => {
     let active = true;
     client
-      .fetch(`*[_type == "headerSettings"][0]`)
+      .fetch(`*[_type == "headerSettings"][0] {
+        ...,
+        "englishFlagUrl": languageSwitch.englishFlag.asset->url,
+        "arabicFlagUrl": languageSwitch.arabicFlag.asset->url
+      }`)
       .then((data) => {
         if (active && data) {
           setHeaderData(data);
@@ -102,7 +104,7 @@ export default function Header() {
         window.scrollTo({ top: 0, behavior: 'smooth' });
       }
     } else {
-      router.push(targetPath);
+      navigateWithLoader(targetPath);
     }
   };
 
@@ -129,6 +131,24 @@ export default function Header() {
   const registerButtonVariant = getButtonVariant(headerData?.registerButton?.styleOption);
   
   const showFlag = headerData?.languageSwitch?.showFlag !== false;
+  const nextLanguageFlag = lang === 'en'
+    ? (optimizedImageUrl(headerData?.arabicFlagUrl, { width: 64, quality: 95 }) || '/images/Syrian-flag.svg')
+    : (optimizedImageUrl(headerData?.englishFlagUrl, { width: 64, quality: 95 }) || '/images/United-Kingdom-flag.svg');
+  const nextLanguageLabel = lang === 'en' ? 'العربية' : 'English';
+
+  const FlagImage = ({ size = 25 }) => (
+    <Box
+      component="img"
+      src={nextLanguageFlag}
+      alt={nextLanguageLabel}
+      sx={{
+        width: size,
+        height: size,
+        display: 'block',
+        objectFit: 'contain',
+      }}
+    />
+  );
 
   const isActive = (id) => {
     const targetPath = buildPath(id);
@@ -239,28 +259,29 @@ export default function Header() {
             <IconButton
               onClick={toggleLanguage}
               sx={{
-                width: 42,
-                height: 42,
-                borderRadius: '50%',
-                backgroundColor: 'rgba(61, 54, 46, 0.05)',
+                width: 34,
+                height: 34,
+                borderRadius: 0,
+                backgroundColor: 'transparent',
                 color: '#3D362E',
-                border: '1px solid rgba(61, 54, 46, 0.08)',
+                border: 'none',
                 display: { xs: 'none', sm: 'flex' },
                 alignItems: 'center',
                 justifyContent: 'center',
                 transition: 'all 0.2s ease',
+                boxShadow: 'none',
+                p: 0.3,
                 '&:hover': {
-                  backgroundColor: '#3D362E',
-                  color: '#FFFFFF',
+                  backgroundColor: 'transparent',
+                  opacity: 0.75,
+                  boxShadow: 'none',
                 },
               }}
             >
               {showFlag ? (
-                <span style={{ fontSize: '18px', lineHeight: 1 }}>
-                  {lang === 'en' ? '🇸🇾' : '🇬🇧'}
-                </span>
+                <FlagImage size={25} />
               ) : (
-                <LanguageIcon sx={{ fontSize: 16 }} />
+                nextLanguageLabel
               )}
             </IconButton>
 
@@ -332,20 +353,21 @@ export default function Header() {
                 sx={{
                   width: 32,
                   height: 32,
-                  borderRadius: '50%',
-                  backgroundColor: '#F4F0EA',
+                  borderRadius: 0,
+                  backgroundColor: 'transparent',
                   color: '#121413',
                   display: { xs: 'flex', sm: 'none' },
                   alignItems: 'center',
                   justifyContent: 'center',
+                  boxShadow: 'none',
+                  p: 0.3,
+                  '&:hover': { backgroundColor: 'transparent', opacity: 0.75 },
                 }}
               >
                 {showFlag ? (
-                  <span style={{ fontSize: '15px', lineHeight: 1 }}>
-                    {lang === 'en' ? '🇸🇾' : '🇬🇧'}
-                  </span>
+                  <FlagImage size={24} />
                 ) : (
-                  <LanguageIcon sx={{ fontSize: 15 }} />
+                  nextLanguageLabel
                 )}
               </IconButton>
               <IconButton
@@ -466,7 +488,7 @@ export default function Header() {
           <Button
             fullWidth
             onClick={toggleLanguage}
-            startIcon={<LanguageIcon sx={{ fontSize: 14 }} />}
+            startIcon={showFlag ? <FlagImage size={20} /> : null}
             sx={{
               color: '#121413',
               borderColor: 'rgba(0, 0, 0, 0.15)',
@@ -490,3 +512,4 @@ export default function Header() {
     </>
   );
 }
+

@@ -4,6 +4,7 @@ import { Box, Container, Grid2 as Grid, Typography } from '@mui/material';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useLanguage } from '../context/LanguageContext';
+import { optimizedImageUrl } from '../sanity/client';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -84,8 +85,8 @@ export default function HolisticLivingSection({ sectionData }) {
   const orchidData = getClusterData('orchid', hl.phases.orchid);
   const magnoliaData = getClusterData('magnolia', hl.phases.magnolia);
   const activeData = activePhase === 'orchid' ? orchidData : magnoliaData;
-  const largeImg = activeData.interiorImage || (activePhase === 'orchid' ? '/images/holistic-orchid-interior.jpg' : '/images/holistic-magnolia-interior.jpg');
-  const smallImg = activeData.flowerImage || (activePhase === 'orchid' ? '/images/holistic-orchid-flower.jpg' : '/images/holistic-magnolia-woman.jpg');
+  const largeImg = optimizedImageUrl(activeData.interiorImage, { width: 1400 }) || (activePhase === 'orchid' ? '/images/holistic-orchid-interior.jpg' : '/images/holistic-magnolia-interior.jpg');
+  const smallImg = optimizedImageUrl(activeData.flowerImage, { width: 700 }) || (activePhase === 'orchid' ? '/images/holistic-orchid-flower.jpg' : '/images/holistic-magnolia-woman.jpg');
 
   return (
     <Box

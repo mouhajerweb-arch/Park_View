@@ -65,6 +65,22 @@ export const structure: StructureResolver = (S) =>
                     .schemaType("galleryPage")
                     .documentId("galleryPage")
                     .title("Gallery Page")
+                ),
+              S.listItem()
+                .title("Terms and Conditions")
+                .child(
+                  S.document()
+                    .schemaType("legalPage")
+                    .documentId("termsPage")
+                    .title("Terms and Conditions")
+                ),
+              S.listItem()
+                .title("Privacy Policy")
+                .child(
+                  S.document()
+                    .schemaType("legalPage")
+                    .documentId("privacyPage")
+                    .title("Privacy Policy")
                 )
             ])
         ),
@@ -72,6 +88,15 @@ export const structure: StructureResolver = (S) =>
       S.divider(),
 
       // Core Content Lists
+      S.listItem()
+        .title("Centralized Sections")
+        .icon(FileText)
+        .child(
+          S.document()
+            .schemaType("reusableSections")
+            .documentId("reusableSections")
+            .title("Centralized Sections")
+        ),
       S.documentTypeListItem("faq").title("FAQs").icon(HelpCircle),
       S.documentTypeListItem("galleryItem").title("Gallery Images").icon(ImageIcon),
 
@@ -126,10 +151,12 @@ export const structure: StructureResolver = (S) =>
             "galleryPage",
             "faq",
             "galleryItem",
+            "reusableSections",
             "siteSettings",
             "footerSettings",
             "headerSettings",
-            "autoScrollPopupSettings"
+            "autoScrollPopupSettings",
+            "legalPage"
           ].includes(listItem.getId() || "")
       ),
     ]);

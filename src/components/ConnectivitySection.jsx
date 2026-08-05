@@ -5,7 +5,7 @@ import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useLanguage } from '../context/LanguageContext';
 import LearnMoreLink from './LearnMoreLink';
-import { client, urlFor } from '../sanity/client';
+import { client, optimizedImageUrl } from '../sanity/client';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -75,7 +75,13 @@ export default function ConnectivitySection({ sectionData }) {
 
     let active = true;
     client
-      .fetch(`*[_type == "page" && _id == "home"][0].sections[_type == "connectivitySection"][0]`)
+      .fetch(`*[_type == "page" && _id == "home"][0].sections[_type == "connectivitySection"][0] {
+        ...,
+        destinations[] {
+          ...,
+          "iconImageUrl": iconImage.asset->url
+        }
+      }`)
       .then((data) => {
         if (active && data) {
           setConnectivityData(data);
@@ -146,17 +152,18 @@ export default function ConnectivitySection({ sectionData }) {
   const labels = t.connectivity.mapLabels;
 
   const mapImage = lang === 'ar'
-    ? (connectivityData?.mapImageArUrl || (connectivityData?.mapImageAr ? urlFor(connectivityData.mapImageAr).url() : null))
-    : (connectivityData?.mapImageEnUrl || connectivityData?.mapImageUrl || (connectivityData?.mapImageEn ? urlFor(connectivityData.mapImageEn).url() : null));
+    ? (connectivityData?.mapImageArUrl || connectivityData?.mapImageAr)
+    : (connectivityData?.mapImageEnUrl || connectivityData?.mapImageUrl || connectivityData?.mapImageEn);
 
-  const desktopMapSrc = mapImage || "/images/map-clean-base.png";
-  const mobileMapSrc = mapImage || "/images/map-mobile-rotated-labels.png";
+  const desktopMapSrc = optimizedImageUrl(mapImage, { width: 1800, quality: 84 }) || "/images/map-clean-base.png";
+  const mobileMapSrc = optimizedImageUrl(mapImage, { width: 900, quality: 84 }) || "/images/map-mobile-rotated-labels.png";
 
   const displayTitle = connectivityData?.title?.[lang] || connectivityData?.title?.en || t.connectivity.title;
   const displaySubtitle = connectivityData?.description?.[lang] || connectivityData?.description?.en || t.connectivity.subtitle;
   const displayDestinations = connectivityData?.destinations?.length
     ? connectivityData.destinations.map((item) => ({
         icon: item.icon,
+        iconImageUrl: optimizedImageUrl(item.iconImageUrl, { width: 128, quality: 90 }),
         time: item.time,
         name: item.label?.[lang] || item.label?.en || '',
       })).filter((item) => item.name || item.time)
@@ -273,51 +280,71 @@ export default function ConnectivitySection({ sectionData }) {
 
           {/* Right Column: 2-Column Destination Grid */}
           <Box sx={{ width: { xs: '100%', md: '58.333333%' } }}>
-            <Grid container spacing={{ xs: 1.5, sm: 2 }} ref={listRef}>
+            <Grid container columnSpacing={{ xs: 2.5, sm: 5, md: 7 }} rowSpacing={{ xs: 2.5, sm: 4, md: 4.5 }} ref={listRef}>
               {displayDestinations.map((item, index) => (
                 <Grid size={{ xs: 12, sm: 6 }} key={index}>
                   <Box
                     sx={{
                       display: 'flex',
-                      alignItems: 'center',
-                      gap: 1.5,
-                      py: 0.5,
+                      alignItems: 'flex-start',
+                      gap: { xs: 1.75, sm: 2.25 },
+                      py: 0.25,
+                      minHeight: { xs: 52, sm: 64 },
+                      width: '100%',
                     }}
                   >
                     {/* Destination Icon */}
                     <Box
                       sx={{
-                        width: { xs: 28, sm: 32 },
-                        height: { xs: 28, sm: 32 },
+                        width: { xs: 38, sm: 44 },
+                        height: { xs: 38, sm: 44 },
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
                         flexShrink: 0,
+                        mt: 0.1,
                       }}
                     >
-                      <DestinationIcon type={item.icon} />
+                      {item.iconImageUrl ? (
+                        <Box
+                          component="img"
+                          src={item.iconImageUrl}
+                          alt=""
+                          aria-hidden="true"
+                          sx={{
+                            width: '100%',
+                            height: '100%',
+                            objectFit: 'contain',
+                            display: 'block',
+                          }}
+                        />
+                      ) : (
+                        <DestinationIcon type={item.icon} />
+                      )}
                     </Box>
 
                     {/* Time & Destination Text */}
-                    <Box sx={{ display: 'flex', alignItems: 'baseline', gap: 0.5, flexWrap: 'nowrap' }}>
+                    <Box sx={{ maxWidth: { xs: '100%', sm: 250, md: 280 }, pt: 0.2 }}>
                       <Typography
-                        component="span"
+                        component="div"
                         sx={{
                           fontFamily: '"Silka", sans-serif',
                           fontWeight: 500,
-                          fontSize: { xs: '0.92rem', sm: '1rem', md: '1.08rem' },
+                          fontSize: { xs: '0.95rem', sm: '1rem', md: '1.05rem' },
+                          lineHeight: 1.25,
                           color: '#3D362E',
-                          whiteSpace: 'nowrap',
+                          mb: 0.55,
                         }}
                       >
-                        · {item.time}
+                        {item.time}
                       </Typography>
                       <Typography
-                        component="span"
+                        component="div"
                         sx={{
                           fontFamily: '"Silka", sans-serif',
                           fontWeight: 400,
-                          fontSize: { xs: '0.85rem', sm: '0.9rem', md: '0.95rem' },
+                          fontSize: { xs: '0.9rem', sm: '0.95rem', md: '1rem' },
+                          lineHeight: 1.45,
                           color: '#5C544B',
                         }}
                       >
@@ -335,3 +362,4 @@ export default function ConnectivitySection({ sectionData }) {
     </Box>
   );
 }
+

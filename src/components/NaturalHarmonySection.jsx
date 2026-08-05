@@ -4,6 +4,7 @@ import { Box, Typography, Grid2 as Grid } from '@mui/material';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useLanguage } from '../context/LanguageContext';
+import { optimizedImageUrl } from '../sanity/client';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -143,10 +144,11 @@ export default function NaturalHarmonySection({ sectionData }) {
   const displayBullets = sectionData?.bullets?.length
     ? sectionData.bullets.map((bullet) => ({
         icon: bullet.icon,
+        iconImageUrl: optimizedImageUrl(bullet.iconImageUrl, { width: 96, quality: 90 }),
         label: bullet.label?.[lang] || bullet.label?.en || '',
       })).filter((bullet) => bullet.label)
     : nh.bullets;
-  const displayImage = sectionData?.largeImageUrl || "/images/harmony-pool.jpg";
+  const displayImage = optimizedImageUrl(sectionData?.largeImageUrl, { width: 1400 }) || "/images/harmony-pool.jpg";
 
   return (
     <Box
@@ -236,19 +238,34 @@ export default function NaturalHarmonySection({ sectionData }) {
                 >
                   <Box
                     sx={{
-                      width: 40,
-                      height: 40,
+                      // width: 40,
+                      // height: 40,
                       borderRadius: '50%',
-                      backgroundColor: '#FFFFFF',
+                      // backgroundColor: '#FFFFFF',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
-                      boxShadow: '0 4px 10px rgba(61, 54, 46, 0.03)',
-                      border: '1px solid #EAE5DE',
+                      // boxShadow: '0 4px 10px rgba(61, 54, 46, 0.03)',
+                      // border: '1px solid #EAE5DE',
                       flexShrink: 0
                     }}
                   >
-                    <FeatureIcon type={bullet.icon} />
+                    {bullet.iconImageUrl ? (
+                      <Box
+                        component="img"
+                        src={bullet.iconImageUrl}
+                        alt=""
+                        aria-hidden="true"
+                        sx={{
+                          width: 40,
+                          height: 40,
+                          objectFit: 'contain',
+                          display: 'block',
+                        }}
+                      />
+                    ) : (
+                      <FeatureIcon type={bullet.icon} />
+                    )}
                   </Box>
                   <Typography
                     sx={{

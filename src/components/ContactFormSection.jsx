@@ -56,7 +56,7 @@ export default function ContactFormSection({ sectionData }) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    const WHATSAPP_NUMBER = contactData?.whatsappNumber || '963997711226';
+    const WHATSAPP_NUMBER = contactData?.whatsappNumber || '963993306655';
 
     const firstName = form.firstName.trim();
     const lastName = form.lastName.trim();
@@ -98,7 +98,7 @@ export default function ContactFormSection({ sectionData }) {
   };
 
   // Resolve dynamic values
-  const displayPhone = contactData?.phone || '+963 11 4068';
+  const displayPhone = contactData?.phone || '+963114068';
   const displayEmail = contactData?.email || 'info@parkview.community';
   const displayAddress = contactData?.address?.[lang] || contactData?.address?.en || (
     lang === 'ar'
@@ -365,7 +365,6 @@ export default function ContactFormSection({ sectionData }) {
                     border: 0,
                   }}
                   allowFullScreen=""
-                  loading="lazy"
                 />
               </Box>
             </Box>
@@ -693,9 +692,9 @@ export default function ContactFormSection({ sectionData }) {
                     fontFamily: '"Silka", sans-serif',
                     fontSize: '0.85rem',
                     fontWeight: 500,
-                    textTransform: 'uppercase',
-                    letterSpacing: '0.15em',
-                    backgroundColor: '#5A7365',
+                    // textTransform: 'uppercase',
+                    letterSpacing: '0.05em',
+                    backgroundColor: '#232423',
                     color: '#FFFFFF',
                     borderRadius: '50px',
                     py: 2,

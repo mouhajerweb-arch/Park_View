@@ -4,6 +4,7 @@ import { Box, Container, Typography, Button, useMediaQuery, useTheme } from '@mu
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useLanguage } from '../context/LanguageContext';
+import { optimizedImageUrl } from '../sanity/client';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -20,7 +21,7 @@ export default function ResidencesSection({ sectionData }) {
   const [activeCluster, setActiveCluster] = useState(null);
   const displayTitle = sectionData?.title?.[lang] || sectionData?.title?.en || t.residences.title;
   const displaySubtitle = sectionData?.eyebrow?.[lang] || sectionData?.eyebrow?.en || t.residences.subtitle;
-  const displayImage = sectionData?.mainImageUrl || "/images/cluster.jpg";
+  const displayImage = optimizedImageUrl(sectionData?.mainImageUrl, { width: 1800, quality: 84 }) || "/images/cluster.jpg";
 
   // Clusters detailed descriptions for popovers (English & Arabic)
   const clusterDetails = {

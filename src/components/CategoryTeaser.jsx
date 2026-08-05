@@ -1,6 +1,5 @@
 'use client';
 import React, { useEffect, useRef } from 'react';
-import { useRouter } from 'next/navigation';
 import { Box, Typography, Container, Button } from '@mui/material';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -9,8 +8,7 @@ import { useLanguage } from '../context/LanguageContext';
 gsap.registerPlugin(ScrollTrigger);
 
 export default function CategoryTeaser() {
-  const { lang } = useLanguage();
-  const router = useRouter();
+  const { lang, navigateWithLoader } = useLanguage();
   const sectionRef = useRef(null);
 
   useEffect(() => {
@@ -101,7 +99,7 @@ export default function CategoryTeaser() {
         <Box
           key={teaser.id}
           className="teaser-row"
-          onClick={() => router.push(teaser.link)}
+          onClick={() => navigateWithLoader(`${teaser.link}/${lang}`)}
           sx={{
             position: 'relative',
             width: '100%',

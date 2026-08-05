@@ -14,7 +14,7 @@ export default defineType({
     defineField({ name: 'headline', title: 'Headline', type: 'localizedString' }),
     defineField({ name: 'description', title: 'Description', type: 'localizedText' }),
     defineField({ name: 'buttonText', title: 'WhatsApp Button Text', type: 'localizedString' }),
-    defineField({ name: 'whatsappNumber', title: 'WhatsApp Number (digits only)', type: 'string' }),
+    defineField({ name: 'whatsappNumber', title: 'WhatsApp Number (digits only, e.g. 963993306655)', type: 'string' }),
     defineField({ name: 'whatsappMessage', title: 'WhatsApp Prefilled Message', type: 'localizedText' }),
   ],
 });

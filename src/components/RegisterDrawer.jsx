@@ -27,7 +27,7 @@ export default function RegisterDrawer() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    const WHATSAPP_NUMBER = '963997711226';
+    const WHATSAPP_NUMBER = '963993306655';
 
     const firstName = form.firstName.trim();
     const lastName = form.lastName.trim();

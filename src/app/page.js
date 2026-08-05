@@ -16,8 +16,8 @@ import AmenitiesSection from '../components/AmenitiesSection';
 import FooterSection from '../components/FooterSection';
 import ContactFormSection from '../components/ContactFormSection';
 import AutoScrollPopup from '../components/AutoScrollPopup';
-import LearnMoreLink from '../components/LearnMoreLink';
 import { client } from '../sanity/client';
+import { mergeSharedSections, pageSectionsProjection } from '../sanity/queries';
 
 export default function Home() {
   const { lang } = useLanguage();
@@ -28,16 +28,19 @@ export default function Home() {
   useEffect(() => {
     let active = true;
     client
-      .fetch(`*[_type == "page" && _id == "home"][0] { seo }`)
+      .fetch(`*[_type == "page" && _id == "home"][0] {
+        seo,
+        ${pageSectionsProjection}
+      }`)
       .then((data) => {
         if (active && data?.seo) {
           setSeoData(data.seo);
         }
         if (active && data) {
-          setPageData(data);
+          setPageData(mergeSharedSections(data));
         }
       })
-      .catch((err) => console.warn('Error fetching homepage SEO:', err));
+      .catch((err) => console.warn('Error fetching homepage data:', err));
     return () => {
       active = false;
     };
@@ -58,47 +61,6 @@ export default function Home() {
       }
     }
   }, [seoData, lang]);
-
-  useEffect(() => {
-    let active = true;
-    client
-      .fetch(`*[_type == "page" && _id == "home"][0] {
-        sections[] {
-          ...,
-          "mainImageUrl": mainImage.asset->url,
-          "profileImageUrl": profileImage.asset->url,
-          "smallImageUrl": smallImage.asset->url,
-          "largeImageUrl": largeImage.asset->url,
-          "mapImageUrl": mapImage.asset->url,
-          "mapImageEnUrl": mapImageEn.asset->url,
-          "mapImageArUrl": mapImageAr.asset->url,
-          tabs[] {
-            ...,
-            images[] {
-              ...,
-              "imageUrl": image.asset->url
-            }
-          },
-          "resolvedAmenities": amenities[] {
-            ...,
-            "iconUrl": icon.asset->url
-          },
-          "inlineImages": images[] {
-            ...,
-            "imageUrl": image.asset->url
-          }
-        }
-      }`)
-      .then((data) => {
-        if (active && data) {
-          setPageData(data);
-        }
-      })
-      .catch((err) => console.warn('Error fetching homepage sections:', err));
-    return () => {
-      active = false;
-    };
-  }, []);
 
   const getSection = (type) => pageData?.sections?.find((section) => section._type === type && section.enabled !== false);
 
