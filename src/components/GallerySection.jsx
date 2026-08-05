@@ -5,7 +5,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useLanguage } from '../context/LanguageContext';
-import { client, urlFor } from '../sanity/client';
+import { client, optimizedImageUrl, urlFor } from '../sanity/client';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -67,6 +67,27 @@ export default function GallerySection({ sectionData }) {
   useEffect(() => {
     let active = true;
 
+    const fetchGalleryItems = () => {
+      client.fetch(`*[_type == "galleryItem"] | order(order asc) {
+        title,
+        subtitle,
+        "imageUrl": image.asset->url
+      }`).then((items) => {
+        if (!active) return;
+        if (items && items.length > 0) {
+          setGalleryList(
+            items.map((item) => ({
+              src: optimizedImageUrl(item.imageUrl, { width: 1200, quality: 82 }) || '',
+              titleEn: item.title?.en || '',
+              titleAr: item.title?.ar || '',
+              subtitleEn: item.subtitle?.en || '',
+              subtitleAr: item.subtitle?.ar || '',
+            }))
+          );
+        }
+      }).catch((err) => console.warn('Gallery items fetch failed:', err));
+    };
+
     if (sectionData) {
       setSectionMeta({
         eyebrow: sectionData.eyebrow || sectionMeta.eyebrow,
@@ -77,13 +98,15 @@ export default function GallerySection({ sectionData }) {
       if (sectionData.inlineImages && sectionData.inlineImages.length > 0) {
         setGalleryList(
           sectionData.inlineImages.map((item) => ({
-            src: item.imageUrl || (item.image ? urlFor(item.image).url() : ''),
+            src: optimizedImageUrl(item.imageUrl || (item.image ? urlFor(item.image).url() : ''), { width: 1200, quality: 82 }) || '',
             titleEn: item.title?.en || '',
             titleAr: item.title?.ar || '',
             subtitleEn: item.subtitle?.en || '',
             subtitleAr: item.subtitle?.ar || '',
           }))
         );
+      } else {
+        fetchGalleryItems();
       }
 
       return () => {
@@ -117,7 +140,7 @@ export default function GallerySection({ sectionData }) {
         if (data.inlineImages && data.inlineImages.length > 0) {
           setGalleryList(
             data.inlineImages.map((item) => ({
-              src: item.imageUrl || (item.image ? urlFor(item.image).url() : ''),
+              src: optimizedImageUrl(item.imageUrl || (item.image ? urlFor(item.image).url() : ''), { width: 1200, quality: 82 }) || '',
               titleEn: item.title?.en || '',
               titleAr: item.title?.ar || '',
               subtitleEn: item.subtitle?.en || '',
@@ -129,20 +152,7 @@ export default function GallerySection({ sectionData }) {
       }
 
       // Fallback: fetch standalone galleryItem documents
-      client.fetch(`*[_type == "galleryItem"] | order(order asc)`).then((items) => {
-        if (!active) return;
-        if (items && items.length > 0) {
-          setGalleryList(
-            items.map((item) => ({
-              src: item.image ? urlFor(item.image).url() : '',
-              titleEn: item.title?.en || '',
-              titleAr: item.title?.ar || '',
-              subtitleEn: item.subtitle?.en || '',
-              subtitleAr: item.subtitle?.ar || '',
-            }))
-          );
-        }
-      }).catch((err) => console.warn('Gallery items fetch failed:', err));
+      fetchGalleryItems();
     }).catch((err) => console.warn('Gallery section fetch failed:', err));
 
     return () => {

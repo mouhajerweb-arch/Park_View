@@ -4,7 +4,7 @@ import { Box, Container, Typography, Button } from '@mui/material';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useLanguage } from '../context/LanguageContext';
-import { client } from '../sanity/client';
+import { client, optimizedImageUrl } from '../sanity/client';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -179,10 +179,10 @@ export default function FloorPlansSection({ sectionData }) {
   }
   
   // Floorplan image file mappings
-  const floorplanImg = currentUnitData.imageUrl || `/images/floorplan-${activeUnit}.png`;
+  const floorplanImg = optimizedImageUrl(currentUnitData.imageUrl, { width: 1000, quality: 86 }) || `/images/floorplan-${activeUnit}.png`;
 
   const handleRequestPlans = () => {
-    const WHATSAPP_NUMBER = sanityData?.whatsappNumber || '963997711226';
+    const WHATSAPP_NUMBER = sanityData?.whatsappNumber || '963993306655';
     const unitName = currentUnitData.name;
     const message = lang === 'ar'
       ? `مرحباً، أود الحصول على مخططات الطوابق والكتيب الخاص بـ ${unitName} في مشروع بارك فيو يعفور.`

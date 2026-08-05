@@ -10,6 +10,7 @@ import CuratedLivingSection from '../../components/CuratedLivingSection';
 import FooterSection from '../../components/FooterSection';
 import { useLanguage } from '../../context/LanguageContext';
 import { client } from '../../sanity/client';
+import { mergeSharedSections, pageSectionsProjection } from '../../sanity/queries';
 
 export default function AboutPage() {
   const { lang } = useLanguage();
@@ -21,20 +22,17 @@ export default function AboutPage() {
       .fetch(`*[_type == "aboutPage" && _id == "aboutPage"][0] {
         ...,
         "heroCoverUrl": heroImage.asset->url,
-        sections[] {
-          ...,
-          "mainImageUrl": mainImage.asset->url,
-          "profileImageUrl": profileImage.asset->url,
-          "smallImageUrl": smallImage.asset->url,
-          "largeImageUrl": largeImage.asset->url
-        }
+        ${pageSectionsProjection}
       }`)
       .then((data) => {
         if (active && data) {
-          setPageData(data);
+          setPageData(mergeSharedSections(data));
         }
       })
-      .catch((err) => console.warn('Error fetching about page settings:', err));
+      .catch((err) => {
+        console.warn('Error fetching about page settings:', err);
+        if (active) setPageData({});
+      });
     return () => {
       active = false;
     };
@@ -69,7 +67,7 @@ export default function AboutPage() {
       
       {/* Dynamic Subpage Cover Hero from Sanity */}
       <SubpageHero 
-        bgImage={pageData?.heroCoverUrl || "/images/prestige-tranquility.jpg"}
+        bgImage={pageData ? (pageData.heroCoverUrl || "/images/prestige-tranquility.jpg") : null}
         titleEn={pageData?.heroTitle?.en || "A Vision Written in Nature's Language"}
         titleAr={pageData?.heroTitle?.ar || "رؤية صاغتها الطبيعة والتميز المعماري"}
         subtitleEn={pageData?.heroSubtitle?.en || "About Park View"}

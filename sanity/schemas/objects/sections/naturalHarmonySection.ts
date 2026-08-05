@@ -16,6 +16,8 @@ export default defineType({
       of: [
         {
           type: 'object',
+          name: 'naturalHarmonyBullet',
+          title: 'Bullet Feature',
           fields: [
             defineField({ name: 'label', title: 'Label', type: 'localizedString' }),
             defineField({
@@ -33,7 +35,27 @@ export default defineType({
                 ]
               }
             }),
-          ]
+            defineField({
+              name: 'iconImage',
+              title: 'Upload Icon',
+              type: 'image',
+              options: { hotspot: false },
+            }),
+          ],
+          preview: {
+            select: {
+              title: 'label.en',
+              subtitle: 'icon',
+              media: 'iconImage',
+            },
+            prepare({ title, subtitle, media }) {
+              return {
+                title: title || 'Bullet Feature',
+                subtitle,
+                media,
+              };
+            },
+          },
         }
       ]
     }),

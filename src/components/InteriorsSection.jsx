@@ -5,6 +5,7 @@ import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useLanguage } from '../context/LanguageContext';
 import LearnMoreLink from './LearnMoreLink';
+import { optimizedImageUrl } from '../sanity/client';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -206,7 +207,7 @@ export default function InteriorsSection({ sectionData }) {
               >
                 <Box
                   component="img"
-                  src={getTabImages('dining')?.[0]?.imageUrl || "/images/interior-dining.jpg"}
+                  src={optimizedImageUrl(getTabImages('dining')?.[0]?.imageUrl, { width: 1600, quality: 84 }) || "/images/interior-dining.jpg"}
                   alt="Luxury Dining room layout rendering"
                   sx={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
                 />
@@ -244,7 +245,7 @@ export default function InteriorsSection({ sectionData }) {
               >
                 <Box
                   component="img"
-                  src={getTabImages('bedroom')?.[0]?.imageUrl || "/images/interior-bedroom.jpg"}
+                  src={optimizedImageUrl(getTabImages('bedroom')?.[0]?.imageUrl, { width: 1600, quality: 84 }) || "/images/interior-bedroom.jpg"}
                   alt="Luxury Master Bedroom rendering"
                   sx={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
                 />
@@ -287,7 +288,7 @@ export default function InteriorsSection({ sectionData }) {
                 >
                   <Box
                     component="img"
-                    src={getTabImages('bathroom')?.[0]?.imageUrl || "/images/interior-closet.jpg"}
+                    src={optimizedImageUrl(getTabImages('bathroom')?.[0]?.imageUrl, { width: 900, quality: 84 }) || "/images/interior-closet.jpg"}
                     alt="Luxury walk in closet detail rendering"
                     sx={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
                   />
@@ -308,7 +309,7 @@ export default function InteriorsSection({ sectionData }) {
                 >
                   <Box
                     component="img"
-                    src={getTabImages('bathroom')?.[1]?.imageUrl || getTabImages('bathroom')?.[0]?.imageUrl || "/images/interior-bathroom.jpg"}
+                    src={optimizedImageUrl(getTabImages('bathroom')?.[1]?.imageUrl || getTabImages('bathroom')?.[0]?.imageUrl, { width: 1400, quality: 84 }) || "/images/interior-bathroom.jpg"}
                     alt="Luxury bathroom travertine marble rendering"
                     sx={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
                   />

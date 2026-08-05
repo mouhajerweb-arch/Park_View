@@ -41,7 +41,21 @@ export default defineType({
             defineField({ name: 'label', title: 'Label', type: 'localizedString' }),
             defineField({ name: 'time', title: 'Travel Time (e.g. 20 mins)', type: 'string' }),
             defineField({ name: 'icon', title: 'Icon Key (e.g. monument, airport, hospital, mall)', type: 'string' }),
-          ]
+            defineField({
+              name: 'iconImage',
+              title: 'Upload Icon',
+              type: 'image',
+              description: 'Upload destination icon image.',
+              options: { hotspot: false },
+            }),
+          ],
+          preview: {
+            select: {
+              title: 'label.en',
+              subtitle: 'time',
+              media: 'iconImage',
+            },
+          },
         }
       ]
     })

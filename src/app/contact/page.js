@@ -8,6 +8,7 @@ import FooterSection from '../../components/FooterSection';
 import ContactFormSection from '../../components/ContactFormSection';
 import { useLanguage } from '../../context/LanguageContext';
 import { client } from '../../sanity/client';
+import { mergeSharedSections, pageSectionsProjection } from '../../sanity/queries';
 
 export default function ContactPage() {
   const { lang } = useLanguage();
@@ -19,20 +20,17 @@ export default function ContactPage() {
       .fetch(`*[_type == "contactPage" && _id == "contactPage"][0] {
         ...,
         "heroCoverUrl": heroImage.asset->url,
-        sections[] {
-          ...,
-          "resolvedAmenities": amenities[] {
-            ...,
-            "iconUrl": icon.asset->url
-          }
-        }
+        ${pageSectionsProjection}
       }`)
       .then((data) => {
         if (active && data) {
-          setPageData(data);
+          setPageData(mergeSharedSections(data));
         }
       })
-      .catch((err) => console.warn('Error fetching contact page settings:', err));
+      .catch((err) => {
+        console.warn('Error fetching contact page settings:', err);
+        if (active) setPageData({});
+      });
     return () => {
       active = false;
     };
@@ -65,7 +63,7 @@ export default function ContactPage() {
       
       {/* Dynamic Subpage Cover Hero from Sanity */}
       <SubpageHero 
-        bgImage={pageData?.heroCoverUrl || "/images/prestige-tranquility.jpg"}
+        bgImage={pageData ? (pageData.heroCoverUrl || "/images/prestige-tranquility.jpg") : null}
         titleEn={pageData?.heroTitle?.en || "Your Sanctuary Awaits Your Inquiry"}
         titleAr={pageData?.heroTitle?.ar || "ملاذك الآمن بانتظار استفسارك"}
         subtitleEn={pageData?.heroSubtitle?.en || "Contact Us"}

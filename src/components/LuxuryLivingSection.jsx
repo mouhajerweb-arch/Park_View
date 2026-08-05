@@ -3,6 +3,7 @@ import React, { useEffect, useRef } from 'react';
 import { Box, Typography } from '@mui/material';
 import gsap from 'react';
 import { useLanguage } from '../context/LanguageContext';
+import { optimizedImageUrl } from '../sanity/client';
 
 export default function LuxuryLivingSection({ sectionData }) {
   const { t, lang } = useLanguage();
@@ -92,7 +93,7 @@ export default function LuxuryLivingSection({ sectionData }) {
         label: stat.label?.[lang] || stat.label?.en || '',
       }))
     : ll.stats;
-  const displayImage = sectionData?.largeImageUrl || "/images/luxury-entry.jpg";
+  const displayImage = optimizedImageUrl(sectionData?.largeImageUrl, { width: 1400 }) || "/images/luxury-entry.jpg";
 
   return (
     <Box

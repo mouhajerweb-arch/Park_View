@@ -4,6 +4,7 @@ import { Box, Typography } from '@mui/material';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useLanguage } from '../context/LanguageContext';
+import { optimizedImageUrl } from '../sanity/client';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -62,7 +63,7 @@ export default function CuratedLivingSection({ sectionData }) {
   const displayTitle = sectionData?.title?.[lang] || sectionData?.title?.en || cl.title;
   const displayParagraph1 = sectionData?.paragraph1?.[lang] || sectionData?.paragraph1?.en || cl.paragraph1;
   const displayParagraph2 = sectionData?.paragraph2?.[lang] || sectionData?.paragraph2?.en || cl.paragraph2;
-  const displayImage = sectionData?.largeImageUrl || "/images/curated-garden.jpg";
+  const displayImage = optimizedImageUrl(sectionData?.largeImageUrl, { width: 1400 }) || "/images/curated-garden.jpg";
 
   return (
     <Box

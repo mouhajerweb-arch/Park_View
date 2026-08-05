@@ -4,6 +4,7 @@ import { Box, Container, Typography } from '@mui/material';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useLanguage } from '../context/LanguageContext';
+import { optimizedImageUrl } from '../sanity/client';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -72,7 +73,7 @@ export default function PrestigeSection({ sectionData }) {
 
   const displayTitle = sectionData?.title?.[lang] || sectionData?.title?.en;
   const displayBody = sectionData?.body?.[lang] || sectionData?.body?.en || t.prestige.body;
-  const displayImage = sectionData?.mainImageUrl || "/images/prestige-tranquility.jpg";
+  const displayImage = optimizedImageUrl(sectionData?.mainImageUrl, { width: 1400 }) || "/images/prestige-tranquility.jpg";
 
   return (
     <Box

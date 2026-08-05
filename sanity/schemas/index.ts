@@ -36,6 +36,8 @@ import siteSettings from './siteSettings';
 import footerSettings from './footerSettings';
 import headerSettings from './headerSettings';
 import autoScrollPopupSettings from './autoScrollPopupSettings';
+import reusableSections from './reusableSections';
+import legalPage from './legalPage';
 
 export const schemaTypes = [
   // Objects
@@ -76,4 +78,6 @@ export const schemaTypes = [
   footerSettings,
   headerSettings,
   autoScrollPopupSettings,
+  reusableSections,
+  legalPage,
 ];

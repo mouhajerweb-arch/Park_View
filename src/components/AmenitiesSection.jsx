@@ -4,7 +4,7 @@ import { Box, Container, Grid2 as Grid, Typography } from '@mui/material';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useLanguage } from '../context/LanguageContext';
-import { client, urlFor } from '../sanity/client';
+import { client, optimizedImageUrl } from '../sanity/client';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -110,7 +110,7 @@ export default function AmenitiesSection({ sectionData }) {
   const listToRender = dynamicAmenities.length > 0 
     ? dynamicAmenities.map(item => ({
         name: item.name?.[lang] || item.name?.en || '',
-        iconSrc: item.iconUrl || '/icons/default.png'
+        iconSrc: optimizedImageUrl(item.iconUrl, { width: 120, quality: 90 }) || '/icons/default.png'
       }))
     : amenitiesList.map(item => ({
         name: lang === 'ar' ? item.nameAr : item.nameEn,

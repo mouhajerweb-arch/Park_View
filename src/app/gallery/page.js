@@ -6,6 +6,7 @@ import GallerySection from '../../components/GallerySection';
 import FooterSection from '../../components/FooterSection';
 import { useLanguage } from '../../context/LanguageContext';
 import { client } from '../../sanity/client';
+import { mergeSharedSections, pageSectionsProjection } from '../../sanity/queries';
 
 export default function GalleryPage() {
   const { lang } = useLanguage();
@@ -17,20 +18,17 @@ export default function GalleryPage() {
       .fetch(`*[_type == "galleryPage" && _id == "galleryPage"][0] {
         ...,
         "heroCoverUrl": heroImage.asset->url,
-        sections[] {
-          ...,
-          "inlineImages": images[] {
-            ...,
-            "imageUrl": image.asset->url
-          }
-        }
+        ${pageSectionsProjection}
       }`)
       .then((data) => {
         if (active && data) {
-          setPageData(data);
+          setPageData(mergeSharedSections(data));
         }
       })
-      .catch((err) => console.warn('Error fetching gallery page settings:', err));
+      .catch((err) => {
+        console.warn('Error fetching gallery page settings:', err);
+        if (active) setPageData({});
+      });
     return () => {
       active = false;
     };
@@ -60,7 +58,7 @@ export default function GalleryPage() {
       
       {/* Dynamic Subpage Cover Hero from Sanity */}
       <SubpageHero 
-        bgImage={pageData?.heroCoverUrl || "/images/harmony-pool.jpg"}
+        bgImage={pageData ? (pageData.heroCoverUrl || "/images/harmony-pool.jpg") : null}
         titleEn={pageData?.heroTitle?.en || "The Art of Refined Living in Frames"}
         titleAr={pageData?.heroTitle?.ar || "فن العيش الراقي مصوراً بالتفصيل"}
         subtitleEn={pageData?.heroSubtitle?.en || "Visual Gallery"}

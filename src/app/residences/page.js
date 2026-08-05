@@ -10,6 +10,7 @@ import FloorPlansSection from '../../components/FloorPlansSection';
 import FooterSection from '../../components/FooterSection';
 import { useLanguage } from '../../context/LanguageContext';
 import { client } from '../../sanity/client';
+import { mergeSharedSections, pageSectionsProjection } from '../../sanity/queries';
 
 export default function ResidencesPage() {
   const { lang } = useLanguage();
@@ -21,31 +22,17 @@ export default function ResidencesPage() {
       .fetch(`*[_type == "residencesPage" && _id == "residencesPage"][0] {
         ...,
         "heroCoverUrl": heroImage.asset->url,
-        sections[] {
-          ...,
-          "mainImageUrl": mainImage.asset->url,
-          "largeImageUrl": largeImage.asset->url,
-          tabs[] {
-            ...,
-            images[] {
-              ...,
-              "imageUrl": image.asset->url
-            }
-          },
-          phases[] {...},
-          clusters[] {
-            ...,
-            "interiorImageUrl": interiorImage.asset->url,
-            "flowerImageUrl": flowerImage.asset->url
-          }
-        }
+        ${pageSectionsProjection}
       }`)
       .then((data) => {
         if (active && data) {
-          setPageData(data);
+          setPageData(mergeSharedSections(data));
         }
       })
-      .catch((err) => console.warn('Error fetching residences page settings:', err));
+      .catch((err) => {
+        console.warn('Error fetching residences page settings:', err);
+        if (active) setPageData({});
+      });
     return () => {
       active = false;
     };
@@ -80,7 +67,7 @@ export default function ResidencesPage() {
       
       {/* Dynamic Subpage Cover Hero from Sanity */}
       <SubpageHero 
-        bgImage={pageData?.heroCoverUrl || "/images/luxury-entry.jpg"}
+        bgImage={pageData ? (pageData.heroCoverUrl || "/images/luxury-entry.jpg") : null}
         titleEn={pageData?.heroTitle?.en || "More Space for Life to Bloom"}
         titleAr={pageData?.heroTitle?.ar || "مساحات أوسع لتزدهر الحياة العائلية"}
         subtitleEn={pageData?.heroSubtitle?.en || "The Residences"}

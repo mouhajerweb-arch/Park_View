@@ -30,7 +30,7 @@ const getPhoneHref = (phone) => `tel:${String(phone || '').replace(/[^\d+]/g, ''
 const getMapHref = (address) => `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address || '')}`;
 
 export default function FooterSection() {
-  const { lang } = useLanguage();
+  const { lang, navigateWithLoader } = useLanguage();
   const [footerData, setFooterData] = useState(null);
 
   useEffect(() => {
@@ -61,7 +61,7 @@ export default function FooterSection() {
     { platform: 'facebook', url: '#' },
     { platform: 'twitter', url: '#' },
     { platform: 'instagram', url: '#' },
-    { platform: 'whatsapp', url: 'https://wa.me/963997711226' }
+    { platform: 'whatsapp', url: 'https://wa.me/963993306655' }
   ];
 
   // Column 2
@@ -78,7 +78,8 @@ export default function FooterSection() {
   const col3Title = footerData?.col3Title?.[lang] || footerData?.col3Title?.en || (
     lang === 'ar' ? 'اتصل بنا' : 'Contact Us'
   );
-  const displayPhone = footerData?.phone || '+963 11 4068';
+  const displayPhone = footerData?.phone || '+963114068';
+  const displayWhatsapp = footerData?.whatsappNumber || '+963993306655';
   const displayEmail = footerData?.email || 'info@parkview.community';
   const displayAddress = footerData?.address?.[lang] || footerData?.address?.en || (
     lang === 'ar'
@@ -247,6 +248,30 @@ export default function FooterSection() {
                 </Typography>
               </Box>
 
+              {/* WhatsApp detail */}
+              <Box
+                component="a"
+                href={`https://wa.me/${String(displayWhatsapp || '').replace(/[^\d]/g, '')}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                sx={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 1.5,
+                  flexDirection: 'row',
+                  color: 'inherit',
+                  textDecoration: 'none',
+                  width: 'fit-content',
+                  '&:hover .contact-text, &:focus-visible .contact-text': { color: '#2B2825' },
+                  '&:focus-visible': { outline: '2px solid rgba(43, 40, 37, 0.35)', outlineOffset: 3 }
+                }}
+              >
+                <WhatsAppIcon sx={{ fontSize: 16, color: '#7C7368' }} />
+                <Typography className="contact-text" sx={{ fontFamily: '"Silka", sans-serif', fontSize: '0.88rem', color: '#6B6661', fontWeight: 300, dir: 'ltr', transition: 'color 0.2s ease' }}>
+                  {displayWhatsapp}
+                </Typography>
+              </Box>
+
               {/* Email detail */}
               <Box
                 component="a"
@@ -312,10 +337,26 @@ export default function FooterSection() {
             &copy; {new Date().getFullYear()} {copyrightText}
           </Typography>
           <Box sx={{ display: 'flex', gap: 3, flexDirection: 'row' }}>
-            <Typography component="a" href="#" sx={{ fontFamily: '"Silka", sans-serif', fontSize: '0.78rem', color: 'rgba(43, 40, 37, 0.6)', textDecoration: 'none', '&:hover': { color: '#2B2825' } }}>
+            <Typography
+              component="a"
+              href={`/privacy/${lang}`}
+              onClick={(event) => {
+                event.preventDefault();
+                navigateWithLoader(`/privacy/${lang}`);
+              }}
+              sx={{ fontFamily: '"Silka", sans-serif', fontSize: '0.78rem', color: 'rgba(43, 40, 37, 0.6)', textDecoration: 'none', '&:hover': { color: '#2B2825' } }}
+            >
               {lang === 'ar' ? 'سياسة الخصوصية' : 'Privacy Policy'}
             </Typography>
-            <Typography component="a" href="#" sx={{ fontFamily: '"Silka", sans-serif', fontSize: '0.78rem', color: 'rgba(43, 40, 37, 0.6)', textDecoration: 'none', '&:hover': { color: '#2B2825' } }}>
+            <Typography
+              component="a"
+              href={`/terms/${lang}`}
+              onClick={(event) => {
+                event.preventDefault();
+                navigateWithLoader(`/terms/${lang}`);
+              }}
+              sx={{ fontFamily: '"Silka", sans-serif', fontSize: '0.78rem', color: 'rgba(43, 40, 37, 0.6)', textDecoration: 'none', '&:hover': { color: '#2B2825' } }}
+            >
               {lang === 'ar' ? 'الشروط والأحكام' : 'Terms & Conditions'}
             </Typography>
           </Box>

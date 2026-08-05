@@ -15,7 +15,7 @@ export default defineType({
     defineField({ name: 'phone', title: 'Phone Number', type: 'string' }),
     defineField({ name: 'email', title: 'Email Address', type: 'string' }),
     defineField({ name: 'address', title: 'Address', type: 'localizedString' }),
-    defineField({ name: 'whatsappNumber', title: 'WhatsApp Number (digits only, e.g. 963997711226)', type: 'string' }),
+    defineField({ name: 'whatsappNumber', title: 'WhatsApp Number (digits only, e.g. 963993306655)', type: 'string' }),
     defineField({ name: 'mapEmbedUrl', title: 'Google Maps Embed URL', type: 'url', validation: (Rule) => Rule.uri({ allowRelative: false, scheme: ['https'] }) }),
     defineField({ name: 'mapLatitude', title: 'Map Latitude', type: 'number' }),
     defineField({ name: 'mapLongitude', title: 'Map Longitude', type: 'number' }),

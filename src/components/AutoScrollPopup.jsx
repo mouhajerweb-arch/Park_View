@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { Dialog, DialogContent, Box, Typography, Button, IconButton } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import { useLanguage } from '../context/LanguageContext';
-import { client } from '../sanity/client';
+import { client, optimizedImageUrl } from '../sanity/client';
 
 const fallbackPopup = {
   enabled: true,
@@ -25,7 +25,7 @@ const fallbackPopup = {
     en: 'Connect via WhatsApp',
     ar: 'تواصل عبر واتساب ↗',
   },
-  whatsappNumber: '963997711226',
+  whatsappNumber: '963993306655',
   whatsappMessage: {
     en: 'Hello, I would like to receive more details and launch offers for the Park View Yaafour project.',
     ar: 'مرحباً، أود الحصول على مزيد من المعلومات والتفاصيل حول مشروع بارك فيو يعفور.',
@@ -94,7 +94,7 @@ export default function AutoScrollPopup() {
   const displayHeadline = popupData.headline?.[lang] || popupData.headline?.en || fallbackPopup.headline.en;
   const displayDescription = popupData.description?.[lang] || popupData.description?.en || fallbackPopup.description.en;
   const displayButtonText = popupData.buttonText?.[lang] || popupData.buttonText?.en || fallbackPopup.buttonText.en;
-  const displayImageUrl = popupData.imageUrl || popupData.imagePath || fallbackPopup.imageUrl;
+  const displayImageUrl = optimizedImageUrl(popupData.imageUrl || popupData.imagePath, { width: 900 }) || fallbackPopup.imageUrl;
 
   return (
     <Dialog

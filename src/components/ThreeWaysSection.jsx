@@ -4,6 +4,7 @@ import { Box, Typography } from '@mui/material';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useLanguage } from '../context/LanguageContext';
+import { optimizedImageUrl } from '../sanity/client';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -77,7 +78,7 @@ export default function ThreeWaysSection({ sectionData }) {
   const displaySubtitle = sectionData?.eyebrow?.[lang] || sectionData?.eyebrow?.en || tw.subtitle;
   const displayTitle = sectionData?.title?.[lang] || sectionData?.title?.en || tw.title;
   const displayParagraph = sectionData?.description?.[lang] || sectionData?.description?.en || tw.paragraph;
-  const displayImage = sectionData?.largeImageUrl || "/images/threeways-balcony.jpg";
+  const displayImage = optimizedImageUrl(sectionData?.largeImageUrl, { width: 1400 }) || "/images/threeways-balcony.jpg";
   
   const getPhaseData = () => {
     switch (activeTab) {

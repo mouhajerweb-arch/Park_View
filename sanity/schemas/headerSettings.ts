@@ -64,6 +64,8 @@ export default defineType({
       type: 'object',
       fields: [
         { name: 'showFlag', title: 'Show Flag Icon', type: 'boolean', initialValue: true },
+        { name: 'englishFlag', title: 'English Flag SVG/Image', type: 'image' },
+        { name: 'arabicFlag', title: 'Arabic Flag SVG/Image', type: 'image' },
       ],
     }),
   ],

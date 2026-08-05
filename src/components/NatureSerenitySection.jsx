@@ -4,6 +4,7 @@ import { Box, Typography } from '@mui/material';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useLanguage } from '../context/LanguageContext';
+import { optimizedImageUrl } from '../sanity/client';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -62,8 +63,8 @@ export default function NatureSerenitySection({ sectionData }) {
   const displayTitle = sectionData?.title?.[lang] || sectionData?.title?.en || t.natureSerenity.title;
   const displayParagraph1 = sectionData?.paragraph1?.[lang] || sectionData?.paragraph1?.en || t.natureSerenity.paragraph1;
   const displayParagraph2 = sectionData?.paragraph2?.[lang] || sectionData?.paragraph2?.en || t.natureSerenity.paragraph2;
-  const displaySmallImage = sectionData?.smallImageUrl || "/images/nature-table-placeholder.jpg";
-  const displayLargeImage = sectionData?.largeImageUrl || "/images/nature-interior-placeholder.jpg";
+  const displaySmallImage = optimizedImageUrl(sectionData?.smallImageUrl, { width: 500 }) || "/images/nature-table-placeholder.jpg";
+  const displayLargeImage = optimizedImageUrl(sectionData?.largeImageUrl, { width: 1400 }) || "/images/nature-interior-placeholder.jpg";
 
   return (
     <Box
