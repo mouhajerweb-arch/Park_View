@@ -279,7 +279,7 @@ export default function HeroSection() {
             direction: "ltr",
             alignItems: "center",
             justifyContent: "center",
-            margin: { xs: "20px auto", sm: "40px auto" },
+            margin: { xs: "20px 0px", sm: "40px 0px " },
             height: { xs: "95px", sm: "150px" },
             zIndex: 10,
           }}
@@ -288,8 +288,8 @@ export default function HeroSection() {
           <Box
             className="time days"
             sx={{
-              width: { xs: "90px", sm: "150px" },
-              height: { xs: "90px", sm: "150px" },
+              width: { xs: "70px", sm: "150px" },
+              height: { xs: "70px", sm: "150px" },
               borderRadius: "50%",
               backgroundColor: "rgba(0, 0, 0, 0.5)",
               margin: { xs: "3px", sm: "5px" },
@@ -310,7 +310,7 @@ export default function HeroSection() {
               sx={{
                 fontFamily: '"Silka", sans-serif',
                 fontWeight: 100,
-                fontSize: { xs: "30px", sm: "50px" },
+                fontSize: { xs: "25px", sm: "50px" },
                 color: "#FFFFFF",
                 lineHeight: 1.1,
                 mb: { xs: 0.2, sm: 0.5 },
@@ -322,7 +322,7 @@ export default function HeroSection() {
               className="unit"
               sx={{
                 fontFamily: '"Silka", sans-serif',
-                fontSize: { xs: "8px", sm: "10px" },
+                fontSize: { xs: "7px", sm: "10px" },
                 fontWeight: 500,
                 letterSpacing: "0.12em",
                 textTransform: "uppercase",
@@ -338,8 +338,8 @@ export default function HeroSection() {
           <Box
             className="time hours"
             sx={{
-              width: { xs: "90px", sm: "150px" },
-              height: { xs: "90px", sm: "150px" },
+              width: { xs: "70px", sm: "150px" },
+              height: { xs: "70px", sm: "150px" },
               borderRadius: "50%",
               backgroundColor: "rgba(0, 0, 0, 0.5)",
               margin: { xs: "3px", sm: "5px" },
@@ -360,7 +360,7 @@ export default function HeroSection() {
               sx={{
                 fontFamily: '"Silka", sans-serif',
                 fontWeight: 100,
-                fontSize: { xs: "30px", sm: "50px" },
+                fontSize: { xs: "25px", sm: "50px" },
                 color: "#FFFFFF",
                 lineHeight: 1.1,
                 mb: { xs: 0.2, sm: 0.5 },
@@ -372,7 +372,7 @@ export default function HeroSection() {
               className="unit"
               sx={{
                 fontFamily: '"Silka", sans-serif',
-                fontSize: { xs: "8px", sm: "10px" },
+                fontSize: { xs: "7px", sm: "10px" },
                 fontWeight: 500,
                 letterSpacing: "0.12em",
                 textTransform: "uppercase",
@@ -388,8 +388,8 @@ export default function HeroSection() {
           <Box
             className="time minutes"
             sx={{
-              width: { xs: "90px", sm: "150px" },
-              height: { xs: "90px", sm: "150px" },
+              width: { xs: "70px", sm: "150px" },
+              height: { xs: "70px", sm: "150px" },
               borderRadius: "50%",
               backgroundColor: "rgba(0, 0, 0, 0.5)",
               margin: { xs: "3px", sm: "5px" },
@@ -410,7 +410,7 @@ export default function HeroSection() {
               sx={{
                 fontFamily: '"Silka", sans-serif',
                 fontWeight: 100,
-                fontSize: { xs: "30px", sm: "50px" },
+                fontSize: { xs: "25px", sm: "50px" },
                 color: "#FFFFFF",
                 lineHeight: 1.1,
                 mb: { xs: 0.2, sm: 0.5 },
@@ -422,7 +422,7 @@ export default function HeroSection() {
               className="unit"
               sx={{
                 fontFamily: '"Silka", sans-serif',
-                fontSize: { xs: "8px", sm: "10px" },
+                fontSize: { xs: "7px", sm: "10px" },
                 fontWeight: 500,
                 letterSpacing: "0.12em",
                 textTransform: "uppercase",
@@ -438,8 +438,8 @@ export default function HeroSection() {
           <Box
             className="time seconds"
             sx={{
-              width: { xs: "90px", sm: "150px" },
-              height: { xs: "90px", sm: "150px" },
+              width: { xs: "70px", sm: "150px" },
+              height: { xs: "70px", sm: "150px" },
               borderRadius: "50%",
               backgroundColor: "rgba(0, 0, 0, 0.5)",
               margin: { xs: "3px", sm: "5px" },
@@ -460,7 +460,7 @@ export default function HeroSection() {
               sx={{
                 fontFamily: '"Silka", sans-serif',
                 fontWeight: 100,
-                fontSize: { xs: "30px", sm: "50px" },
+                fontSize: { xs: "25px", sm: "50px" },
                 color: "#FFFFFF",
                 lineHeight: 1.1,
                 mb: { xs: 0.2, sm: 0.5 },
@@ -472,7 +472,7 @@ export default function HeroSection() {
               className="unit"
               sx={{
                 fontFamily: '"Silka", sans-serif',
-                fontSize: { xs: "8px", sm: "10px" },
+                fontSize: { xs: "7px", sm: "10px" },
                 fontWeight: 500,
                 letterSpacing: "0.12em",
                 textTransform: "uppercase",
@@ -508,7 +508,7 @@ export default function HeroSection() {
           width="18"
           height="18"
           viewBox="0 0 24 24"
-          fill="none"
+          fill="none" 
           xmlns="http://www.w3.org/2000/svg"
         >
           <circle cx="12" cy="12" r="3" fill="#FFFFFF" opacity="0.9" />
