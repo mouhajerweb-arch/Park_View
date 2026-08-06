@@ -56,7 +56,7 @@ function LayoutContent({ children }) {
   if (isStudio) {
     return (
       <html lang="en">
-        <body>
+        <body className="sanity-studio-body">
           {children}
         </body>
       </html>
