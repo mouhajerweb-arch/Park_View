@@ -3,7 +3,8 @@ import {
   Settings, 
   FileText, 
   HelpCircle, 
-  Image as ImageIcon
+  Image as ImageIcon,
+  Newspaper
 } from "lucide-react";
 
 export const structure: StructureResolver = (S) =>
@@ -67,6 +68,14 @@ export const structure: StructureResolver = (S) =>
                     .title("Gallery Page")
                 ),
               S.listItem()
+                .title("Blogs Page")
+                .child(
+                  S.document()
+                    .schemaType("blogPage")
+                    .documentId("blogPage")
+                    .title("Blogs Page")
+                ),
+              S.listItem()
                 .title("Terms and Conditions")
                 .child(
                   S.document()
@@ -99,6 +108,7 @@ export const structure: StructureResolver = (S) =>
         ),
       S.documentTypeListItem("faq").title("FAQs").icon(HelpCircle),
       S.documentTypeListItem("galleryItem").title("Gallery Images").icon(ImageIcon),
+      S.documentTypeListItem("blogPost").title("Blog Posts").icon(Newspaper),
 
       S.divider(),
 
@@ -149,8 +159,10 @@ export const structure: StructureResolver = (S) =>
             "residencesPage",
             "locationPage",
             "galleryPage",
+            "blogPage",
             "faq",
             "galleryItem",
+            "blogPost",
             "reusableSections",
             "siteSettings",
             "footerSettings",

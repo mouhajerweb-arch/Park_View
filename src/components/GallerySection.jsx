@@ -622,7 +622,7 @@ export default function GallerySection({ sectionData }) {
                 onClick={(e) => handleSlideClick(e, img)}
                 sx={{
                   width: `${slideWidth}px`, 
-                  height: { xs: '340px', sm: '400px', md: '480px' }, 
+                  height: { xs: '240px', sm: '400px', md: '480px' }, 
                   mx: `${slideGap / 2}px`, 
                   borderRadius: 0, 
                   overflow: 'hidden',
@@ -709,8 +709,12 @@ export default function GallerySection({ sectionData }) {
               alt={lang === 'ar' ? zoomedImage.titleAr : zoomedImage.titleEn}
               sx={{
                 width: '100%',
-                height: '100%',
-                objectFit: 'cover',
+                height: { xs: '72vh', md: '100%' },
+                objectFit: { xs: 'contain', md: 'cover' },
+                position: { xs: 'absolute', md: 'static' },
+                top: { xs: '50%', md: 'auto' },
+                left: { xs: 0, md: 'auto' },
+                transform: { xs: 'translateY(-50%)', md: 'none' },
               }}
             />
             
@@ -723,7 +727,7 @@ export default function GallerySection({ sectionData }) {
                 width: '100%',
                 height: '100%',
                 // backgroundColor: 'rgba(30, 26, 22, 0.3)',
-                backgroundImage: 'linear-gradient(to bottom, rgba(30, 26, 22, 0.1) 0%, rgba(30, 26, 22, 0.7) 100%)',
+                // backgroundImage: 'linear-gradient(to bottom, rgba(30, 26, 22, 0.1) 0%, rgba(30, 26, 22, 0.7) 100%)',
                 zIndex: 1
               }}
             />
@@ -753,23 +757,25 @@ export default function GallerySection({ sectionData }) {
               ref={textOverlayRef}
               sx={{
                 position: 'absolute',
-                bottom: { xs: 24, md: 50 },
-                left: lang === 'ar' ? 'auto' : { xs: 20, md: 50 },
-                right: lang === 'ar' ? { xs: 20, md: 50 } : 'auto',
+                bottom: { xs: 'calc(14vh + 18px)', md: 50 },
+                left: lang === 'ar' ? 'auto' : { xs: 16, md: 50 },
+                right: lang === 'ar' ? { xs: 16, md: 50 } : 'auto',
                 color: '#FFFFFF',
                 textAlign: lang === 'ar' ? 'right' : 'left',
                 zIndex: 2,
-                maxWidth: '650px',
-                px: { xs: 2, md: 0 }
+                width: { xs: 'calc(100% - 32px)', md: 'auto' },
+                maxWidth: { xs: 'calc(100% - 32px)', md: '650px' },
+                px: 0,
+                overflowWrap: 'anywhere'
               }}
             >
               <Typography
                 variant="h3"
                 sx={{
                   fontFamily: '"CS Brandis", serif',
-                  fontSize: { xs: '1.4rem', sm: '2rem', md: '2.5rem' }, // Responsive font size
+                  fontSize: { xs: '1.2rem', sm: '2rem', md: '2.5rem' }, // Responsive font size
                   lineHeight: 1.2,
-                  mb: 1.5,
+                  mb: { xs: 0.75, md: 1.5 },
                   textShadow: '0 2px 8px rgba(0,0,0,0.2)'
                 }}
               >
@@ -778,11 +784,13 @@ export default function GallerySection({ sectionData }) {
               <Typography
                 sx={{
                   fontFamily: '"Silka", sans-serif',
-                  fontSize: { xs: '0.8rem', sm: '0.9rem', md: '1.05rem' }, // Responsive font size
+                  fontSize: { xs: '0.75rem', sm: '0.9rem', md: '1.05rem' }, // Responsive font size
+                  lineHeight: { xs: 1.35, md: 1.5 },
                   fontWeight: 300,
                   opacity: 0.9,
                   letterSpacing: '0.02em',
-                  textShadow: '0 1px 4px rgba(0,0,0,0.2)'
+                  textShadow: '0 1px 4px rgba(0,0,0,0.2)',
+                  color:'#ffffff'
                 }}
               >
                 {lang === 'ar' ? zoomedImage.subtitleAr : zoomedImage.subtitleEn}

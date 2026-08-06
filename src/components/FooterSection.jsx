@@ -339,6 +339,17 @@ export default function FooterSection() {
           <Box sx={{ display: 'flex', gap: 3, flexDirection: 'row' }}>
             <Typography
               component="a"
+              href={`/blogs/${lang}`}
+              onClick={(event) => {
+                event.preventDefault();
+                navigateWithLoader(`/blogs/${lang}`);
+              }}
+              sx={{ fontFamily: '"Silka", sans-serif', fontSize: '0.78rem', color: 'rgba(43, 40, 37, 0.6)', textDecoration: 'none', '&:hover': { color: '#2B2825' } }}
+            >
+              {lang === 'ar' ? 'المدونة' : 'Blogs'}
+            </Typography>
+            <Typography
+              component="a"
               href={`/privacy/${lang}`}
               onClick={(event) => {
                 event.preventDefault();
