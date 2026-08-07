@@ -158,15 +158,21 @@ export default function ConnectivitySection({ sectionData }) {
   const desktopMapSrc = optimizedImageUrl(mapImage, { width: 1800, quality: 84 }) || "/images/map-clean-base.png";
   const mobileMapSrc = optimizedImageUrl(mapImage, { width: 900, quality: 84 }) || "/images/map-mobile-rotated-labels.png";
 
-  const displayTitle = connectivityData?.title?.[lang] || connectivityData?.title?.en || t.connectivity.title;
-  const displaySubtitle = connectivityData?.description?.[lang] || connectivityData?.description?.en || t.connectivity.subtitle;
+  const displayTitle = connectivityData?.title?.[lang] || (lang === 'ar' ? t.connectivity.title : connectivityData?.title?.en) || t.connectivity.title;
+  const displaySubtitle = connectivityData?.description?.[lang] || (lang === 'ar' ? t.connectivity.subtitle : connectivityData?.description?.en) || t.connectivity.subtitle;
   const displayDestinations = connectivityData?.destinations?.length
-    ? connectivityData.destinations.map((item) => ({
-        icon: item.icon,
-        iconImageUrl: optimizedImageUrl(item.iconImageUrl, { width: 128, quality: 90 }),
-        time: item.time,
-        name: item.label?.[lang] || item.label?.en || '',
-      })).filter((item) => item.name || item.time)
+    ? connectivityData.destinations.map((item, index) => {
+        const fallbackItem = t.connectivity.destinations[index] || {};
+        const localizedName = item.label?.[lang] || (lang === 'ar' ? fallbackItem.name : item.label?.en);
+        const localizedTime = lang === 'ar' ? (fallbackItem.time || item.time) : item.time;
+
+        return {
+          icon: item.icon || fallbackItem.icon,
+          iconImageUrl: optimizedImageUrl(item.iconImageUrl, { width: 128, quality: 90 }),
+          time: localizedTime,
+          name: localizedName || '',
+        };
+      }).filter((item) => item.name || item.time)
     : t.connectivity.destinations;
 
   return (
@@ -275,7 +281,7 @@ export default function ConnectivitySection({ sectionData }) {
                 {displaySubtitle}
               </Typography>
             </Box>
-            <LearnMoreLink path="/location" bg="#F6F2EC" />
+            {/* <LearnMoreLink path="/location" bg="#F6F2EC" /> */}
           </Box>
 
           {/* Right Column: 2-Column Destination Grid */}
