@@ -14,7 +14,9 @@ export default function HeroSection() {
   const timerRef = useRef(null);
 
   const [heroData, setHeroData] = useState(null);
+  const [heroFetchComplete, setHeroFetchComplete] = useState(false);
   const [mediaReadySent, setMediaReadySent] = useState(false);
+  const [useDefaultImage, setUseDefaultImage] = useState(false);
   const playbackCheckRef = useRef(null);
 
   // Dynamic live countdown state targeting June 30, 2027 (matching live parkview.community)
@@ -27,6 +29,15 @@ export default function HeroSection() {
 
   useEffect(() => {
     let active = true;
+
+    const showDefaultHeroImage = () => {
+      if (!active) return;
+      setUseDefaultImage(true);
+      setHeroFetchComplete(true);
+      setMediaReadySent(true);
+      markHeroReady();
+    };
+
     client
       .fetch(
         `*[_type == "page" && _id == "home"][0].sections[_type == "heroSection"][0] {
@@ -37,13 +48,14 @@ export default function HeroSection() {
       .then((data) => {
         if (active && data) {
           setHeroData(data);
+          setHeroFetchComplete(true);
         } else if (active) {
-          markHeroReady();
+          showDefaultHeroImage();
         }
       })
       .catch((err) => {
         console.warn("Error fetching hero section data:", err);
-        markHeroReady();
+        showDefaultHeroImage();
       });
     return () => {
       active = false;
@@ -102,13 +114,14 @@ export default function HeroSection() {
 
   const formatTwoDigits = (num) => String(num).padStart(2, "0");
 
-  const backgroundType = heroData?.backgroundType || 'image';
-  const finalImageUrl = heroData?.backgroundImage
+  const backgroundType = useDefaultImage ? 'image' : heroData?.backgroundType;
+  const finalImageUrl = !useDefaultImage && heroData?.backgroundImage
     ? optimizedImageUrl(heroData.backgroundImage, { width: 2200, quality: 84 })
     : '/images/bg2.jpg';
-  const finalVideoUrl = heroData?.videoUrl || heroData?.backgroundVideoUrl;
+  const finalVideoUrl = useDefaultImage ? '' : heroData?.videoUrl || heroData?.backgroundVideoUrl;
 
   useEffect(() => {
+    if (!heroFetchComplete) return;
     if (backgroundType === 'video' && finalVideoUrl) return;
     if (!finalImageUrl || mediaReadySent) return;
 
@@ -119,17 +132,14 @@ export default function HeroSection() {
     };
     image.onerror = () => markHeroReady();
     image.src = finalImageUrl;
-  }, [backgroundType, finalImageUrl, finalVideoUrl, markHeroReady, mediaReadySent]);
+  }, [backgroundType, finalImageUrl, finalVideoUrl, heroFetchComplete, markHeroReady, mediaReadySent]);
 
   useEffect(() => {
-    if (backgroundType !== 'video' || !finalVideoUrl || mediaReadySent) return;
-
-    const fallbackTimer = setTimeout(() => {
-      markHeroReady();
-    }, 12000);
-
-    return () => clearTimeout(fallbackTimer);
-  }, [backgroundType, finalVideoUrl, markHeroReady, mediaReadySent]);
+    if (!heroFetchComplete || mediaReadySent) return;
+    if (backgroundType === 'video' && !finalVideoUrl) {
+      setUseDefaultImage(true);
+    }
+  }, [backgroundType, finalVideoUrl, heroFetchComplete, mediaReadySent]);
 
   useEffect(() => {
     return () => {
@@ -152,6 +162,16 @@ export default function HeroSection() {
 
   const handleHeroVideoPlaying = (event) => {
     markVideoReadyAfterPlayback(event.currentTarget);
+  };
+
+  const handleHeroVideoError = () => {
+    if (playbackCheckRef.current) {
+      clearTimeout(playbackCheckRef.current);
+    }
+
+    setUseDefaultImage(true);
+    setMediaReadySent(true);
+    markHeroReady();
   };
 
   const logoUrl = heroData?.logo
@@ -208,7 +228,7 @@ export default function HeroSection() {
           poster={finalImageUrl}
           onPlaying={handleHeroVideoPlaying}
           onTimeUpdate={handleHeroVideoPlaying}
-          onError={() => markHeroReady()}
+          onError={handleHeroVideoError}
           sx={{
             position: "absolute",
             top: 0,
@@ -270,220 +290,7 @@ export default function HeroSection() {
         </Typography>
 
         {/* Circled Large Countdown Timer */}
-        <Box
-          ref={timerRef}
-          className="countdown circled large"
-          sx={{
-            display: "flex",
-            flexDirection: "row",
-            direction: "ltr",
-            alignItems: "center",
-            justifyContent: "center",
-            margin: { xs: "20px 0px", sm: "40px 0px " },
-            height: { xs: "95px", sm: "150px" },
-            zIndex: 10,
-          }}
-        >
-          {/* Days */}
-          <Box
-            className="time days"
-            sx={{
-              width: { xs: "70px", sm: "150px" },
-              height: { xs: "70px", sm: "150px" },
-              borderRadius: "50%",
-              backgroundColor: "rgba(0, 0, 0, 0.5)",
-              margin: { xs: "3px", sm: "5px" },
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              justifyContent: "center",
-              position: "relative",
-              transition: "transform 0.3s ease, background-color 0.3s ease",
-              "&:hover": {
-                transform: "scale(1.05)",
-                backgroundColor: "rgba(0, 0, 0, 0.65)",
-              },
-            }}
-          >
-            <Typography
-              className="value"
-              sx={{
-                fontFamily: '"Silka", sans-serif',
-                fontWeight: 100,
-                fontSize: { xs: "25px", sm: "50px" },
-                color: "#FFFFFF",
-                lineHeight: 1.1,
-                mb: { xs: 0.2, sm: 0.5 },
-              }}
-            >
-              {timeLeft.days}
-            </Typography>
-            <Typography
-              className="unit"
-              sx={{
-                fontFamily: '"Silka", sans-serif',
-                fontSize: { xs: "7px", sm: "10px" },
-                fontWeight: 500,
-                letterSpacing: "0.12em",
-                textTransform: "uppercase",
-                color: "#76808f",
-                lineHeight: 1.2,
-              }}
-            >
-              {daysLabel}
-            </Typography>
-          </Box>
-
-          {/* Hours */}
-          <Box
-            className="time hours"
-            sx={{
-              width: { xs: "70px", sm: "150px" },
-              height: { xs: "70px", sm: "150px" },
-              borderRadius: "50%",
-              backgroundColor: "rgba(0, 0, 0, 0.5)",
-              margin: { xs: "3px", sm: "5px" },
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              justifyContent: "center",
-              position: "relative",
-              transition: "transform 0.3s ease, background-color 0.3s ease",
-              "&:hover": {
-                transform: "scale(1.05)",
-                backgroundColor: "rgba(0, 0, 0, 0.65)",
-              },
-            }}
-          >
-            <Typography
-              className="value"
-              sx={{
-                fontFamily: '"Silka", sans-serif',
-                fontWeight: 100,
-                fontSize: { xs: "25px", sm: "50px" },
-                color: "#FFFFFF",
-                lineHeight: 1.1,
-                mb: { xs: 0.2, sm: 0.5 },
-              }}
-            >
-              {formatTwoDigits(timeLeft.hours)}
-            </Typography>
-            <Typography
-              className="unit"
-              sx={{
-                fontFamily: '"Silka", sans-serif',
-                fontSize: { xs: "7px", sm: "10px" },
-                fontWeight: 500,
-                letterSpacing: "0.12em",
-                textTransform: "uppercase",
-                color: "#76808f",
-                lineHeight: 1.2,
-              }}
-            >
-              {hoursLabel}
-            </Typography>
-          </Box>
-
-          {/* Minutes */}
-          <Box
-            className="time minutes"
-            sx={{
-              width: { xs: "70px", sm: "150px" },
-              height: { xs: "70px", sm: "150px" },
-              borderRadius: "50%",
-              backgroundColor: "rgba(0, 0, 0, 0.5)",
-              margin: { xs: "3px", sm: "5px" },
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              justifyContent: "center",
-              position: "relative",
-              transition: "transform 0.3s ease, background-color 0.3s ease",
-              "&:hover": {
-                transform: "scale(1.05)",
-                backgroundColor: "rgba(0, 0, 0, 0.65)",
-              },
-            }}
-          >
-            <Typography
-              className="value"
-              sx={{
-                fontFamily: '"Silka", sans-serif',
-                fontWeight: 100,
-                fontSize: { xs: "25px", sm: "50px" },
-                color: "#FFFFFF",
-                lineHeight: 1.1,
-                mb: { xs: 0.2, sm: 0.5 },
-              }}
-            >
-              {formatTwoDigits(timeLeft.minutes)}
-            </Typography>
-            <Typography
-              className="unit"
-              sx={{
-                fontFamily: '"Silka", sans-serif',
-                fontSize: { xs: "7px", sm: "10px" },
-                fontWeight: 500,
-                letterSpacing: "0.12em",
-                textTransform: "uppercase",
-                color: "#76808f",
-                lineHeight: 1.2,
-              }}
-            >
-              {minutesLabel}
-            </Typography>
-          </Box>
-
-          {/* Seconds */}
-          <Box
-            className="time seconds"
-            sx={{
-              width: { xs: "70px", sm: "150px" },
-              height: { xs: "70px", sm: "150px" },
-              borderRadius: "50%",
-              backgroundColor: "rgba(0, 0, 0, 0.5)",
-              margin: { xs: "3px", sm: "5px" },
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              justifyContent: "center",
-              position: "relative",
-              transition: "transform 0.3s ease, background-color 0.3s ease",
-              "&:hover": {
-                transform: "scale(1.05)",
-                backgroundColor: "rgba(0, 0, 0, 0.65)",
-              },
-            }}
-          >
-            <Typography
-              className="value"
-              sx={{
-                fontFamily: '"Silka", sans-serif',
-                fontWeight: 100,
-                fontSize: { xs: "25px", sm: "50px" },
-                color: "#FFFFFF",
-                lineHeight: 1.1,
-                mb: { xs: 0.2, sm: 0.5 },
-              }}
-            >
-              {formatTwoDigits(timeLeft.seconds)}
-            </Typography>
-            <Typography
-              className="unit"
-              sx={{
-                fontFamily: '"Silka", sans-serif',
-                fontSize: { xs: "7px", sm: "10px" },
-                fontWeight: 500,
-                letterSpacing: "0.12em",
-                textTransform: "uppercase",
-                color: "#76808f",
-                lineHeight: 1.2,
-              }}
-            >
-              {secondsLabel}
-            </Typography>
-          </Box>
-        </Box>
+       
       </Container>
 
       {/* Bottom Right Brand Badge */}
@@ -521,3 +328,215 @@ export default function HeroSection() {
     </Box>
   );
 }
+//  <Box
+//           ref={timerRef}
+//           className="countdown circled large"
+//           sx={{
+//             display: "flex",
+//             flexDirection: "row",
+//             direction: "ltr",
+//             alignItems: "center",
+//             justifyContent: "center",
+//             margin: { xs: "20px 0px", sm: "40px 0px " },
+//             height: { xs: "95px", sm: "150px" },
+//             zIndex: 10,
+//           }}
+//         >
+  
+//           <Box
+//             className="time days"
+//             sx={{
+//               width: { xs: "70px", sm: "150px" },
+//               height: { xs: "70px", sm: "150px" },
+//               borderRadius: "50%",
+//               backgroundColor: "rgba(0, 0, 0, 0.5)",
+//               margin: { xs: "3px", sm: "5px" },
+//               display: "flex",
+//               flexDirection: "column",
+//               alignItems: "center",
+//               justifyContent: "center",
+//               position: "relative",
+//               transition: "transform 0.3s ease, background-color 0.3s ease",
+//               "&:hover": {
+//                 transform: "scale(1.05)",
+//                 backgroundColor: "rgba(0, 0, 0, 0.65)",
+//               },
+//             }}
+//           >
+//             <Typography
+//               className="value"
+//               sx={{
+//                 fontFamily: '"Silka", sans-serif',
+//                 fontWeight: 100,
+//                 fontSize: { xs: "25px", sm: "50px" },
+//                 color: "#FFFFFF",
+//                 lineHeight: 1.1,
+//                 mb: { xs: 0.2, sm: 0.5 },
+//               }}
+//             >
+//               {timeLeft.days}
+//             </Typography>
+//             <Typography
+//               className="unit"
+//               sx={{
+//                 fontFamily: '"Silka", sans-serif',
+//                 fontSize: { xs: "7px", sm: "10px" },
+//                 fontWeight: 500,
+//                 letterSpacing: "0.12em",
+//                 textTransform: "uppercase",
+//                 color: "#76808f",
+//                 lineHeight: 1.2,
+//               }}
+//             >
+//               {daysLabel}
+//             </Typography>
+//           </Box>
+
+//           <Box
+//             className="time hours"
+//             sx={{
+//               width: { xs: "70px", sm: "150px" },
+//               height: { xs: "70px", sm: "150px" },
+//               borderRadius: "50%",
+//               backgroundColor: "rgba(0, 0, 0, 0.5)",
+//               margin: { xs: "3px", sm: "5px" },
+//               display: "flex",
+//               flexDirection: "column",
+//               alignItems: "center",
+//               justifyContent: "center",
+//               position: "relative",
+//               transition: "transform 0.3s ease, background-color 0.3s ease",
+//               "&:hover": {
+//                 transform: "scale(1.05)",
+//                 backgroundColor: "rgba(0, 0, 0, 0.65)",
+//               },
+//             }}
+//           >
+//             <Typography
+//               className="value"
+//               sx={{
+//                 fontFamily: '"Silka", sans-serif',
+//                 fontWeight: 100,
+//                 fontSize: { xs: "25px", sm: "50px" },
+//                 color: "#FFFFFF",
+//                 lineHeight: 1.1,
+//                 mb: { xs: 0.2, sm: 0.5 },
+//               }}
+//             >
+//               {formatTwoDigits(timeLeft.hours)}
+//             </Typography>
+//             <Typography
+//               className="unit"
+//               sx={{
+//                 fontFamily: '"Silka", sans-serif',
+//                 fontSize: { xs: "7px", sm: "10px" },
+//                 fontWeight: 500,
+//                 letterSpacing: "0.12em",
+//                 textTransform: "uppercase",
+//                 color: "#76808f",
+//                 lineHeight: 1.2,
+//               }}
+//             >
+//               {hoursLabel}
+//             </Typography>
+//           </Box>
+
+//           <Box
+//             className="time minutes"
+//             sx={{
+//               width: { xs: "70px", sm: "150px" },
+//               height: { xs: "70px", sm: "150px" },
+//               borderRadius: "50%",
+//               backgroundColor: "rgba(0, 0, 0, 0.5)",
+//               margin: { xs: "3px", sm: "5px" },
+//               display: "flex",
+//               flexDirection: "column",
+//               alignItems: "center",
+//               justifyContent: "center",
+//               position: "relative",
+//               transition: "transform 0.3s ease, background-color 0.3s ease",
+//               "&:hover": {
+//                 transform: "scale(1.05)",
+//                 backgroundColor: "rgba(0, 0, 0, 0.65)",
+//               },
+//             }}
+//           >
+//             <Typography
+//               className="value"
+//               sx={{
+//                 fontFamily: '"Silka", sans-serif',
+//                 fontWeight: 100,
+//                 fontSize: { xs: "25px", sm: "50px" },
+//                 color: "#FFFFFF",
+//                 lineHeight: 1.1,
+//                 mb: { xs: 0.2, sm: 0.5 },
+//               }}
+//             >
+//               {formatTwoDigits(timeLeft.minutes)}
+//             </Typography>
+//             <Typography
+//               className="unit"
+//               sx={{
+//                 fontFamily: '"Silka", sans-serif',
+//                 fontSize: { xs: "7px", sm: "10px" },
+//                 fontWeight: 500,
+//                 letterSpacing: "0.12em",
+//                 textTransform: "uppercase",
+//                 color: "#76808f",
+//                 lineHeight: 1.2,
+//               }}
+//             >
+//               {minutesLabel}
+//             </Typography>
+//           </Box>
+
+//           {/* Seconds */}
+//           <Box
+//             className="time seconds"
+//             sx={{
+//               width: { xs: "70px", sm: "150px" },
+//               height: { xs: "70px", sm: "150px" },
+//               borderRadius: "50%",
+//               backgroundColor: "rgba(0, 0, 0, 0.5)",
+//               margin: { xs: "3px", sm: "5px" },
+//               display: "flex",
+//               flexDirection: "column",
+//               alignItems: "center",
+//               justifyContent: "center",
+//               position: "relative",
+//               transition: "transform 0.3s ease, background-color 0.3s ease",
+//               "&:hover": {
+//                 transform: "scale(1.05)",
+//                 backgroundColor: "rgba(0, 0, 0, 0.65)",
+//               },
+//             }}
+//           >
+//             <Typography
+//               className="value"
+//               sx={{
+//                 fontFamily: '"Silka", sans-serif',
+//                 fontWeight: 100,
+//                 fontSize: { xs: "25px", sm: "50px" },
+//                 color: "#FFFFFF",
+//                 lineHeight: 1.1,
+//                 mb: { xs: 0.2, sm: 0.5 },
+//               }}
+//             >
+//               {formatTwoDigits(timeLeft.seconds)}
+//             </Typography>
+//             <Typography
+//               className="unit"
+//               sx={{
+//                 fontFamily: '"Silka", sans-serif',
+//                 fontSize: { xs: "7px", sm: "10px" },
+//                 fontWeight: 500,
+//                 letterSpacing: "0.12em",
+//                 textTransform: "uppercase",
+//                 color: "#76808f",
+//                 lineHeight: 1.2,
+//               }}
+//             >
+//               {secondsLabel}
+//             </Typography>
+//           </Box>
+//         </Box>

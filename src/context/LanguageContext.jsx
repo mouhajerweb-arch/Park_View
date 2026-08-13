@@ -38,6 +38,8 @@ export function LanguageProvider({ children }) {
 
   useEffect(() => {
     if (isHeroReady) return;
+    const isHomePath = pathname === '/' || pathname === '/en' || pathname === '/ar';
+    if (isHomePath) return;
 
     const fallbackTimer = setTimeout(() => {
       setIsHeroReady(true);
