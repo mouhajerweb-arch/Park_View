@@ -1,11 +1,12 @@
 import Script from 'next/script';
 import ClientLayout from '../components/ClientLayout';
+import { client } from '../sanity/client';
 import './globals.css';
 
 const SITE_URL = 'https://parkview.community';
 const META_PIXEL_ID = '2225745461706390';
 
-export const metadata = {
+const baseMetadata = {
   metadataBase: new URL(SITE_URL),
   title: { default: 'Park View Yaafour | Private Residential Community in Damascus', template: '%s | Park View Yaafour' },
   description: 'Discover Park View Yaafour, a private residential community near Damascus with landscaped gardens, contemporary Mediterranean homes, premium amenities, and secure family living.',
@@ -22,9 +23,31 @@ export const metadata = {
   },
   twitter: { card: 'summary_large_image', title: 'Park View Yaafour', description: 'Private residential community in Yaafour, Damascus.', images: ['/images/bg2.jpg'] },
   robots: { index: true, follow: true, googleBot: { index: true, follow: true, 'max-image-preview': 'large', 'max-snippet': -1, 'max-video-preview': -1 } },
-  icons: { icon: '/favicon.ico', apple: '/images/logo.png' },
   manifest: '/manifest.webmanifest',
 };
+
+export async function generateMetadata() {
+  const settings = await client.fetch(
+    `*[_type == "siteSettings" && _id == "siteSettings"][0]{
+      "faviconUrl": favicon.asset->url
+    }`,
+    {},
+    { next: { revalidate: 300 } }
+  ).catch(() => null);
+
+  const source = settings?.faviconUrl;
+  const favicon = source ? `${source}?w=64&h=64&fit=crop&auto=format` : '/images/logo.png';
+  const appleIcon = source ? `${source}?w=180&h=180&fit=crop&auto=format` : '/images/logo.png';
+
+  return {
+    ...baseMetadata,
+    icons: {
+      icon: [{ url: favicon, sizes: '64x64' }],
+      shortcut: [favicon],
+      apple: [{ url: appleIcon, sizes: '180x180' }],
+    },
+  };
+}
 
 const organizationSchema = {
   '@context': 'https://schema.org', '@type': ['Organization', 'RealEstateAgent'],
