@@ -35,16 +35,15 @@ export async function generateMetadata() {
     { next: { revalidate: 300 } }
   ).catch(() => null);
 
-  const source = settings?.faviconUrl;
-  const favicon = source ? `${source}?w=64&h=64&fit=crop&auto=format` : '/images/logo.png';
-  const appleIcon = source ? `${source}?w=180&h=180&fit=crop&auto=format` : '/images/logo.png';
+  // Use the exact favicon uploaded in Sanity without cropping or reshaping it.
+  const favicon = settings?.faviconUrl || '/images/logo.png';
 
   return {
     ...baseMetadata,
     icons: {
-      icon: [{ url: favicon, sizes: '64x64' }],
+      icon: [{ url: favicon }],
       shortcut: [favicon],
-      apple: [{ url: appleIcon, sizes: '180x180' }],
+      apple: [{ url: favicon }],
     },
   };
 }
